@@ -25,6 +25,7 @@ function prefillHeaderFromLocalProfile(){
 
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
+console.log("API_URL 적용 확인:", API_URL);
 const API_URL = "PASTE_APPS_SCRIPT_WEB_APP_EXEC_URL_HERE";
 
 let JSONP_SEQ = 0;
