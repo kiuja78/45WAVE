@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>WAVE LEADER V5.16</title>
+<title>WAVE LEADER V5.17</title>
 <style>
-
 
 
 :root{--purple:#6b55b6;--bg:#f3f3f5;--line:#e7e7e7}
@@ -93,7 +92,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.16 stats card layout */
+/* V5.17 stats card layout */
 .stats-month-card.clean{
   background:#fff;
   border-radius:22px;
@@ -207,7 +206,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.16 monthly stats layout */
+/* V5.17 monthly stats layout */
 .month-member-list{margin-top:10px}
 .month-member-row{
   display:grid;
@@ -232,7 +231,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .month-empty{width:23px;height:23px;border:2px solid #555;border-radius:50%;background:#fff}
 
 
-/* V5.16 stats: 3~12 monthly grid */
+/* V5.17 stats: 3~12 monthly grid */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -334,7 +333,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.16 child statistics */
+/* V5.17 child statistics */
 .month-table .name-col{
   font-size:12px;
 }
@@ -366,7 +365,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.16 sticky stats, register detail */
+/* V5.17 sticky stats, register detail */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -460,7 +459,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.16 register management */
+/* V5.17 register management */
 .register-manager-top{
   background:#fff;
   border-radius:22px;
@@ -539,7 +538,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.16 full add member page */
+/* V5.17 full add member page */
 .add-page-card{
   background:#fff;
   border-radius:0;
@@ -674,44 +673,8 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
   justify-content:center;
 }
 
-
-
-.name{cursor:pointer}
-.detail-clean-card{
-  background:#fff;
-}
-.detail-top{
-  display:grid;
-  grid-template-columns:1fr 104px;
-  gap:12px;
-  align-items:start;
-}
-.detail-name{
-  font-size:22px;
-  font-weight:950;
-  color:#333;
-  margin-bottom:8px;
-}
-.detail-line{
-  font-size:15px;
-  color:#777;
-  line-height:1.55;
-}
-.detail-info-list{
-  border-top:1px solid var(--line);
-  margin-top:12px;
-  padding-top:12px;
-  display:grid;
-  gap:10px;
-  color:#666;
-  line-height:1.55;
-}
-.detail-actions.two{
-  grid-template-columns:1fr 1fr;
-}
-
 </style>
-<!-- 45WAVE V5.16 single-file build -->
+<!-- 45WAVE V5.17 single-file build -->
 </head>
 <body>
 <div class="app">
@@ -794,7 +757,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
-console.log("45WAVE V5.16 시작", API_URL);
+console.log("45WAVE V5.17 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -808,7 +771,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.16")
+      + "&v=" + encodeURIComponent("V5.17")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -1018,64 +981,16 @@ function prefillHeaderFromLocalProfile(){
 }
 
 
-
-function normalizeBirthYear(birth){
-  const s = String(birth || '').trim();
-  if(!s) return 0;
-  const first = s.split(/[.\-\/]/)[0].replace(/[^0-9]/g,'');
-  if(!first) return 0;
-  if(first.length === 4) return Number(first);
-  if(first.length === 2){
-    const yy = Number(first);
-    return yy <= 30 ? 2000 + yy : 1900 + yy;
-  }
-  return 0;
-}
-
-function ageText(birth){
-  const y = normalizeBirthYear(birth);
-  if(!y) return '';
-  const today = DATA.today || new Date().toISOString().slice(0,10);
-  const nowY = Number(String(today).slice(0,4));
-  const age = nowY - y;
-  return age > 0 && age < 120 ? age + '세' : '';
-}
-
-function birthAgeLine(birth){
-  const b = formatBirth(birth);
-  const a = ageText(birth);
-  if(b && a) return b + ' (' + a + ')';
-  return b || '';
-}
-
-function memberRateUntil(m, ym){
-  const p = String(ym || state.currentYm || '2026.06').split('.');
-  const mon = Math.max(3, Math.min(12, Number(p[1] || 6)));
-  const months = [];
-  for(let i=3;i<=mon;i++) months.push(i);
-  if(!months.length) return 0;
-  const present = months.filter(month => memberMonthStatus(m, month) === '출석').length;
-  return Math.round((present / months.length) * 100);
-}
-
-function explicitMonthStatus(memberId, month){
-  const ym = '2026.' + String(month).padStart(2,'0');
-  const r = (DATA.attendance || []).find(a =>
-    String(a.memberId) === String(memberId) &&
-    String(a['연월']) === ym
-  );
-  if(!r) return null;
-  return String(r['상태']) === '출석' ? '출석' : '';
-}
-
-
 function statusOn(id,date){
   const ym = ymFromDate(date || state.attendanceDate || '');
-  const month = Number(String(ym).split('.')[1] || 0);
-  const explicit = explicitMonthStatus(id, month);
-  if(explicit !== null) return explicit;
+  const r = DATA.attendance.find(a =>
+    String(a.memberId) === String(id) &&
+    String(a['연월']) === ym &&
+    String(a['상태']) === '출석'
+  );
+  if(r) return '출석';
 
-  const m = (DATA.members || []).find(x => String(x.id) === String(id));
+  const m = DATA.members.find(x => String(x.id) === String(id));
   if(m && m.monthAttendance){
     const mon = String(Number(String(ym).split('.')[1] || ''));
     if(m.monthAttendance[mon] === '출석') return '출석';
@@ -1120,16 +1035,17 @@ async function toggleAttend(id){
   const next=cur==='출석'?'':'출석';
   const ym = state.currentYm || ymFromDate(state.attendanceDate);
   const saveDate = meetingDateOf(ym) || state.attendanceDate;
-  const saveStatus = next || '불참';
 
   DATA.attendance=DATA.attendance.filter(a=>
     !(String(a.memberId)===String(id)&&String(a['연월'])===ym)
   );
-  DATA.attendance.push({'날짜':saveDate,'연월':ym,memberId:m.id,'순':m.team,'이름':m.name,'상태':saveStatus});
+  if(next){
+    DATA.attendance.push({'날짜':saveDate,'연월':ym,memberId:m.id,'순':m.team,'이름':m.name,'상태':next});
+  }
   render();
 
   try{
-    await call('saveAttendance',{date:saveDate,records:[{memberId:m.id,team:m.team,name:m.name,status:saveStatus}]});
+    await call('saveAttendance',{date:saveDate,records:[{memberId:m.id,team:m.team,name:m.name,status:next}]});
   }catch(e){
     alert('출석 저장 중 오류가 발생했습니다: '+(e.message||e));
     await load();
@@ -1177,14 +1093,13 @@ function visibleStatsMonths(){
 }
 
 function memberMonthStatus(m,month){
-  const explicit = explicitMonthStatus(m.id, month);
-  if(explicit !== null) return explicit;
-
-  if(m && m.monthAttendance){
-    const st = m.monthAttendance[String(Number(month))];
-    if(st === '출석') return '출석';
-  }
-  return '';
+  const ym = '2026.' + String(month).padStart(2,'0');
+  const r = DATA.attendance.find(a =>
+    String(a.memberId) === String(m.id) &&
+    String(a['연월']) === ym &&
+    String(a['상태']) === '출석'
+  );
+  return r ? '출석' : '';
 }
 
 function monthRate(month,members){if(!members.length)return 0; const p=members.filter(m=>memberMonthStatus(m,month)==='출석').length; return Math.round((p/members.length)*100);}
@@ -1487,35 +1402,27 @@ function memberFormHtml(id='', embedded=false){
   const children = parseChildListForForm(m);
   return `
     <div class="add-page-card">
-      <div class="add-title">${id?'정보수정':'순원 추가'}</div>
+      <div class="add-title">${id?'순원 수정':'순원 추가'}</div>
       <div class="add-form">
         <select id="fmTeam" class="full">${(DATA.teams||[]).map(t=>`<option ${m.team===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
-
         <input id="fmName" class="add-input" placeholder="이름" value="${esc(m.name||'')}">
         <select id="fmGender"><option value="">성별</option><option ${m.gender==='남'?'selected':''}>남</option><option ${m.gender==='여'?'selected':''}>여</option></select>
-
-        <input id="fmBirth" class="add-input" placeholder="생년월일" value="${esc(formatBirth(m.birth||''))}" oninput="agePreview.textContent=this.value?ageText(this.value):'나이 자동계산'">
-        <div class="add-input add-age" id="agePreview">${m.birth ? ageText(m.birth) : '나이 자동계산'}</div>
-
+        <input id="fmBirth" class="add-input" placeholder="생년월일" value="${esc(formatBirth(m.birth||''))}" oninput="agePreview.textContent=this.value?calcAgeText(this.value):'나이 자동계산'">
+        <div class="add-input add-age" id="agePreview">${m.birth ? calcAgeText(m.birth) : '나이 자동계산'}</div>
         <input id="fmVillage" class="add-input" placeholder="마을명" value="${esc(m.village||'')}">
         <input id="fmRoom" class="add-input" placeholder="사랑방명" value="${esc(m.room||'')}">
-
-        <input id="fmPhone" class="add-input full" placeholder="연락처" value="${esc(formatPhone(m.phone||''))}">
+        <input id="fmPhone" class="add-input full" placeholder="연락처" value="${esc(m.phone||'')}">
         <input id="fmAddress" class="add-input full" placeholder="집주소" value="${esc(m.address||'')}">
-
         <div class="add-photo">
           사진
-          <button type="button" onclick="setPhotoUrl()">사진등록</button>
-          <input id="fmPhotoUrl" type="hidden" value="${esc(m.photoUrl||'')}">
+          <button type="button" onclick="setPhotoUrl()">사진등록</button><input id="fmPhotoUrl" type="hidden" value="${esc(m.photoUrl||'')}">
         </div>
-
         <div class="child-title">자녀이름 / 생년월일</div>
         <div id="childListBox" class="full">${childFormRows(children)}</div>
         <button class="add-child-button" type="button" onclick="addChildInput()">+ 자녀 추가</button>
-
         <textarea id="fmMemo" class="full" placeholder="메모">${esc(m.memo||'')}</textarea>
-        <button class="add-save" onclick="saveMemberUi('${esc(id)}')">저장하기</button>
-        <button class="add-close" onclick="${id ? `openMemberDetail('${esc(id)}')` : `go('home')`}">닫기</button>
+        <button class="add-save" onclick="saveMemberUi('${esc(id)}')">저장</button>
+        <button class="add-close" onclick="go('home')">닫기</button>
       </div>
     </div>`;
 }
@@ -1575,47 +1482,6 @@ function collectChildList(){
   return arr.join(',');
 }
 
-
-function openMemberDetail(id){
-  const m = DATA.members.find(x => String(x.id) === String(id));
-  if(!m) return;
-
-  const phone = formatPhone(m.phone);
-  const villageRoom = [m.village, m.room].filter(Boolean).join(' / ');
-
-  memberDetailView.innerHTML = `
-    <div class="detail-clean-card">
-      <div class="detail-top">
-        <div>
-          <div class="detail-name">${nameGender(m)}</div>
-          <div class="detail-line">🎂 ${esc(birthAgeLine(m.birth))}</div>
-          <div class="detail-line">${esc(m.team || '-')}</div>
-        </div>
-        <div class="detail-photo">●</div>
-      </div>
-
-      <div class="detail-actions two">
-        <button class="detail-icon-btn" onclick="location.href='tel:${cleanPhone(m.phone)}'">전화</button>
-        <button class="detail-icon-btn" onclick="location.href='sms:${cleanPhone(m.phone)}'">문자</button>
-      </div>
-
-      <div class="detail-info-list">
-        <div><b>마을명 / 사랑방</b><br>${esc(villageRoom || '-')}</div>
-        <div><b>집주소</b><br>${esc(m.address || '-')}</div>
-        <div><b>연락처</b><br>${esc(phone || '-')}</div>
-      </div>
-
-      <button class="save" onclick="openMemberForm('${esc(m.id)}')" style="width:100%;margin-top:14px">정보수정</button>
-      <button class="outline" onclick="closeMemberModal()" style="width:100%;margin-top:8px">닫기</button>
-    </div>`;
-  memberModal.classList.remove('hidden');
-}
-
-function closeMemberModal(){
-  memberModal.classList.add('hidden');
-}
-
-
 function openMemberForm(id=''){
   view.innerHTML=`<section class="page">${memberFormHtml(id, true)}</section>`;
 }
@@ -1631,19 +1497,20 @@ async function saveMemberUi(id){
     birth:fmBirth.value,
     village:fmVillage.value,
     room:fmRoom.value,
-    phone:formatPhone(fmPhone.value),
+    phone:fmPhone.value,
     address:fmAddress.value,
     childList:collectChildList(),
-    photoUrl:(typeof fmPhotoUrl!=='undefined'?fmPhotoUrl.value:''),
     memo:fmMemo.value,
+    photoUrl:(typeof fmPhotoUrl!=='undefined'?fmPhotoUrl.value:''),
     active:'Y'
   };
   if(!payload.name) return alert('이름을 입력해주세요.');
   loadingToast.classList.remove('hidden');
   try{
     await call('saveMemberRecord', payload);
-    await load();
-    state.tab='home';
+    SELECTED_MEMBER_ID = '';
+    await startInitialLoad();
+    state.tab='register';
     render();
   }catch(e){
     alert('저장 중 오류가 발생했습니다: '+(e.message||e));
@@ -1786,7 +1653,7 @@ function updateHeader(){
 }
 
 function versionText(){
-  return 'V5.16';
+  return 'V5.17';
 }
 
 function render(){
@@ -1817,7 +1684,7 @@ function roleByNameTeam(name, team){
 
 
 
-/* V5.16 compatibility helpers */
+/* V5.17 compatibility helpers */
 function safeArr(v){ return Array.isArray(v) ? v : []; }
 
 function teamMembers(){
@@ -2012,75 +1879,12 @@ startInitialLoad();
 
 
 
-function renderHome(){
-  const members = teamMembers();
-  const ym = state.currentYm || '2026.06';
-  state.attendanceDate = meetingDateOf(ym);
-  view.innerHTML = `<section class="page">
-    <h1>${esc((DATA.settings&&DATA.settings.leaderName)||'순장')} ${esc((DATA.settings&&DATA.settings.leaderRole)||'순장')}님</h1>
-    <h2>45교구 "결" ${esc((DATA.settings&&DATA.settings.leaderTeam)||'')}</h2>
-    <p>사랑으로 섬겨주셔서 감사합니다.</p>
-    ${teamSelect()}
-    <div class="card">
-      <div class="section-head">순원 출석체크 <span style="font-size:15px;color:#666">(${monthLabelFromYm(ym)})</span></div>
-      ${members.length ? members.map(m=>memberRow(m)).join('') : '등록된 순원이 없습니다.'}
-    </div>
-  </section>`;
-}
-
-function memberRow(m){
-  const st = statusOn(m.id,state.attendanceDate);
-  const children = parseChildren(m);
-  return `<div class="member-row">
-    <div class="photo">●</div>
-    <div class="member-info">
-      <div class="member-name">${nameGender(m)}</div>
-      <div class="member-meta">${esc(formatBirth(m.birth))}</div>
-      ${children.length ? `<div class="children">${children.map(c=>esc(c.name)).join(', ')}</div>` : ''}
-    </div>
-    <button class="check ${st==='출석'?'on':''}" onclick="toggleAttend('${esc(m.id)}')">${st==='출석'?'출석':'체크'}</button>
-    <button class="phone phone-icon-btn" onclick="openContact('${esc(m.name)}','${esc(m.phone)}')">${ICONS&&ICONS.phoneMobile?`<img class="phone-btn-img" src="${ICONS.phoneMobile}" alt="전화">`:'☎'}</button>
-  </div>`;
-}
-
-function renderStats(){
-  const months = monthNumbers();
-  const members = state.team==='전체' ? allMembers() : teamMembers();
-  view.innerHTML = `<section class="page">
-    <div class="section-head">출석통계</div>
-    ${teamSelect()}
-    <div class="card">
-      <div class="stats-main-title">2026년 출석 현황</div>
-      <div class="month-table-wrap">
-        <div class="month-table">
-          <div class="month-th name-col">이름</div>
-          ${months.map(m=>`<div class="month-th">${m}월</div>`).join('')}
-          ${members.map((m,idx)=>`
-            <div class="month-td name-col ${idx%2?'shade':''}">${esc(m.name)}</div>
-            ${months.map(mon=>{
-              const ym='2026.'+String(mon).padStart(2,'0');
-              const st=statusOn(m.id, meetingDateOf(ym));
-              if(st==='출석') return `<div class="month-td ${idx%2?'shade':''}">✓</div>`;
-              if(isAttendanceDueMonth(mon)) return `<div class="month-td ${idx%2?'shade':''}">✕</div>`;
-              return `<div class="month-td ${idx%2?'shade':''}"></div>`;
-            }).join('')}
-          `).join('')}
-        </div>
-      </div>
-    </div>
-  </section>`;
-}
-
-function renderRegister(){
-  view.innerHTML = `<section class="page">${memberFormHtml ? memberFormHtml('', true) : '<div class="card">순원등록</div>'}</section>`;
-}
-
 function renderNotice(){
   view.innerHTML = `<section class="page"><div class="section-head">공지사항</div><div class="card">공지사항 준비중입니다.</div></section>`;
 }
 
 
 </script>
-<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.16&t=static"></script>
+<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.17&t=static"></script>
 </body>
 </html>
