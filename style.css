@@ -83,7 +83,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.02 stats card layout */
+/* V5.03 stats card layout */
 .stats-month-card.clean{
   background:#fff;
   border-radius:22px;
@@ -197,7 +197,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.02 monthly stats layout */
+/* V5.03 monthly stats layout */
 .month-member-list{margin-top:10px}
 .month-member-row{
   display:grid;
@@ -222,7 +222,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .month-empty{width:23px;height:23px;border:2px solid #555;border-radius:50%;background:#fff}
 
 
-/* V5.02 stats: 3~12 monthly grid */
+/* V5.03 stats: 3~12 monthly grid */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -324,7 +324,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.02 child statistics */
+/* V5.03 child statistics */
 .month-table .name-col{
   font-size:12px;
 }
@@ -356,7 +356,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.02 sticky stats, register detail */
+/* V5.03 sticky stats, register detail */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -450,7 +450,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.02 register management */
+/* V5.03 register management */
 .register-manager-top{
   background:#fff;
   border-radius:22px;
@@ -529,7 +529,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.02 full add member page */
+/* V5.03 full add member page */
 .add-page-card{
   background:#fff;
   border-radius:0;

@@ -25,6 +25,7 @@ function prefillHeaderFromLocalProfile(){
 
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
+console.log("45WAVE frontend loaded V5.03");
 console.log("API_URL 적용 확인:", API_URL);
 const API_URL = "PASTE_APPS_SCRIPT_WEB_APP_EXEC_URL_HERE";
 
@@ -262,7 +263,7 @@ function shiftMonth(delta){let p=String(state.currentYm||'2026.06').split('.'); 
 async function load(){
   let slowTimer = setTimeout(()=>{
     try{
-      view.innerHTML = `<section class="page"><div class="card"><div class="section-head">불러오는 중...</div><div class="count">구글시트 연결이 느립니다. 잠시만 기다려주세요.</div></div></section>`;
+      view.innerHTML = `<section class="page"><div class="card"><div class="section-head">불러오는 중...</div><div class="count">데이터를 불러오는 중입니다. 잠시만 기다려주세요.</div></div></section>`;
     }catch(e){}
   }, 4000);
 
