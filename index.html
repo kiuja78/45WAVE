@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>WAVE LEADER V5.07</title>
+<title>WAVE LEADER V5.09</title>
 <style>
 
 :root{--purple:#6b55b6;--bg:#f3f3f5;--line:#e7e7e7}
@@ -91,7 +91,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.07 stats card layout */
+/* V5.09 stats card layout */
 .stats-month-card.clean{
   background:#fff;
   border-radius:22px;
@@ -205,7 +205,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.07 monthly stats layout */
+/* V5.09 monthly stats layout */
 .month-member-list{margin-top:10px}
 .month-member-row{
   display:grid;
@@ -230,7 +230,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .month-empty{width:23px;height:23px;border:2px solid #555;border-radius:50%;background:#fff}
 
 
-/* V5.07 stats: 3~12 monthly grid */
+/* V5.09 stats: 3~12 monthly grid */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -332,7 +332,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.07 child statistics */
+/* V5.09 child statistics */
 .month-table .name-col{
   font-size:12px;
 }
@@ -364,7 +364,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.07 sticky stats, register detail */
+/* V5.09 sticky stats, register detail */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -458,7 +458,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.07 register management */
+/* V5.09 register management */
 .register-manager-top{
   background:#fff;
   border-radius:22px;
@@ -537,7 +537,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.07 full add member page */
+/* V5.09 full add member page */
 .add-page-card{
   background:#fff;
   border-radius:0;
@@ -659,7 +659,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 </style>
-<!-- 45WAVE V5.07 single-file build -->
+<!-- 45WAVE V5.09 single-file build -->
 </head>
 <body>
 <div class="app">
@@ -734,7 +734,8 @@ function prefillHeaderFromLocalProfile(){
 
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
-console.log("45WAVE V5.07 시작", API_URL);
+const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
+console.log("45WAVE V5.09 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -748,7 +749,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.07")
+      + "&v=" + encodeURIComponent("V5.09")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -1572,6 +1573,6 @@ startInitialLoad();
 
 
 </script>
-<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.07"></script>
+<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.09&t=static"></script>
 </body>
 </html>
