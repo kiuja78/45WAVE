@@ -25,60 +25,64 @@ function prefillHeaderFromLocalProfile(){
 
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
-console.log("45WAVE frontend loaded V5.03");
-console.log("API_URL 적용 확인:", API_URL);
-const API_URL = "PASTE_APPS_SCRIPT_WEB_APP_EXEC_URL_HERE";
+console.log("45WAVE frontend loaded V5.04", API_URL);
 
 let JSONP_SEQ = 0;
 
 function call(name, ...args){
   return new Promise((resolve, reject) => {
-    if(!API_URL || API_URL.includes("PASTE_APPS_SCRIPT")){
-      reject(new Error("app.js의 API_URL에 Apps Script /exec 주소를 입력해야 합니다."));
+    if(!API_URL || !API_URL.startsWith("https://script.google.com/macros/s/")){
+      reject(new Error("API 주소가 올바르지 않습니다."));
       return;
     }
 
-    const cb = "__wave_jsonp_" + (++JSONP_SEQ);
+    const callbackName = "__wave_cb_" + Date.now() + "_" + (++JSONP_SEQ);
+    const payload = encodeURIComponent(JSON.stringify(args || []));
+    const src = API_URL
+      + "?action=" + encodeURIComponent(name)
+      + "&args=" + payload
+      + "&callback=" + encodeURIComponent(callbackName)
+      + "&_=" + Date.now();
+
+    let done = false;
     const script = document.createElement("script");
 
     const cleanup = () => {
-      try{ delete window[cb]; }catch(e){ window[cb] = undefined; }
-      if(script.parentNode) script.parentNode.removeChild(script);
+      try{ delete window[callbackName]; }catch(e){ window[callbackName] = undefined; }
+      try{ script.remove(); }catch(e){ if(script.parentNode) script.parentNode.removeChild(script); }
     };
 
     const timer = setTimeout(() => {
+      if(done) return;
+      done = true;
       cleanup();
-      reject(new Error("API 응답 시간이 초과되었습니다."));
-    }, 30000);
+      reject(new Error("데이터 응답 시간이 초과되었습니다. 새로고침 후 다시 시도해주세요."));
+    }, 45000);
 
-    window[cb] = (res) => {
+    window[callbackName] = (response) => {
+      if(done) return;
+      done = true;
       clearTimeout(timer);
       cleanup();
 
-      try{
-        if(typeof res === "string"){
-          resolve(res);
-        }else{
-          resolve(JSON.stringify(res));
-        }
-      }catch(e){
-        reject(e);
+      if(response && response.ok === false){
+        reject(new Error(response.error || "API 오류"));
+        return;
       }
+
+      resolve(typeof response === "string" ? response : JSON.stringify(response));
     };
 
-    const url = new URL(API_URL);
-    url.searchParams.set("action", name);
-    url.searchParams.set("callback", cb);
-    url.searchParams.set("args", JSON.stringify(args || []));
-
+    script.async = true;
     script.onerror = () => {
+      if(done) return;
+      done = true;
       clearTimeout(timer);
       cleanup();
-      reject(new Error("API 스크립트를 불러오지 못했습니다."));
+      reject(new Error("데이터 연결에 실패했습니다. API 배포 권한을 확인해주세요."));
     };
-
-    script.src = url.toString();
-    document.body.appendChild(script);
+    script.src = src;
+    document.head.appendChild(script);
   });
 }
 
@@ -263,27 +267,35 @@ function shiftMonth(delta){let p=String(state.currentYm||'2026.06').split('.'); 
 async function load(){
   let slowTimer = setTimeout(()=>{
     try{
-      view.innerHTML = `<section class="page"><div class="card"><div class="section-head">불러오는 중...</div><div class="count">데이터를 불러오는 중입니다. 잠시만 기다려주세요.</div></div></section>`;
+      view.innerHTML = `<section class="page"><div class="card"><div class="section-head">불러오는 중...</div><div class="count">데이터를 준비하고 있습니다. 잠시만 기다려주세요.</div></div></section>`;
     }catch(e){}
-  }, 4000);
+  }, 3000);
 
   try{
-    const raw=await call('getDataJson');
+    console.log("45WAVE load start");
+    const raw = await call('getDataJson');
+    console.log("45WAVE raw response length", raw && raw.length);
     clearTimeout(slowTimer);
-    const r=typeof raw==='string'?JSON.parse(raw):raw;
-    if(!r||!r.ok)throw new Error(r&&r.error?r.error:'getDataJson 실패');
-    DATA=r;
+
+    const r = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if(!r || !r.ok) throw new Error(r && r.error ? r.error : '데이터를 불러오지 못했습니다.');
+
+    DATA = r;
     const hasLocalProfile = applyLocalProfile();
     const currentM = Math.min(12, Math.max(3, Number(String(DATA.today || '').slice(5,7)) || 6));
     state.currentYm = '2026.' + String(currentM).padStart(2,'0');
-    state.attendanceDate=meetingDateOf(state.currentYm)||DATA.today;
+    state.attendanceDate = meetingDateOf(state.currentYm) || DATA.today;
     state.team = hasLocalProfile ? (DATA.settings.leaderTeam || '') : '';
+
     updateHeader();
     render();
+
     if(!hasLocalProfile) openProfile(true);
   }catch(e){
     clearTimeout(slowTimer);
-    view.innerHTML=`<section class="page"><div class="card"><div class="section-head">오류</div><div>${esc(e.message||e)}</div><button class="save" onclick="load()" style="margin-top:12px">다시 불러오기</button></div></section>`;
+    console.error("45WAVE load error", e);
+    const msg = esc(e && e.message ? e.message : e);
+    view.innerHTML = `<section class="page"><div class="card"><div class="section-head">오류</div><div>${msg}</div><button class="save" onclick="load()" style="margin-top:12px">다시 불러오기</button><div class="count" style="margin-top:10px">문제가 계속되면 새로고침하거나 관리자에게 문의해주세요.</div></div></section>`;
   }
 }
 
