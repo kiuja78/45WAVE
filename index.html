@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-<title>WAVE LEADER V5.19</title>
+<title>WAVE LEADER V5.20</title>
 <style>
 
 
@@ -94,7 +94,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.19 stats card layout */
+/* V5.20 stats card layout */
 .stats-month-card.clean{
   background:#fff;
   border-radius:22px;
@@ -208,7 +208,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.19 monthly stats layout */
+/* V5.20 monthly stats layout */
 .month-member-list{margin-top:10px}
 .month-member-row{
   display:grid;
@@ -233,7 +233,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .month-empty{width:23px;height:23px;border:2px solid #555;border-radius:50%;background:#fff}
 
 
-/* V5.19 stats: 3~12 monthly grid */
+/* V5.20 stats: 3~12 monthly grid */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -335,7 +335,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.19 child statistics */
+/* V5.20 child statistics */
 .month-table .name-col{
   font-size:12px;
 }
@@ -367,7 +367,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.19 sticky stats, register detail */
+/* V5.20 sticky stats, register detail */
 .month-table-wrap{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -461,7 +461,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.19 register management */
+/* V5.20 register management */
 .register-manager-top{
   background:#fff;
   border-radius:22px;
@@ -540,7 +540,7 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 }
 
 
-/* V5.19 full add member page */
+/* V5.20 full add member page */
 .add-page-card{
   background:#fff;
   border-radius:0;
@@ -685,37 +685,36 @@ body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,
 .detail-actions.two{grid-template-columns:1fr 1fr}
 
 
-/* V5.19 header polish */
-header,
-.app-header,
-.topbar,
-.header {
-  background:#dff4f3 !important;
-}
-.header-version-badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin-left:6px;
-  padding:2px 7px;
-  border-radius:999px;
-  background:#eef7ff;
-  border:1px solid #9fd4ff;
-  color:#5b55a6;
-  font-size:11px;
-  font-weight:950;
-  line-height:1.2;
-  white-space:nowrap;
-}
-.profile,
-.avatar,
-.setting-avatar,
-.header-avatar {
-  cursor:pointer;
-}
+/* V5.20 header/detail/edit refinement */
+header,.app-header,.topbar,.header{background:#dff4f3!important}
+.header-version-badge{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;padding:2px 7px;border-radius:999px;background:#eef7ff;border:1px solid #9fd4ff;color:#5b55a6;font-size:11px;font-weight:950;line-height:1.2;white-space:nowrap}
+.header-version-line{color:#4a408a;font-size:12px;font-weight:900;align-self:center}
+.detail-card-pretty,.edit-card-pretty{background:#fff;border-radius:22px;padding:18px}
+.detail-top,.edit-top{display:grid;grid-template-columns:1fr 112px;gap:14px;align-items:start}
+.detail-name,.edit-name-line{font-size:23px;font-weight:950;color:#333;margin-bottom:8px}
+.edit-name-line span{font-size:16px;color:#777}
+.detail-line,.edit-small{font-size:15px;color:#777;line-height:1.55}
+.detail-photo-wrap,.edit-photo-wrap{width:108px;height:108px;border-radius:34px;background:#fff0c6;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.detail-profile-img,.edit-photo-img{width:100%;height:100%;object-fit:cover}
+.detail-profile-fallback,.edit-photo-fallback{color:#ffe0a0;font-size:58px;line-height:1}
+.detail-actions.two{display:grid;grid-template-columns:78px 78px;gap:10px;margin:16px 0 14px}
+.mini-action{border:0;border-radius:14px;background:#efe8ff;color:#5f4bb2;min-height:54px;font-weight:850;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.mini-action span{font-size:12px;color:#666}
+.detail-info-list.pretty{border-top:1px solid var(--line);margin-top:10px;padding-top:13px;display:grid;gap:10px}
+.detail-info-row{display:grid;grid-template-columns:28px 1fr;gap:6px;align-items:start;color:#666;line-height:1.5}
+.info-icon{color:#6b55b6;text-align:center}
+.memo-box{margin-top:12px;background:#f2edff;color:#666;border-radius:14px;padding:11px 13px;line-height:1.45}
+.detail-bottom-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.soft-btn{border:1px solid #eadcf4;background:#fff7ff;color:#8a4a97;border-radius:12px;padding:11px;font-weight:900}
+.photo-register-btn{width:150px;border:1px solid #ded2ff;background:#f4efff;color:#6b55b6;border-radius:10px;padding:9px 10px;font-weight:900;margin:10px 0 16px}
+.form-section-title{margin:14px 0 7px;font-weight:950;color:#6b55b6;font-size:15px}
+.edit-grid.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.clean-input{width:100%;border:1px solid #e5e5e5;background:#fff;border-radius:12px;padding:12px 13px;font-size:15px;min-height:46px}
+.memo-input{margin-top:12px;min-height:84px}
+@media(max-width:420px){.detail-top,.edit-top{grid-template-columns:1fr 96px}.detail-photo-wrap,.edit-photo-wrap{width:96px;height:96px;border-radius:30px}.detail-actions.two{grid-template-columns:72px 72px}}
 
 </style>
-<!-- 45WAVE V5.19 single-file build -->
+<!-- 45WAVE V5.20 single-file build -->
 </head>
 <body>
 <div class="app">
@@ -800,7 +799,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
-console.log("45WAVE V5.19 시작", API_URL);
+console.log("45WAVE V5.20 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -814,7 +813,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.19")
+      + "&v=" + encodeURIComponent("V5.20")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -1443,32 +1442,59 @@ function memberFormHtml(id='', embedded=false){
     memo:''
   };
   const children = parseChildListForForm(m);
+  const photoPreview = m.photoUrl
+    ? `<img class="edit-photo-img" src="${esc(m.photoUrl)}" alt="사진">`
+    : `<div class="edit-photo-fallback">●</div>`;
+
   return `
-    <div class="add-page-card">
-      <div class="add-title">${id?'순원 수정':'순원 추가'}</div>
-      <div class="add-form">
-        <select id="fmTeam" class="full">${(DATA.teams||[]).map(t=>`<option ${m.team===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
-        <input id="fmName" class="add-input" placeholder="이름" value="${esc(m.name||'')}">
-        <select id="fmGender"><option value="">성별</option><option ${m.gender==='남'?'selected':''}>남</option><option ${m.gender==='여'?'selected':''}>여</option></select>
-        <input id="fmBirth" class="add-input" placeholder="생년월일" value="${esc(formatBirth(m.birth||''))}" oninput="agePreview.textContent=this.value?calcAgeText(this.value):'나이 자동계산'">
-        <div class="add-input add-age" id="agePreview">${m.birth ? calcAgeText(m.birth) : '나이 자동계산'}</div>
-        <input id="fmVillage" class="add-input" placeholder="마을명" value="${esc(m.village||'')}">
-        <input id="fmRoom" class="add-input" placeholder="사랑방명" value="${esc(m.room||'')}">
-        <input id="fmPhone" class="add-input full" placeholder="연락처" value="${esc(m.phone||'')}">
-        <input id="fmAddress" class="add-input full" placeholder="집주소" value="${esc(m.address||'')}">
-        <div class="add-photo">
-          사진
-          <button type="button" onclick="setPhotoUrl()">사진등록</button><input id="fmPhotoUrl" type="hidden" value="${esc(m.photoUrl||'')}">
+    <div class="edit-card-pretty">
+      <div class="edit-top">
+        <div>
+          <div class="edit-name-line">${esc(m.name||'순원')} ${m.gender?`<span>(${esc(m.gender)})</span>`:''}</div>
+          <div class="edit-small">🎂 ${esc(birthAgeLine(m.birth)||'생년월일')}</div>
+          <div class="edit-small">${esc(m.team||'순 선택')}</div>
         </div>
-        <div class="child-title">자녀이름 / 생년월일</div>
-        <div id="childListBox" class="full">${childFormRows(children)}</div>
-        <button class="add-child-button" type="button" onclick="addChildInput()">+ 자녀 추가</button>
-        <textarea id="fmMemo" class="full" placeholder="메모">${esc(m.memo||'')}</textarea>
-        <button class="add-save" onclick="saveMemberUi('${esc(id)}')">저장</button>
-        <button class="add-close" onclick="go('home')">닫기</button>
+        <div class="edit-photo-wrap">${photoPreview}</div>
       </div>
+
+      <button class="photo-register-btn" type="button" onclick="setPhotoUrl()">＋ 사진등록</button>
+      <input id="fmPhotoUrl" type="hidden" value="${esc(m.photoUrl||'')}">
+
+      <div class="form-section-title">기본정보</div>
+      <select id="fmTeam" class="full clean-input">${(DATA.teams||[]).map(t=>`<option ${m.team===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
+
+      <div class="edit-grid two">
+        <input id="fmName" class="clean-input" placeholder="이름" value="${esc(m.name||'')}">
+        <select id="fmGender" class="clean-input"><option value="">성별</option><option ${m.gender==='남'?'selected':''}>남</option><option ${m.gender==='여'?'selected':''}>여</option></select>
+      </div>
+
+      <div class="edit-grid two">
+        <input id="fmBirth" class="clean-input" placeholder="생년월일" value="${esc(formatBirth(m.birth||''))}" oninput="agePreview.textContent=this.value?ageText(this.value):'나이 자동계산'">
+        <div class="clean-input add-age" id="agePreview">${m.birth ? ageText(m.birth) : '나이 자동계산'}</div>
+      </div>
+
+      <div class="form-section-title">연락처</div>
+      <input id="fmPhone" class="clean-input full" placeholder="연락처" value="${esc(formatPhone(m.phone||''))}">
+
+      <div class="form-section-title">소속 / 주소</div>
+      <div class="edit-grid two">
+        <input id="fmVillage" class="clean-input" placeholder="마을명" value="${esc(m.village||'')}">
+        <input id="fmRoom" class="clean-input" placeholder="사랑방명" value="${esc(m.room||'')}">
+      </div>
+      <input id="fmAddress" class="clean-input full" placeholder="집주소" value="${esc(m.address||'')}">
+
+      <div class="form-section-title">자녀이름 / 생년월일</div>
+      <div id="childListBox">${childFormRows(children)}</div>
+      <button class="add-child-button" type="button" onclick="addChildInput()">+ 자녀 추가</button>
+
+      <textarea id="fmMemo" class="clean-input full memo-input" placeholder="특이사항 / 메모">${esc(m.memo||'')}</textarea>
+
+      <button class="add-save" onclick="saveMemberUi('${esc(id)}')">저장하기</button>
+      <button class="add-close" onclick="${id ? `openMemberDetail('${esc(id)}')` : `go('home')`}">닫기</button>
     </div>`;
 }
+
+
 
 function registerSelectRow(m){
   return '';
@@ -1598,7 +1624,6 @@ async function saveProfile(){
 
   closeProfile();
   updateHeader();
-  bindHeaderActions();
   render();
 }
 
@@ -1683,13 +1708,36 @@ function updateHeader(){
   const name=(DATA.settings&&DATA.settings.leaderName)||'';
   const team=(DATA.settings&&DATA.settings.leaderTeam)||'';
   const role=(DATA.settings&&DATA.settings.leaderRole)||roleByNameTeam(name,team);
+  const titleHtml = `${esc(district)} <span class="header-version-badge">V5.20</span>`;
 
-  if(typeof headerTitle!=='undefined' && headerTitle){
-    headerTitle.innerHTML = `${esc(district)} <span class="header-version-badge">V5.19</span>`;
+  const targets = [
+    typeof headerTitle !== 'undefined' ? headerTitle : null,
+    document.getElementById('headerTitle'),
+    document.querySelector('.header-title'),
+    document.querySelector('.top-title'),
+    document.querySelector('header .title'),
+    document.querySelector('header h2')
+  ].filter(Boolean);
+
+  let applied = false;
+  targets.forEach(el=>{ el.innerHTML = titleHtml; applied = true; });
+
+  if(!applied){
+    const brand = document.querySelector('header .brand') || document.querySelector('.brand');
+    if(brand && !document.querySelector('.header-version-line')){
+      brand.insertAdjacentHTML('afterend', `<div class="header-version-line">${titleHtml}</div>`);
+    }
   }
+
   if(typeof headerLeader!=='undefined' && headerLeader){
     headerLeader.textContent=name?name+' '+role:'순장 등록 필요';
   }
+}
+
+
+
+function versionText(){
+  return 'V5.20';
 }
 
 function render(){
@@ -1720,7 +1768,7 @@ function roleByNameTeam(name, team){
 
 
 
-/* V5.19 compatibility helpers */
+/* V5.20 compatibility helpers */
 function safeArr(v){ return Array.isArray(v) ? v : []; }
 
 
@@ -1772,35 +1820,48 @@ function openMemberDetail(id){
   if(!m) return;
 
   const phone = formatPhone(m.phone);
-  const villageRoom = [m.village, m.room].filter(Boolean).join(' / ');
+  const birthLine = birthAgeLine(m.birth);
+  const village = m.village || '-';
+  const room = m.room || '-';
+  const memo = m.memo || '';
+  const photo = m.photoUrl
+    ? `<img class="detail-profile-img" src="${esc(m.photoUrl)}" alt="사진">`
+    : `<div class="detail-profile-fallback">●</div>`;
 
   memberDetailView.innerHTML = `
-    <div class="detail-clean-card">
+    <div class="detail-card-pretty">
       <div class="detail-top">
-        <div>
+        <div class="detail-main">
           <div class="detail-name">${nameGender(m)}</div>
-          <div class="detail-line">🎂 ${esc(birthAgeLine(m.birth))}</div>
+          <div class="detail-line">🎂 ${esc(birthLine || '-')}</div>
           <div class="detail-line">${esc(m.team || '-')}</div>
         </div>
-        <div class="detail-photo">●</div>
+        <div class="detail-photo-wrap">${photo}</div>
       </div>
 
       <div class="detail-actions two">
-        <button class="detail-icon-btn" onclick="location.href='tel:${cleanPhone(m.phone)}'">전화</button>
-        <button class="detail-icon-btn" onclick="location.href='sms:${cleanPhone(m.phone)}'">문자</button>
+        <button class="mini-action" onclick="location.href='tel:${cleanPhone(m.phone)}'">📞<span>전화</span></button>
+        <button class="mini-action" onclick="location.href='sms:${cleanPhone(m.phone)}'">💬<span>문자</span></button>
       </div>
 
-      <div class="detail-info-list">
-        <div><b>마을명 / 사랑방</b><br>${esc(villageRoom || '-')}</div>
-        <div><b>집주소</b><br>${esc(m.address || '-')}</div>
-        <div><b>연락처</b><br>${esc(phone || '-')}</div>
+      <div class="detail-info-list pretty">
+        <div class="detail-info-row"><span class="info-icon">🏠</span><span>${esc(village)}</span></div>
+        <div class="detail-info-row"><span class="info-icon">☕</span><span>${esc(room)}</span></div>
+        <div class="detail-info-row"><span class="info-icon">📍</span><span>${esc(m.address || '-')}</span></div>
+        ${phone ? `<div class="detail-info-row"><span class="info-icon">☎️</span><span>${esc(phone)}</span></div>` : ''}
       </div>
 
-      <button class="save" onclick="openMemberForm('${esc(m.id)}')" style="width:100%;margin-top:14px">정보수정</button>
-      <button class="outline" onclick="closeMemberModal()" style="width:100%;margin-top:8px">닫기</button>
+      ${memo ? `<div class="memo-box">💬 ${esc(memo)}</div>` : ''}
+
+      <div class="detail-bottom-actions">
+        <button class="soft-btn" onclick="openMemberForm('${esc(m.id)}')">✎ 정보수정</button>
+        <button class="soft-btn" onclick="closeMemberModal()">닫기</button>
+      </div>
     </div>`;
   memberModal.classList.remove('hidden');
 }
+
+
 
 
 function teamMembers(){
@@ -1971,7 +2032,6 @@ function initialDataCallback(response){
   }
 }
 
-
 function bindHeaderActions(){
   const candidates = [
     document.getElementById('profileBtn'),
@@ -1981,18 +2041,21 @@ function bindHeaderActions(){
     document.querySelector('.profile'),
     document.querySelector('.avatar'),
     document.querySelector('.setting-avatar'),
-    document.querySelector('.header-avatar')
+    document.querySelector('.header-avatar'),
+    document.querySelector('header img'),
+    document.querySelector('header button:last-child'),
+    document.querySelector('header [role="button"]')
   ].filter(Boolean);
 
   candidates.forEach(el=>{
-    el.onclick = function(){
+    el.onclick = function(e){
+      e.preventDefault();
       if(typeof openProfile === 'function') openProfile(false);
       else alert('설정 화면을 불러오지 못했습니다.');
     };
     el.style.cursor = 'pointer';
   });
 }
-
 
 function startInitialLoad(){
   bindHeaderActions();
@@ -2027,6 +2090,6 @@ function renderNotice(){
 
 
 </script>
-<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.19&t=static"></script>
+<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.20&t=static"></script>
 </body>
 </html>
