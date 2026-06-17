@@ -1,6 +1,6 @@
 {
-  "name": "45WAVE LEADER",
-  "short_name": "45WAVE",
+  "name": "45결 LEADER",
+  "short_name": "45결",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
