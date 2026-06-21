@@ -1482,7 +1482,7 @@ header,.app-header,.topbar,.header{background:#dff4f3!important}
 .child-click-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 
 </style>
-<!-- 결 LEADER V5.66 single-file build -->
+<!-- 결 LEADER V5.69 single-file build -->
 
 
 
@@ -1603,7 +1603,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
-console.log("결 LEADER V5.66 시작", API_URL);
+console.log("결 LEADER V5.69 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -1635,7 +1635,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.66';
+      vInput.value = 'V5.69';
       form.appendChild(vInput);
 
       let done = false;
@@ -1759,7 +1759,7 @@ function parseChildren(m){
   add(m.child2,m.child2Birth,m.child2Gender,m.child2Photo);
   add(m.child3,m.child3Birth,m.child3Gender,m.child3Photo);
   add(m.child4,m.child4Birth,m.child4Gender,m.child4Photo);
-  String(m.childList||'').split(',').forEach(raw=>{
+  splitChildListText(m.childList).forEach(raw=>{
     const p = parseChildToken(raw);
     add(p.name,p.birth,p.gender,p.photo);
   });
@@ -2103,7 +2103,9 @@ function childrenToFields(children){
     seen[key] = true;
     clean.push({name, birth:c.birth||'', gender:c.gender||'', photo:c.photo||''});
   });
-  const row = {childList: clean.map(c => c.name + (c.birth ? '('+c.birth+')' : '') + (c.gender ? '['+c.gender+']' : '') + (c.photo ? '{'+c.photo+'}' : '')).join(', ')};
+  // V5.69: 자녀목록에는 이름만 저장한다. 생년월일/성별/사진은 child1Birth/child1Gender/child1Photo 필드에만 저장해
+  // 출석체크 리스트에 base64 사진문자가 노출되는 문제를 차단한다.
+  const row = {childList: clean.map(c => c.name).join(', ')};
   for(let i=0;i<4;i++){
     const c = clean[i] || {};
     row['child'+(i+1)] = c.name || '';
@@ -2155,12 +2157,16 @@ function childrenForDisplay(m){
 
 function stripChildNameText(v){
   let s = String(v || '').trim();
-  s = s.replace(/\{[^{}]*\}\s*$/g, '').trim();
+  // V5.69 긴급복구: 자녀목록 안에 사진 data:image/base64가 섞였거나
+  // 쉼표 때문에 중간에서 잘린 경우에도 화면에는 이름만 보이게 강제한다.
+  s = s.replace(/\s*\{\s*data:image\/[\s\S]*$/ig, '').trim();
+  s = s.replace(/\s*data:image\/[a-zA-Z0-9.+-]+;base64[\s\S]*$/ig, '').trim();
+  s = s.replace(/\s*\{[^{}]*\}\s*$/g, '').trim();
   let before = '';
   while(before !== s){
     before = s;
     s = s.replace(/\[(남|여)\]\s*$/g, '').trim();
-    s = s.replace(/\((?:남|여|[0-9]{1,2}(?:[.\-/][0-9]{1,2}){0,2}|[0-9]{1,2}세|[0-9]{1,2}살|.*?)\)\s*$/g, '').trim();
+    s = s.replace(/\((?:남|여|[0-9]{1,4}(?:[.\-/][0-9]{1,2}){1,2}|[0-9]{1,2}(?:세|살)|.*?)\)\s*$/g, '').trim();
   }
   return s.trim();
 }
@@ -2221,17 +2227,54 @@ function canonicalChildName(v){
   return stripChildNameText(v).replace(/\s/g,'');
 }
 
+function splitChildListText(text){
+  const src = String(text || '').trim();
+  if(!src) return [];
+  const out = [];
+  let buf = '';
+  let braceDepth = 0;
+  for(let i=0;i<src.length;i++){
+    const ch = src[i];
+    if(ch === '{') braceDepth++;
+    if(ch === '}') braceDepth = Math.max(0, braceDepth - 1);
+    if(ch === ',' && braceDepth === 0){
+      if(buf.trim()) out.push(buf.trim());
+      buf = '';
+    }else{
+      buf += ch;
+    }
+  }
+  if(buf.trim()) out.push(buf.trim());
+  return out;
+}
+
 function parseChildToken(raw){
   let s = String(raw || '').trim();
   let photo = '';
   let gender = '';
   let birth = '';
-  const pm = s.match(/\{([^{}]+)\}\s*$/);
-  if(pm){ photo = pm[1] || ''; s = s.replace(/\{([^{}]+)\}\s*$/,'').trim(); }
+
+  const dataAt = s.search(/\{?\s*data:image\//i);
+  if(dataAt >= 0){
+    let chunk = s.slice(dataAt).replace(/^\s*\{/, '').replace(/\}\s*$/, '').trim();
+    const dm = chunk.match(/data:image\/[a-zA-Z0-9.+-]+;base64,?[A-Za-z0-9+/=\r\n]+/);
+    if(dm) photo = dm[0].replace(/\s/g, '');
+    s = s.slice(0, dataAt).trim();
+  }else{
+    const pm = s.match(/\{([^{}]+)\}\s*$/);
+    if(pm){ photo = (pm[1] || '').trim(); s = s.replace(/\{([^{}]+)\}\s*$/,'').trim(); }
+  }
+
   const gm = s.match(/\[(남|여)\]\s*$/);
   if(gm){ gender = gm[1] || ''; s = s.replace(/\[(남|여)\]\s*$/,'').trim(); }
-  const bm = s.match(/^(.+?)\(([^()]*)\)$/);
-  if(bm){ s = bm[1].trim(); birth = bm[2].trim(); }
+
+  const bm = s.match(/^(.+?)\(([^()]*)\)\s*$/);
+  if(bm){
+    s = bm[1].trim();
+    const inside = String(bm[2] || '').trim();
+    if(inside === '남' || inside === '여') gender = gender || inside;
+    else birth = inside;
+  }
   return {name:stripChildNameText(s), birth, gender, photo};
 }
 
@@ -4225,24 +4268,24 @@ function renderNotice(){
 </script>
 
 <script>
-/* 45결 LEADER V5.66 저장 검수 패치 - 덮어쓰기용 index 내장 */
+/* 45결 LEADER V5.69 저장 검수 패치 - 덮어쓰기용 index 내장 */
 function dataCacheKey(){
-  return 'geolLeaderDataCacheV5_66';
+  return 'geolLeaderDataCacheV5_69';
 }
 
-function parseGeolApiResponseV566(raw){
+function parseGeolApiResponseV569(raw){
   if(raw == null) return {ok:true};
   if(typeof raw === 'object') return raw;
   try { return JSON.parse(String(raw)); } catch(e) { return {ok:true, value: raw}; }
 }
 
-async function saveMemberRecordVerifiedV566(payload){
+async function saveMemberRecordVerifiedV569(payload){
   const smallPayload = !(typeof shouldUsePostPayload === 'function' && shouldUsePostPayload(payload));
   let result = {ok:true};
 
   if(smallPayload && typeof call === 'function'){
     const raw = await call('saveMemberRecord', payload);
-    result = parseGeolApiResponseV566(raw);
+    result = parseGeolApiResponseV569(raw);
     if(result && result.ok === false){
       throw new Error(result.error || '순원목록 저장 실패');
     }
@@ -4252,12 +4295,12 @@ async function saveMemberRecordVerifiedV566(payload){
   if(typeof callWrite === 'function'){
     await callWrite('saveMemberRecord', payload);
     if(typeof call === 'function'){
-      const rawCheck = await call('debugFindMemberRecordV566', {
+      const rawCheck = await call('debugFindMemberRecordV569', {
         id: payload.id || payload.memberId || '',
         name: payload.name || '',
         team: payload.team || ''
       });
-      const check = parseGeolApiResponseV566(rawCheck);
+      const check = parseGeolApiResponseV569(rawCheck);
       if(check && check.ok === false){
         throw new Error(check.error || '저장 후 순원목록 확인 실패');
       }
@@ -4325,7 +4368,7 @@ async function saveMemberUi(id){
 
   loadingToast.classList.remove('hidden');
   try{
-    const saveResult = await saveMemberRecordVerifiedV566(payload);
+    const saveResult = await saveMemberRecordVerifiedV569(payload);
     if(saveResult && saveResult.id && !payload.id) payload.id = saveResult.id;
 
     if(id){
@@ -4363,7 +4406,7 @@ async function saveMemberUi(id){
         spousePayload.partner = '';
       }
 
-      await saveMemberRecordVerifiedV566(spousePayload);
+      await saveMemberRecordVerifiedV569(spousePayload);
     }
 
     try{ localStorage.removeItem(dataCacheKey()); }catch(e){}
