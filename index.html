@@ -1481,8 +1481,17 @@ header,.app-header,.topbar,.header{background:#dff4f3!important}
 .child-panel .child-name{font-weight:900;color:#26224a;white-space:normal}
 .child-click-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 
+
+/* V5.70 emergency splash restore */
+.initial-splash-page{min-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center;padding:28px 14px;}
+.initial-splash-card{width:100%;max-width:430px;text-align:center;border-radius:30px;padding:34px 24px;background:linear-gradient(180deg,#ffffff,#fff8e0);box-shadow:0 20px 60px rgba(88,64,144,.16);}
+.splash-kicker{font-size:18px;font-weight:800;color:#6b5f8f;letter-spacing:-.02em;margin-bottom:4px;}
+.splash-title{font-size:30px;font-weight:1000;color:#2f285f;letter-spacing:-.04em;margin-bottom:14px;}
+.splash-leader{font-size:20px;font-weight:1000;color:#4f4388;margin-top:10px;}
+.splash-body{font-size:15px;font-weight:800;color:#8a7d58;margin-top:8px;}
+
 </style>
-<!-- 결 LEADER V5.69 single-file build -->
+<!-- 결 LEADER V5.70 single-file build -->
 
 
 
@@ -1603,7 +1612,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec";
-console.log("결 LEADER V5.69 시작", API_URL);
+console.log("결 LEADER V5.70 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -4202,7 +4211,7 @@ function startInitialLoad(){
 
 
 
-startInitialLoad();
+/* V5.70: startInitialLoad call moved after emergency overrides. */
 
 
 
@@ -4268,7 +4277,7 @@ function renderNotice(){
 </script>
 
 <script>
-/* 45결 LEADER V5.69 저장 검수 패치 - 덮어쓰기용 index 내장 */
+/* 45결 LEADER V5.70 저장 검수 패치 - 덮어쓰기용 index 내장 */
 function dataCacheKey(){
   return 'geolLeaderDataCacheV5_69';
 }
@@ -4426,7 +4435,288 @@ async function saveMemberUi(id){
   }
 }
 </script>
-<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.66&t=V5.66"></script>
+
+<script>
+/* 45결 LEADER V5.70 긴급 화면복구/자녀표시/부부매칭 최종 오버라이드 */
+const GEOL_LEADER_CLIENT_PATCH_VERSION = 'V5.70_EMERGENCY_RESTORE_FINAL';
+
+function cleanChildNameV570(value){
+  let s = String(value || '').trim();
+  s = s.replace(/\{?\s*data:image\/[a-zA-Z0-9.+-]+;base64,?[A-Za-z0-9+\/+=\r\n]+\}?/gi, '').trim();
+  s = s.replace(/\{\s*data:image\/[\s\S]*$/i, '').trim();
+  s = s.replace(/\s*data:image\/[\s\S]*$/i, '').trim();
+  s = s.replace(/\s*\{[^{}]*\}\s*$/g, '').trim();
+  let before = '';
+  while(before !== s){
+    before = s;
+    s = s.replace(/\[(남|여)\]\s*$/g, '').trim();
+    s = s.replace(/\((?:남|여|\d{1,4}[.\-/]\d{1,2}(?:[.\-/]\d{1,2})?|\d{1,2}(?:세|살)|.*?)\)\s*$/g, '').trim();
+  }
+  return s.trim();
+}
+
+function stripChildNameText(value){
+  return cleanChildNameV570(value);
+}
+
+function splitChildListTextV570(text){
+  const src = String(text || '').trim();
+  if(!src) return [];
+  const out = [];
+  let buf = '';
+  let braceDepth = 0;
+  let inDataImage = false;
+  for(let i=0;i<src.length;i++){
+    const ch = src[i];
+    const ahead = src.slice(i, i+11).toLowerCase();
+    if(ahead === 'data:image/') inDataImage = true;
+    if(ch === '{') braceDepth++;
+    if(ch === '}'){
+      braceDepth = Math.max(0, braceDepth-1);
+      if(inDataImage) inDataImage = false;
+    }
+    if((ch === ',' || ch === '\n' || ch === ';') && braceDepth === 0 && !inDataImage){
+      if(buf.trim()) out.push(buf.trim());
+      buf = '';
+    }else{
+      buf += ch;
+    }
+  }
+  if(buf.trim()) out.push(buf.trim());
+  return out;
+}
+
+function parseChildTokenV570(raw){
+  let s = String(raw || '').trim();
+  let photo = '';
+  let gender = '';
+  let birth = '';
+
+  const dataAt = s.search(/\{?\s*data:image\//i);
+  if(dataAt >= 0){
+    const chunk = s.slice(dataAt).replace(/^\s*\{/, '').replace(/\}\s*$/, '').trim();
+    const dm = chunk.match(/data:image\/[a-zA-Z0-9.+-]+;base64,?[A-Za-z0-9+\/+=\r\n]+/i);
+    if(dm) photo = String(dm[0] || '').replace(/\s/g, '');
+    s = s.slice(0, dataAt).trim();
+  }else{
+    const pm = s.match(/\{([^{}]+)\}\s*$/);
+    if(pm){
+      photo = String(pm[1] || '').trim();
+      s = s.replace(/\{([^{}]+)\}\s*$/, '').trim();
+    }
+  }
+
+  const gm = s.match(/\[(남|여)\]\s*$/);
+  if(gm){
+    gender = gm[1] || '';
+    s = s.replace(/\[(남|여)\]\s*$/, '').trim();
+  }
+
+  const bm = s.match(/^(.+?)\(([^()]*)\)\s*$/);
+  if(bm){
+    s = bm[1].trim();
+    const inside = String(bm[2] || '').trim();
+    if(inside === '남' || inside === '여') gender = gender || inside;
+    else birth = inside;
+  }
+
+  return {name: cleanChildNameV570(s), birth, gender, photo};
+}
+
+function canonicalChildName(name){
+  return cleanChildNameV570(name).replace(/\s/g, '').toLowerCase();
+}
+
+function parseChildren(m){
+  if(!m) return [];
+  const out = [];
+  const seen = {};
+  function add(name,birth,gender,photo){
+    const parsed = parseChildTokenV570(name);
+    const item = {
+      name: cleanChildNameV570(parsed.name || name),
+      birth: String(birth || parsed.birth || '').trim(),
+      gender: String(gender || parsed.gender || '').trim(),
+      photo: String(photo || parsed.photo || '').trim()
+    };
+    const key = canonicalChildName(item.name);
+    if(!key) return;
+    if(seen[key]){
+      if(!seen[key].birth && item.birth) seen[key].birth = item.birth;
+      if(!seen[key].gender && item.gender) seen[key].gender = item.gender;
+      if(!seen[key].photo && item.photo) seen[key].photo = item.photo;
+      return;
+    }
+    seen[key] = item;
+    out.push(item);
+  }
+  add(m.child1, m.child1Birth, m.child1Gender, m.child1Photo);
+  add(m.child2, m.child2Birth, m.child2Gender, m.child2Photo);
+  add(m.child3, m.child3Birth, m.child3Gender, m.child3Photo);
+  add(m.child4, m.child4Birth, m.child4Gender, m.child4Photo);
+  splitChildListTextV570(m.childList).forEach(raw=>{
+    const p = parseChildTokenV570(raw);
+    add(p.name, p.birth, p.gender, p.photo);
+  });
+  return out;
+}
+
+function childrenForDisplay(m){
+  return parseChildren(m).filter(c => cleanChildNameV570(c.name));
+}
+
+function collectChildList(){
+  const children = typeof collectChildrenPayload === 'function' ? collectChildrenPayload() : [];
+  const seen = {};
+  return children.map(c=>cleanChildNameV570(c.name)).filter(name=>{
+    const key = canonicalChildName(name);
+    if(!key || seen[key]) return false;
+    seen[key] = true;
+    return true;
+  }).join(', ');
+}
+
+function declaredSpouseNameOf(m){
+  if(!m) return '';
+  if(Object.prototype.hasOwnProperty.call(m, '배우자명')) return String(m['배우자명'] || '').trim();
+  if(Object.prototype.hasOwnProperty.call(m, 'spouseName')) return String(m.spouseName || '').trim();
+  return '';
+}
+
+function legacySpouseNameOfV570(m){
+  if(!m) return '';
+  return String(m['배우자'] || m.spouse || m.partnerName || m.partner || '').trim();
+}
+
+function reciprocalSpouseNameV570(m){
+  return declaredSpouseNameOf(m) || legacySpouseNameOfV570(m);
+}
+
+function getMemberByNameSafeV570(name, team){
+  const target = normalizedName ? normalizedName(name) : String(name||'').replace(/\s/g,'');
+  if(!target) return null;
+  const list = (DATA && Array.isArray(DATA.members)) ? DATA.members : [];
+  let candidates = list.filter(x => {
+    const n = normalizedName ? normalizedName(x.name) : String(x.name||'').replace(/\s/g,'');
+    const sameTeam = !team || !x.team || String(x.team) === String(team);
+    return n === target && sameTeam;
+  });
+  if(!candidates.length){
+    candidates = list.filter(x => {
+      const n = normalizedName ? normalizedName(x.name) : String(x.name||'').replace(/\s/g,'');
+      return n === target;
+    });
+  }
+  return candidates[0] || null;
+}
+
+function findSpouseFor(m){
+  if(!m) return null;
+  const mainName = String(m.name || '').trim();
+  const direct = declaredSpouseNameOf(m);
+  if(direct){
+    return getMemberByNameSafeV570(direct, m.team);
+  }
+  if(Object.prototype.hasOwnProperty.call(m, '배우자명') && !String(m['배우자명'] || '').trim()){
+    return null;
+  }
+
+  const list = (DATA && Array.isArray(DATA.members)) ? DATA.members : [];
+  const mine = normalizedName ? normalizedName(mainName) : String(mainName).replace(/\s/g,'');
+
+  // 한쪽 행에만 배우자명이 있을 때도 복구한다.
+  const reverse = list.find(x => {
+    if(String(x.id) === String(m.id)) return false;
+    if(m.team && x.team && String(x.team) !== String(m.team)) return false;
+    const s = declaredSpouseNameOf(x);
+    const key = normalizedName ? normalizedName(s) : String(s).replace(/\s/g,'');
+    return key && key === mine;
+  });
+  if(reverse) return reverse;
+
+  // 구형 서버가 배우자명 대신 배우자/spouse 필드만 내려보낸 경우만, 상호 지목일 때 제한적으로 허용한다.
+  const legacy = legacySpouseNameOfV570(m);
+  if(legacy){
+    const candidate = getMemberByNameSafeV570(legacy, m.team);
+    if(candidate){
+      const back = reciprocalSpouseNameV570(candidate);
+      const backKey = normalizedName ? normalizedName(back) : String(back).replace(/\s/g,'');
+      if(backKey && backKey === mine) return candidate;
+    }
+  }
+  return null;
+}
+
+function spouseNameOf(m){
+  return declaredSpouseNameOf(m) || (findSpouseFor(m)?.name || '');
+}
+
+function shouldShowChildrenInList(m){
+  const spouse = findSpouseFor(m);
+  if(!spouse) return true;
+  const g = String(m.gender || '').trim();
+  const sg = String(spouse.gender || '').trim();
+  if(g === '여') return false;
+  if(g === '남') return true;
+  if(sg === '남') return false;
+  if(sg === '여') return true;
+  return true;
+}
+
+function childDisplay(m){
+  if(!shouldShowChildrenInList(m)) return '';
+  return childrenForDisplay(m).map(c=>cleanChildNameV570(c.name)).filter(Boolean).join(', ');
+}
+
+function loadingMarkup(title='수영로교회 45교구 결 LEADER', body='데이터를 불러오는 중입니다'){
+  const icon = (typeof ICONS !== 'undefined' && ICONS.appIcon) ? ICONS.appIcon : '';
+  const img = icon ? `<img class="loading-app-icon" src="${icon}" alt="결 로고">` : '';
+  return `<section class="page initial-splash-page"><div class="card loading-card initial-splash-card">
+    <div class="loading-icon-wrap">
+      <div class="splash-kicker">수영로교회</div>
+      <div class="splash-title">45교구 결</div>
+      ${img}
+      <div class="splash-leader">LEADER V5.70</div>
+      <div class="splash-body">${body}</div>
+    </div>
+  </div></section>`;
+}
+
+function showInitialLoading(){
+  try{ view.innerHTML = loadingMarkup(); }catch(e){}
+}
+
+function startInitialLoad(){
+  bindHeaderActions();
+  if(typeof prefillHeaderFromLocalProfile === 'function') prefillHeaderFromLocalProfile();
+  CACHE_VIEW_ACTIVE = false;
+  view.innerHTML = loadingMarkup();
+  showInitialLoading();
+  setTimeout(() => {
+    if(!INITIAL_DATA_RECEIVED){
+      try{
+        const hasCache = typeof renderCachedDataFirst === 'function' ? renderCachedDataFirst() : false;
+        if(hasCache) showSyncBadge('최신 정보 확인 중');
+      }catch(e){}
+    }
+  }, 1100);
+  setTimeout(() => {
+    if(!INITIAL_DATA_RECEIVED && !CACHE_VIEW_ACTIVE){
+      view.innerHTML = `<section class="page"><div class="card"><div class="section-head">불러오는 중...</div><div class="count">데이터 응답을 기다리고 있습니다.</div><button class="save" onclick="location.reload()" style="margin-top:12px;width:100%">다시 시도</button></div></section>`;
+    }else if(!INITIAL_DATA_RECEIVED && CACHE_VIEW_ACTIVE){
+      showSyncBadge('최신 정보 확인 중');
+    }
+  }, 7000);
+  setTimeout(() => {
+    if(!INITIAL_DATA_RECEIVED && !CACHE_VIEW_ACTIVE){
+      showFallbackDemoData();
+    }
+  }, 15000);
+}
+
+startInitialLoad();
+</script>
+<script src="https://script.google.com/macros/s/AKfycbxaFHU0h9T68eGNsQTg29ZwOwB8E8OMyjhznoCmOadurnDBL9hFH4cYMU_Sx8uHoBe5lg/exec?action=getDataJson&callback=initialDataCallback&v=V5.70&t=V5.70"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 </body>
