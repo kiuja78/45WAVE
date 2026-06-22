@@ -8241,5 +8241,170 @@ applyLoadedData = function(r){
 })();
 </script>
 
+
+
+<script>
+/* V5.62P19 navigation context / spouse placeholder / selected team return patch
+   - 정보수정 닫기: 상세창이 아니라 출석체크 목록으로 복귀
+   - 정보수정 저장 후: 전체로 돌아가지 않고 기존 선택 순 목록 유지
+   - 순원등록 관계 선택 시 배우자 이름 placeholder 즉시 보정
+   - Apps Script 수정 없음: 서버는 기존 P18 저장 구조 유지
+*/
+(function(){
+  const P19_VERSION = 'V5.62P19';
+  const P19_CACHE_KEY = 'geolLeaderDataCacheV5_62P19';
+  let p19LastDetailContext = null;
+  let p19FormContext = null;
+
+  function p19MemberById(id){
+    try{ return safeArr(DATA.members).find(x => String(x.id) === String(id)); }catch(e){ return null; }
+  }
+  function p19CurrentTeamFor(id){
+    const m = p19MemberById(id);
+    const team = String((state && state.team) || '').trim();
+    if(team && team !== '전체' && team !== '순을 선택해주세요' && team !== '순을 선택하세요') return team;
+    return (m && m.team) ? String(m.team) : team;
+  }
+  function p19SetFormContext(id, extra){
+    const m = p19MemberById(id);
+    const team = p19CurrentTeamFor(id);
+    p19FormContext = Object.assign({
+      tab: 'home',
+      team: team,
+      memberId: id || '',
+      memberName: m && m.name || '',
+      from: 'memberForm'
+    }, extra || {});
+    return p19FormContext;
+  }
+  function p19RestoreHomeList(id){
+    const ctx = p19FormContext || p19LastDetailContext || {};
+    const m = p19MemberById(id || ctx.memberId);
+    state.tab = 'home';
+    const team = ctx.team || (m && m.team) || state.team || (DATA.settings && DATA.settings.leaderTeam) || '';
+    if(team && team !== '전체') state.team = team;
+    if(typeof closeMemberModal === 'function') closeMemberModal();
+    if(typeof render === 'function') render();
+    if(typeof updateNav === 'function') updateNav();
+    setTimeout(function(){
+      try{
+        const targetId = String(id || ctx.memberId || '');
+        if(!targetId) return;
+        const rows = Array.from(document.querySelectorAll('.member-row'));
+        const row = rows.find(function(r){ return r.innerHTML.indexOf("openMemberDetail('" + targetId + "')") >= 0 || r.innerHTML.indexOf('openMemberDetail(&#39;' + targetId + '&#39;)') >= 0; });
+        if(row){
+          row.classList.add('p19-return-highlight');
+          row.scrollIntoView({block:'center', behavior:'smooth'});
+          setTimeout(function(){ row.classList.remove('p19-return-highlight'); }, 1600);
+        }
+      }catch(e){}
+    }, 80);
+  }
+  window.p19RestoreHomeList = p19RestoreHomeList;
+
+  const oldVersionText = typeof versionText === 'function' ? versionText : null;
+  window.versionText = function(){ return P19_VERSION; };
+  try{ window.dataCacheKey = function(){ return P19_CACHE_KEY; }; }catch(e){}
+
+  const oldUpdateHeader = typeof updateHeader === 'function' ? updateHeader : null;
+  window.updateHeader = function(){
+    if(oldUpdateHeader) oldUpdateHeader();
+    try{
+      const districtEl = document.getElementById('headerDistrict');
+      if(districtEl) districtEl.innerHTML = '<span class="header-version-badge">' + P19_VERSION + '</span>';
+    }catch(e){}
+  };
+
+  function p19FixSpousePlaceholders(){
+    try{
+      const role = (typeof fmFamilyRole !== 'undefined' && fmFamilyRole) ? fmFamilyRole.value : '개인';
+      const input = document.getElementById('spName');
+      const title = document.getElementById('spouseSectionTitle');
+      if(input){
+        if(role === '남편') input.placeholder = '아내 이름';
+        else if(role === '아내') input.placeholder = '남편 이름';
+        else input.placeholder = '배우자 이름';
+      }
+      if(title){
+        if(role === '남편') title.textContent = '👩 아내 정보';
+        else if(role === '아내') title.textContent = '👨 남편 정보';
+      }
+    }catch(e){}
+  }
+  const oldToggleFamilyRoleFields = typeof toggleFamilyRoleFields === 'function' ? toggleFamilyRoleFields : null;
+  window.toggleFamilyRoleFields = function(){
+    if(oldToggleFamilyRoleFields) oldToggleFamilyRoleFields();
+    p19FixSpousePlaceholders();
+  };
+
+  const oldOpenMemberDetail = typeof openMemberDetail === 'function' ? openMemberDetail : null;
+  window.openMemberDetail = function(id){
+    p19LastDetailContext = {tab:'home', team:p19CurrentTeamFor(id), memberId:id, from:'detail'};
+    if(oldOpenMemberDetail) oldOpenMemberDetail(id);
+    setTimeout(function(){
+      try{
+        const editBtns = Array.from(document.querySelectorAll('.detail-bottom-actions .soft-btn'));
+        editBtns.forEach(function(btn){
+          if((btn.textContent || '').indexOf('정보수정') >= 0){
+            btn.onclick = function(){
+              if(typeof closeMemberModal === 'function') closeMemberModal();
+              p19SetFormContext(id, {from:'detail'});
+              openMemberForm(id, {from:'detail'});
+            };
+          }
+        });
+      }catch(e){}
+    }, 0);
+  };
+
+  const oldOpenMemberForm = typeof openMemberForm === 'function' ? openMemberForm : null;
+  window.openMemberForm = function(id, opts){
+    if(id) p19SetFormContext(id, opts || {});
+    else p19FormContext = {tab:'register', team:state.team || '', memberId:'', from:'register'};
+    const ret = oldOpenMemberForm ? oldOpenMemberForm(id) : undefined;
+    setTimeout(function(){
+      p19FixSpousePlaceholders();
+      try{
+        const btn = document.querySelector('.register-actions .add-close');
+        if(btn){
+          btn.onclick = function(){
+            if(id) p19RestoreHomeList(id);
+            else { state.tab = 'register'; if(typeof render === 'function') render(); if(typeof updateNav === 'function') updateNav(); }
+          };
+        }
+      }catch(e){}
+    }, 0);
+    return ret;
+  };
+
+  const oldSaveMemberUi = typeof saveMemberUi === 'function' ? saveMemberUi : null;
+  window.saveMemberUi = async function(id){
+    const ctx = p19FormContext || p19SetFormContext(id, {from:'save'});
+    const keepTeam = ctx.team || p19CurrentTeamFor(id);
+    const beforeTeam = state.team;
+    let ret;
+    if(oldSaveMemberUi) ret = await oldSaveMemberUi(id);
+    // 기존 저장 함수가 최신정보 재조회 후 전체 화면으로 돌려도, 다시 원래 순 목록으로 복귀시킨다.
+    try{
+      state.tab = 'home';
+      if(keepTeam) state.team = keepTeam;
+      else if(beforeTeam) state.team = beforeTeam;
+      if(typeof render === 'function') render();
+      if(typeof updateNav === 'function') updateNav();
+      setTimeout(function(){ p19RestoreHomeList(id); }, 80);
+    }catch(e){}
+    return ret;
+  };
+
+  try{
+    const style = document.createElement('style');
+    style.textContent = `.member-row.p19-return-highlight{outline:3px solid rgba(139,99,232,.32);background:rgba(248,244,255,.88);border-radius:18px;transition:background .4s, outline .4s}`;
+    document.head.appendChild(style);
+  }catch(e){}
+
+  try{ updateHeader(); }catch(e){}
+})();
+</script>
+
 </body>
 </html>
