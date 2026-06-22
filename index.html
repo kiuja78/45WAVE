@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.62P18 시작", API_URL);
+console.log("결 LEADER V5.62P21 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -8244,15 +8244,15 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.62P19 navigation context / spouse placeholder / selected team return patch
+/* V5.62P21 navigation context / spouse placeholder / selected team return patch
    - 정보수정 닫기: 상세창이 아니라 출석체크 목록으로 복귀
    - 정보수정 저장 후: 전체로 돌아가지 않고 기존 선택 순 목록 유지
    - 순원등록 관계 선택 시 배우자 이름 placeholder 즉시 보정
    - Apps Script 수정 없음: 서버는 기존 P18 저장 구조 유지
 */
 (function(){
-  const P19_VERSION = 'V5.62P19';
-  const P19_CACHE_KEY = 'geolLeaderDataCacheV5_62P19';
+  const P19_VERSION = 'V5.62P21';
+  const P19_CACHE_KEY = 'geolLeaderDataCacheV5_62P21';
   let p19LastDetailContext = null;
   let p19FormContext = null;
 
@@ -8403,6 +8403,188 @@ applyLoadedData = function(r){
   }catch(e){}
 
   try{ updateHeader(); }catch(e){}
+})();
+</script>
+
+
+<script>
+/* V5.62P21 spouse column match only
+   기준: 구글시트 순원목록의 "배우자명" 컬럼만으로 전체 순 부부매칭을 계산한다.
+   - 배우자명에 상대 이름이 있으면 직접 연결
+   - 한쪽만 입력되어 있어도 역방향 연결
+   - 배우자명 빈칸이고 다른 사람도 그 이름을 배우자명으로 적지 않았으면 개인
+   - 주소/전화번호/자녀/인접순서/수동목록으로 추측하지 않음
+*/
+(function(){
+  const P21_VERSION = 'V5.62P21';
+  const P21_CACHE_KEY = 'geolLeaderDataCacheV5_62P21';
+
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function text(v){ return (v === undefined || v === null) ? '' : String(v).trim(); }
+  function canon(v){
+    let s = text(v);
+    if(!s) return '';
+    s = s.replace(/\(.*?\)/g,'');
+    s = s.replace(/\[.*?\]/g,'');
+    s = s.replace(/^(남편|아내|배우자|부인|처|남편명|아내명|배우자명)\s*[:：=\-]\s*/,'');
+    s = s.replace(/\s+/g,'');
+    return s;
+  }
+  function validPersonName(v){
+    const c = canon(v);
+    if(!c || c.length < 2 || c.length > 20) return false;
+    if(['개인','부부','배우자','남편','아내','없음','무','해당없음','미해당'].includes(c)) return false;
+    return /[A-Za-z가-힣]/.test(c);
+  }
+  function memberName(m){ return text(m && (m.name || m['이름'] || m.memberName)); }
+  function memberTeam(m){ return text(m && (m.team || m['순'] || m['소속순'] || m.group)); }
+  function memberId(m){ return text(m && (m.id || m.memberId || m['순원ID'] || m.rowNumber)); }
+
+  function p21DeclaredSpouseName(m){
+    if(!m) return '';
+    // 서버가 내려주는 원본 배우자명 필드를 최우선으로 사용한다.
+    const keys = ['spouseNameRaw','declaredSpouseName','배우자명원본','배우자명'];
+    for(const k of keys){
+      const v = text(m[k]);
+      if(validPersonName(v)) return v;
+    }
+    // 구버전 서버 호환용: spouseName은 서버에서 배우자명 컬럼 값으로 내려주던 경우만 보조로 사용한다.
+    const fallback = text(m.spouseName);
+    if(validPersonName(fallback)) return fallback;
+    return '';
+  }
+
+  function findById(id){
+    const sid = text(id);
+    if(!sid) return null;
+    return arr(DATA && DATA.members).find(x => memberId(x) === sid) || null;
+  }
+  function findByName(name, team, selfId){
+    const key = canon(name);
+    if(!key) return null;
+    const list = arr(DATA && DATA.members).filter(x => memberId(x) !== text(selfId) && canon(memberName(x)) === key);
+    if(!list.length) return null;
+    const teamKey = text(team);
+    return list.find(x => memberTeam(x) === teamKey) || list[0];
+  }
+  function link(a,b,source){
+    if(!a || !b || memberId(a) === memberId(b)) return;
+    if(typeof FAMILY_LINK_BY_ID === 'undefined' || !FAMILY_LINK_BY_ID) window.FAMILY_LINK_BY_ID = {};
+    FAMILY_LINK_BY_ID[memberId(a)] = b;
+    FAMILY_LINK_BY_ID[memberId(b)] = a;
+    a.spouseId = memberId(b);
+    a.spouseMemberId = memberId(b);
+    a.spouseName = memberName(b);
+    a.spouseMatchSource = source || '배우자명';
+    b.spouseId = memberId(a);
+    b.spouseMemberId = memberId(a);
+    b.spouseName = memberName(a);
+    b.spouseMatchSource = source || '배우자명';
+  }
+
+  function buildFamilyLinksFromSpouseColumn(){
+    const list = arr(DATA && DATA.members);
+    if(typeof window.FAMILY_LINK_BY_ID === 'undefined') window.FAMILY_LINK_BY_ID = {};
+    const stamp = list.map(m => [memberId(m), memberName(m), memberTeam(m), p21DeclaredSpouseName(m), m.spouseId || ''].join(':')).join('|');
+    if(DATA && DATA.__p21FamilyLinksStamp === stamp && DATA.__familyLinksReady) return;
+
+    window.FAMILY_LINK_BY_ID = {};
+    list.forEach(m => {
+      m.spouseMatchSource = 'individual';
+      // 원본 배우자명은 보존한다. 개인은 표시용 spouseName을 비운다.
+      if(!p21DeclaredSpouseName(m) && !m.spouseId && !m.spouseMemberId) m.spouseName = '';
+    });
+
+    // 1) 서버가 이미 spouseId를 계산해서 내려준 경우 최우선 사용
+    list.forEach(m => {
+      if(FAMILY_LINK_BY_ID[memberId(m)]) return;
+      const sid = text(m.spouseId || m.spouseMemberId);
+      const sp = sid ? findById(sid) : null;
+      if(sp) link(m, sp, 'serverSpouseId');
+    });
+
+    // 2) 직접 매칭: 내 배우자명 컬럼에 적힌 상대 이름
+    list.forEach(m => {
+      if(FAMILY_LINK_BY_ID[memberId(m)]) return;
+      const declared = p21DeclaredSpouseName(m);
+      if(!declared) return;
+      const sp = findByName(declared, memberTeam(m), memberId(m));
+      if(sp) link(m, sp, '배우자명');
+    });
+
+    // 3) 역방향 매칭: 나는 배우자명이 비어 있어도 상대가 나를 배우자명으로 적은 경우
+    list.forEach(m => {
+      if(FAMILY_LINK_BY_ID[memberId(m)]) return;
+      const myKey = canon(memberName(m));
+      if(!myKey) return;
+      const sameTeam = list.find(x => memberId(x) !== memberId(m) && !FAMILY_LINK_BY_ID[memberId(x)] && memberTeam(x) === memberTeam(m) && canon(p21DeclaredSpouseName(x)) === myKey);
+      const anyTeam = sameTeam || list.find(x => memberId(x) !== memberId(m) && !FAMILY_LINK_BY_ID[memberId(x)] && canon(p21DeclaredSpouseName(x)) === myKey);
+      if(anyTeam) link(m, anyTeam, '배우자명_역방향');
+    });
+
+    if(DATA){
+      DATA.__familyLinksReady = true;
+      DATA.__p21FamilyLinksStamp = stamp;
+      DATA.__familyLinksStamp = stamp;
+    }
+  }
+
+  window.declaredSpouseNameOf = function(m){ return p21DeclaredSpouseName(m); };
+  window.spouseNameOf = function(m){ return p21DeclaredSpouseName(m); };
+  window.normalizeFamilyLinks = buildFamilyLinksFromSpouseColumn;
+  window.findSpouseFor = function(m){
+    if(!m) return null;
+    buildFamilyLinksFromSpouseColumn();
+    const linked = FAMILY_LINK_BY_ID && FAMILY_LINK_BY_ID[memberId(m)];
+    if(linked) return linked;
+    const declared = p21DeclaredSpouseName(m);
+    if(declared) return findByName(declared, memberTeam(m), memberId(m));
+    const myKey = canon(memberName(m));
+    if(!myKey) return null;
+    return arr(DATA && DATA.members).find(x => memberId(x) !== memberId(m) && memberTeam(x) === memberTeam(m) && canon(p21DeclaredSpouseName(x)) === myKey) ||
+           arr(DATA && DATA.members).find(x => memberId(x) !== memberId(m) && canon(p21DeclaredSpouseName(x)) === myKey) || null;
+  };
+  window.setSpouseNameFields = function(payload, spouseName){
+    const v = text(spouseName);
+    if(!payload) return;
+    payload['배우자명'] = v;
+    payload.spouseName = v;
+    payload.spouseNameRaw = v;
+    payload.declaredSpouseName = v;
+    payload['배우자명원본'] = v;
+    // 과거 추측 필드가 다시 저장 기준으로 쓰이지 않도록 비운다.
+    payload['배우자'] = '';
+    payload.spouse = '';
+    payload.partnerName = '';
+    payload.partner = '';
+  };
+
+  const oldApplyLoadedData = typeof applyLoadedData === 'function' ? applyLoadedData : null;
+  if(oldApplyLoadedData){
+    window.applyLoadedData = function(data){
+      const r = oldApplyLoadedData.apply(this, arguments);
+      try{ buildFamilyLinksFromSpouseColumn(); }catch(e){ console.warn('P21 spouse link build failed', e); }
+      return r;
+    };
+  }
+  const oldRender = typeof render === 'function' ? render : null;
+  if(oldRender){
+    window.render = function(){
+      try{ buildFamilyLinksFromSpouseColumn(); }catch(e){}
+      return oldRender.apply(this, arguments);
+    };
+  }
+  window.versionText = function(){ return P21_VERSION; };
+  try{ window.dataCacheKey = function(){ return P21_CACHE_KEY; }; }catch(e){}
+  const oldUpdateHeader = typeof updateHeader === 'function' ? updateHeader : null;
+  window.updateHeader = function(){
+    if(oldUpdateHeader) oldUpdateHeader();
+    try{
+      const districtEl = document.getElementById('headerDistrict');
+      if(districtEl) districtEl.innerHTML = '<span class="header-version-badge">' + P21_VERSION + '</span>';
+    }catch(e){}
+  };
+  try{ buildFamilyLinksFromSpouseColumn(); updateHeader(); }catch(e){}
 })();
 </script>
 
