@@ -9326,5 +9326,346 @@ applyLoadedData = function(r){
 })();
 </script>
 
+<script>
+/* V5.64 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
+(function(){
+  const APP_VERSION = 'V5.64';
+  const CACHE_KEY = 'geolLeaderDataCacheV5_64';
+  const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
+  const LEADER_ORDER = {
+    '새순': ['서영주','이경민','김덕중','신미경','양홍준','박소영'],
+    '임마누엘순': ['정경환','백정선'],
+    '성엽사랑순': ['이성엽','장민경'],
+    '에스더사랑순': ['김건일','문에스더'],
+    '세젤예순': ['최규철','서은정'],
+    '여일사랑순': ['조여일','이성임'],
+    '경욱사랑순': ['조경욱','황진희']
+  };
+
+  const txt = v => String(v == null ? '' : v).trim();
+  const safeArr = v => Array.isArray(v) ? v : [];
+  const h = v => (typeof esc === 'function' ? esc(v) : String(v == null ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
+  const keyText = v => txt(v).replace(/\s/g,'').replace(/(목사님|전도사님|순장님|순장|목사|전도사)$/g,'');
+  const childClean = v => (typeof stripChildNameText === 'function' ? stripChildNameText(v) : txt(v));
+  const childKey = v => (typeof canonicalChildName === 'function' ? canonicalChildName(v) : childClean(v).replace(/\s/g,''));
+  const teamKey = v => keyText(v);
+
+  function activeMember(m){ return m && m.active !== 'N' && m.active !== '보류'; }
+  function originalIndex(m){ return safeArr(DATA && DATA.members).findIndex(x => String(x.id) === String(m && m.id)); }
+  function genderOf(m){ return txt((typeof getGender === 'function' ? getGender(m) : (m && m.gender))).replace(/[()\[\]]/g,''); }
+  function isMale(m){ const g = genderOf(m); return g === '남' || g.includes('남'); }
+  function isFemale(m){ const g = genderOf(m); return g === '여' || g.includes('여'); }
+
+  function knownLeaderNames(team){
+    const k = teamKey(team);
+    const direct = Object.keys(LEADER_ORDER).find(t => teamKey(t) === k || k.includes(teamKey(t)) || teamKey(t).includes(k));
+    return direct ? LEADER_ORDER[direct] : [];
+  }
+  function leaderRank(m, team){
+    const list = knownLeaderNames(team || (m && m.team));
+    const n = keyText(m && m.name);
+    const idx = list.findIndex(x => keyText(x) === n);
+    return idx < 0 ? 9999 : idx;
+  }
+  function pairGroupIndex(m){
+    const i = originalIndex(m);
+    let j = 999999;
+    try{
+      const sp = typeof findSpouseFor === 'function' ? findSpouseFor(m) : null;
+      if(sp) j = originalIndex(sp);
+    }catch(e){}
+    const nums = [i, j].filter(x => Number.isFinite(x) && x >= 0);
+    return nums.length ? Math.min.apply(null, nums) : (i < 0 ? 999999 : i);
+  }
+  function spouseSort(a,b){
+    const ga = pairGroupIndex(a), gb = pairGroupIndex(b);
+    if(ga !== gb) return ga - gb;
+    const spa = typeof findSpouseFor === 'function' ? findSpouseFor(a) : null;
+    const spb = typeof findSpouseFor === 'function' ? findSpouseFor(b) : null;
+    if(spa && spb && String(spa.id) === String(b.id) && String(spb.id) === String(a.id)){
+      if(isMale(a) && isFemale(b)) return -1;
+      if(isFemale(a) && isMale(b)) return 1;
+    }
+    return (originalIndex(a) - originalIndex(b)) || txt(a && a.name).localeCompare(txt(b && b.name),'ko');
+  }
+  function sortMembersForList(list, selectedTeam){
+    const copy = safeArr(list).filter(activeMember).slice();
+    const selected = selectedTeam && selectedTeam !== '전체' && selectedTeam !== '어린이결';
+    return copy.sort((a,b)=>{
+      if(selected){
+        const ra = leaderRank(a, selectedTeam), rb = leaderRank(b, selectedTeam);
+        if(ra !== rb) return ra - rb;
+      }
+      return spouseSort(a,b);
+    });
+  }
+  function orderedTeamNames(){
+    const base = [];
+    safeArr(DATA && DATA.teams).forEach(t => { t = txt(t); if(t && t !== '전체' && t !== '어린이결' && !base.includes(t)) base.push(t); });
+    safeArr(DATA && DATA.members).forEach(m => { const t=txt(m && m.team); if(t && !base.includes(t)) base.push(t); });
+    return base;
+  }
+
+  try{ window.versionText = function(){ return APP_VERSION; }; }catch(e){}
+  try{ window.dataCacheKey = function(){ return CACHE_KEY; }; }catch(e){}
+  try{
+    const oldUpdate = typeof updateHeader === 'function' ? updateHeader : null;
+    window.updateHeader = function(){
+      if(oldUpdate) try{ oldUpdate(); }catch(e){}
+      document.querySelectorAll('.header-version-badge').forEach(el => { el.textContent = APP_VERSION; });
+    };
+  }catch(e){}
+
+  window.childOwnerFor = function(m){
+    if(!m) return null;
+    const spouse = typeof findSpouseFor === 'function' ? findSpouseFor(m) : null;
+    if(spouse){
+      if(isMale(m)) return m;
+      if(isMale(spouse)) return spouse;
+      return m;
+    }
+    if(isFemale(m)) return null;
+    return m;
+  };
+  window.shouldShowChildrenInList = function(m){
+    if(!m) return false;
+    const owner = childOwnerFor(m);
+    if(!owner || String(owner.id) !== String(m.id)) return false;
+    return (typeof childrenForDisplay === 'function' ? childrenForDisplay(m) : []).some(c => childClean(c && c.name));
+  };
+  window.childDisplay = function(m){
+    if(!shouldShowChildrenInList(m)) return '';
+    return (typeof childrenForDisplay === 'function' ? childrenForDisplay(m) : [])
+      .map(c => childClean(c && c.name)).filter(Boolean).join(', ');
+  };
+  function childAttend(v){
+    if(typeof normalizeChildAttend === 'function') return normalizeChildAttend(v);
+    const s = txt(v).replace(/[\u200B-\u200D\uFEFF]/g,'');
+    if(!s) return '해당';
+    const low = s.toLowerCase();
+    return (s.includes('미') || s.includes('제외') || s.includes('안함') || low === 'n' || low === 'no' || low === 'false' || low === '0') ? '미해당' : '해당';
+  }
+  function isEligibleChild(c){ return !!(c && childClean(c.name) && childAttend(c.attend) !== '미해당'); }
+  window.isChildAttendanceEligible = isEligibleChild;
+  window.childrenForAttendance = function(m){
+    return (typeof childrenForDisplay === 'function' ? childrenForDisplay(m) : []).filter(isEligibleChild);
+  };
+
+  function childFirstLine(c){
+    const name = childClean(c && c.name);
+    const gender = txt(c && c.gender) ? '(' + h(c.gender) + ')' : '';
+    const age = typeof ageText === 'function' ? ageText(c && c.birth) : '';
+    return h(name) + gender + (age ? ' ' + h(age) : '');
+  }
+  function childSecondLine(c){
+    const b = typeof formatBirth === 'function' ? formatBirth(c && c.birth) : txt(c && c.birth);
+    return b ? '<div class="child-birth-v564">' + h(b) + '</div>' : '';
+  }
+  window.childPanel = function(m,date){
+    if(!shouldShowChildrenInList(m)) return '';
+    const children = (typeof childrenForDisplay === 'function' ? childrenForDisplay(m) : []).filter(c => childClean(c && c.name));
+    if(!children.length) return '';
+    return '<div class="child-panel child-panel-v564">' + children.map(c => {
+      const name = childClean(c.name);
+      const eligible = isEligibleChild(c);
+      const st = eligible && typeof childStatusOn === 'function' ? childStatusOn(m.id, name, date) : '';
+      const photo = c.photo ? '<img src="'+h(c.photo)+'" alt="자녀사진">' : '<img src="'+DEFAULT_AVATAR_IMAGE+'" alt="자녀사진">';
+      const btn = eligible ? '<button class="child-check-v564 '+(st==='출석'?'present':'')+'" onclick="toggleChild(\''+h(m.id)+'\',\''+h(name)+'\',\''+h(c.birth||'')+'\')">'+(st==='출석'?'출석':'체크')+'</button>' : '<span class="child-no-attend-v564"></span>';
+      return '<div class="child-row child-row-v564 '+(eligible?'eligible':'ineligible')+'">'
+        + '<div class="photo child-click-photo" onclick="openChildDetail(\''+h(m.id)+'\',\''+h(name)+'\')">'+photo+'</div>'
+        + '<div class="child-info-line" onclick="openChildDetail(\''+h(m.id)+'\',\''+h(name)+'\')"><div class="child-name">'+childFirstLine(c)+'</div>'+childSecondLine(c)+'</div>'
+        + btn
+        + '</div>';
+    }).join('') + '</div>';
+  };
+
+  const oldTeamMembersV564 = typeof teamMembers === 'function' ? teamMembers : null;
+  window.teamMembers = function(){
+    let list;
+    if(state && state.team === '전체'){
+      const teams = orderedTeamNames();
+      list = [];
+      teams.forEach(t => list = list.concat(sortMembersForList(safeArr(DATA && DATA.members).filter(m => txt(m.team) === t), t)));
+      return list;
+    }
+    if(oldTeamMembersV564) list = oldTeamMembersV564();
+    else list = safeArr(DATA && DATA.members).filter(m => !state.team || txt(m.team) === txt(state.team));
+    return sortMembersForList(list, state && state.team);
+  };
+
+  function currentMonth2026(){
+    const today = txt(DATA && DATA.today) || new Date().toISOString().slice(0,10);
+    const y = Number(today.slice(0,4));
+    let m = Number(today.slice(5,7));
+    if(!m) m = new Date().getMonth()+1;
+    if(y < 2026) return 2;
+    if(y > 2026) return 12;
+    return Math.max(2, Math.min(12, m));
+  }
+  window.visibleStatsMonths = function(){ const cm=currentMonth2026(); return MONTHS_2026.filter(m => m <= cm); };
+  window.isAttendanceDueMonth = function(mon){ return Number(mon) <= currentMonth2026(); };
+  function ymOf(mon){ return '2026.' + String(mon).padStart(2,'0'); }
+  function familyIds(parentId){
+    if(typeof familyParentIds === 'function') return familyParentIds(parentId).map(String);
+    const p = safeArr(DATA && DATA.members).find(x => String(x.id) === String(parentId));
+    const ids = [String(parentId)];
+    try{ const sp = p && typeof findSpouseFor === 'function' ? findSpouseFor(p) : null; if(sp && sp.id != null) ids.push(String(sp.id)); }catch(e){}
+    return Array.from(new Set(ids));
+  }
+  window.childStatusOn = function(parentId, childName, date){
+    const targetYm = typeof ymFromDate === 'function' ? ymFromDate(date || (state && state.attendanceDate) || '') : '';
+    const ids = familyIds(parentId);
+    const ck = childKey(childName);
+    return safeArr(DATA && DATA.childAttendance).some(a => ids.includes(String(a.parentId)) && childKey(a['자녀명'] || a.childName || a.name) === ck && String(a['연월'] || a.ym || '') === targetYm && String(a['상태'] || a.status || '') === '출석') ? '출석' : '';
+  };
+  function childMonthStatus(child, mon){
+    const targetYm = ymOf(mon);
+    const ids = familyIds(child && child.parentId);
+    const ck = childKey(child && child.name);
+    return safeArr(DATA && DATA.childAttendance).some(a => ids.includes(String(a.parentId)) && childKey(a['자녀명'] || a.childName || a.name) === ck && String(a['연월'] || a.ym || '') === targetYm && String(a['상태'] || a.status || '') === '출석') ? '출석' : '';
+  }
+  window.childMonthStatus = childMonthStatus;
+  window.allChildrenRows = function(){
+    const rows = [];
+    const processed = {};
+    safeArr(DATA && DATA.members).forEach(m => {
+      const owner = childOwnerFor(m);
+      if(!owner || String(owner.id) !== String(m.id)) return;
+      if(processed[String(owner.id)]) return;
+      processed[String(owner.id)] = true;
+      const seen = {};
+      (typeof childrenForDisplay === 'function' ? childrenForDisplay(owner) : []).filter(isEligibleChild).forEach(c => {
+        const name = childClean(c.name); const k = childKey(name); if(!k || seen[k]) return; seen[k]=true;
+        rows.push({type:'child', id:String(owner.id)+'::'+name, parentId:owner.id, parentName:owner.name, team:owner.team, name, birth:c.birth||'', gender:c.gender||'', attend:'해당'});
+      });
+    });
+    const teams = orderedTeamNames();
+    return rows.sort((a,b)=>{
+      const ta = teams.indexOf(a.team), tb = teams.indexOf(b.team);
+      if(ta !== tb) return (ta < 0 ? 9999 : ta) - (tb < 0 ? 9999 : tb);
+      return txt(a.name).localeCompare(txt(b.name),'ko');
+    });
+  };
+
+  function memberMonthStatusSafe(m, mon){ return typeof memberMonthStatus === 'function' ? memberMonthStatus(m, mon) : ''; }
+  function countMembers(mon, members){ const list=safeArr(members); const present=list.filter(m=>memberMonthStatusSafe(m,mon)==='출석').length; return {present,total:list.length,rate:list.length?Math.round(present/list.length*100):0}; }
+  function countChildren(mon, children){ const list=safeArr(children); const present=list.filter(c=>childMonthStatus(c,mon)==='출석').length; return {present,total:list.length,rate:list.length?Math.round(present/list.length*100):0}; }
+  function statusIcon(status, due){
+    if(status === '출석') return '<span class="stat-ok-v564">✓</span>';
+    if(due) return '<span class="stat-no-v564">×</span>';
+    return '<span class="stat-blank-v564"></span>';
+  }
+  function table(headers, body){
+    return '<div class="stats-table-scroll-v564"><table class="stats-table-v564"><thead><tr>'+headers.map(x=>'<th>'+h(x)+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
+  function memberStatusTable(members){
+    const months = visibleStatsMonths();
+    const body = safeArr(members).map(m => '<tr><td class="name-cell">'+h(m.name||'')+'</td>' + months.map(mon => '<td>'+statusIcon(memberMonthStatusSafe(m,mon), isAttendanceDueMonth(mon))+'</td>').join('') + '</tr>').join('');
+    return table(['이름'].concat(months.map(m=>m+'월')), body || '<tr><td colspan="'+(months.length+1)+'">표시할 순원이 없습니다.</td></tr>');
+  }
+  function teamRateTable(){
+    const months = visibleStatsMonths();
+    const teams = orderedTeamNames();
+    const body = teams.map(team => {
+      const members = sortMembersForList(safeArr(DATA && DATA.members).filter(m => activeMember(m) && txt(m.team) === team), team);
+      return '<tr><td class="name-cell team-name">'+h(team)+'</td>' + months.map(mon => { const c=countMembers(mon,members); return '<td><b>'+c.rate+'%</b><br><small>'+c.present+'/'+c.total+'</small></td>'; }).join('') + '</tr>';
+    }).join('');
+    return table(['순'].concat(months.map(m=>m+'월')), body || '<tr><td colspan="'+(months.length+1)+'">표시할 순이 없습니다.</td></tr>');
+  }
+  function groupedAllMemberTable(){
+    const months = visibleStatsMonths();
+    const teams = orderedTeamNames();
+    let body = '';
+    teams.forEach(team => {
+      const members = sortMembersForList(safeArr(DATA && DATA.members).filter(m => activeMember(m) && txt(m.team) === team), team);
+      if(!members.length) return;
+      body += '<tr class="team-sep"><td colspan="'+(months.length+1)+'">'+h(team)+'</td></tr>';
+      members.forEach(m => { body += '<tr><td class="name-cell">'+h(m.name||'')+'</td>' + months.map(mon => '<td>'+statusIcon(memberMonthStatusSafe(m,mon), isAttendanceDueMonth(mon))+'</td>').join('') + '</tr>'; });
+    });
+    return table(['순원'].concat(months.map(m=>m+'월')), body || '<tr><td colspan="'+(months.length+1)+'">표시할 순원이 없습니다.</td></tr>');
+  }
+  function childStatsTable(){
+    const months = visibleStatsMonths();
+    const children = allChildrenRows();
+    const byTeam = {};
+    children.forEach(c => { const t=txt(c.team)||'미지정'; (byTeam[t]=byTeam[t]||[]).push(c); });
+    const teams = orderedTeamNames().filter(t => byTeam[t] && byTeam[t].length).concat(Object.keys(byTeam).filter(t => !orderedTeamNames().includes(t)));
+    let body = '';
+    teams.forEach(team => {
+      body += '<tr class="team-sep"><td colspan="'+(months.length+1)+'">'+h(team)+'</td></tr>';
+      byTeam[team].forEach(c => { body += '<tr><td class="name-cell">'+h(c.name)+'</td>'+months.map(mon=>'<td>'+statusIcon(childMonthStatus(c,mon), isAttendanceDueMonth(mon))+'</td>').join('')+'</tr>'; });
+    });
+    return table(['이름'].concat(months.map(m=>m+'월')), body || '<tr><td colspan="'+(months.length+1)+'">어린이결 출석 대상 자녀가 없습니다.</td></tr>');
+  }
+  function monthlyRateRows(kind, list){
+    const months = visibleStatsMonths();
+    return months.map(mon => {
+      const c = kind === 'child' ? countChildren(mon, list) : countMembers(mon, list);
+      return '<div class="rate-row"><div class="rate-label">'+mon+'월</div><div class="rate-bar"><div class="rate-fill" style="width:'+c.rate+'%"></div></div><div class="rate-num">'+c.rate+'%<br><span>'+c.present+'/'+c.total+'명</span></div></div>';
+    }).join('');
+  }
+  window.renderStats = function(){
+    const team = state && state.team;
+    const isChildren = team === '어린이결';
+    let mainTable = '';
+    let countText = '';
+    let monthlyRate = '';
+    let extra = '';
+    if(!team){
+      mainTable = '순을 선택하면 통계가 표시됩니다.';
+      countText = '순을 선택해주세요.';
+      monthlyRate = '순을 선택하면 월별 출석율이 표시됩니다.';
+    }else if(isChildren){
+      const children = allChildrenRows();
+      mainTable = childStatsTable();
+      countText = '어린이결 통계: 출석 대상 자녀 '+children.length+'명';
+      monthlyRate = monthlyRateRows('child', children);
+    }else if(team === '전체'){
+      const members = teamMembers();
+      mainTable = teamRateTable();
+      countText = '전체 순 통계: '+orderedTeamNames().length+'개 순 / 전체 '+members.length+'명';
+      monthlyRate = monthlyRateRows('member', members);
+      extra = '<div class="card all-members-section"><div class="section-head">전체 순원 월별 출석현황</div>'+groupedAllMemberTable()+'</div>';
+    }else{
+      const members = teamMembers();
+      mainTable = memberStatusTable(members);
+      countText = '통계 대상: '+members.length+'명';
+      monthlyRate = monthlyRateRows('member', members);
+    }
+    const title = isChildren ? '2026년 어린이결 출석 현황' : '2026년 출석 현황';
+    view.innerHTML = '<section class="page"><div class="section-head">출석통계</div>'+statsTeamSelect()+'<div class="count">'+countText+'</div><div class="card"><div class="stats-main-title">'+title+'</div>'+mainTable+'</div><div class="card"><div class="section-head">월별 출석율</div>'+monthlyRate+'</div>'+extra+'</section>';
+  };
+
+  try{
+    const style = document.createElement('style');
+    style.id = 'v564-fix-style';
+    style.textContent = `
+      .child-panel-v564{margin-left:60px;padding-left:12px;border-left:3px solid #e3dcff}
+      .child-panel-v564 .child-row-v564{display:grid!important;grid-template-columns:42px minmax(0,1fr) 48px!important;align-items:center!important;gap:8px!important;padding:9px 0!important;border-top:1px solid var(--line);background:#fff}
+      .child-panel-v564 .photo{width:36px!important;height:36px!important;border-radius:12px!important;overflow:hidden;background:#fff7d9;border:2px solid #ffe08a}
+      .child-panel-v564 .photo img{width:100%;height:100%;object-fit:cover;display:block}
+      .child-panel-v564 .child-name{font-size:14px!important;font-weight:950!important;color:#302d48;line-height:1.18!important;white-space:normal!important}
+      .child-birth-v564{font-size:12px;color:#777;margin-top:3px;font-weight:700}
+      .child-check-v564{width:48px;min-height:30px;border-radius:9px;border:1px solid #ccc;background:#e8e8e8;color:#555;font-weight:900;font-size:12px;padding:5px 3px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+      .child-check-v564.present{background:#e6faf6;color:#219c87;border-color:#9ee1d5}
+      .child-no-attend-v564{width:48px;min-height:30px;display:block}
+      .stats-table-scroll-v564{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+      .stats-table-v564{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:420px;font-size:13px;table-layout:auto}
+      .stats-table-v564 th{background:#efe9ff;color:#5f50d8;font-weight:950;padding:10px 8px;text-align:center;border-radius:9px;white-space:nowrap}
+      .stats-table-v564 td{background:#faf9ff;border:1px solid #eee9ff;padding:8px 8px;text-align:center;border-radius:9px;vertical-align:middle;min-width:42px}
+      .stats-table-v564 .name-cell{text-align:left;color:#232136;font-weight:900;min-width:82px;max-width:140px;white-space:normal;line-height:1.2}
+      .stats-table-v564 .team-name{color:#4b3b89}
+      .stats-table-v564 .team-sep td{background:#f1ebff!important;color:#4b3b89!important;font-weight:950;text-align:left!important;border-color:#dfd4ff!important}
+      .stat-ok-v564,.stat-no-v564{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-weight:950;color:#fff;font-size:17px;line-height:1}
+      .stat-ok-v564{background:#43bd83}.stat-no-v564{background:#f04b45}.stat-blank-v564{display:inline-block;width:24px;height:24px;border-radius:8px;background:#f1eff8}
+      @media(max-width:430px){.child-panel-v564{margin-left:46px}.child-panel-v564 .child-row-v564{grid-template-columns:38px minmax(0,1fr) 46px!important}.child-check-v564{width:46px;font-size:12px}.child-no-attend-v564{width:46px}.stats-table-v564{font-size:12px}.stats-table-v564 .name-cell{min-width:76px}}
+    `;
+    document.head.appendChild(style);
+  }catch(e){}
+
+  try{ updateHeader(); }catch(e){}
+})();
+</script>
+
 </body>
 </html>
