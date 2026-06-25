@@ -9329,8 +9329,8 @@ applyLoadedData = function(r){
 <script>
 /* V5.64 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.64';
-  const CACHE_KEY = 'geolLeaderDataCacheV5_64';
+  const APP_VERSION = 'V5.66';
+  const CACHE_KEY = 'geolLeaderDataCacheV5_66';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
     '새순': ['서영주','이경민','김덕중','신미경','양홍준','박소영'],
@@ -9675,12 +9675,12 @@ applyLoadedData = function(r){
    - 목회자/위원장/임원/관리자/부관리자는 전체 조회/등록/수정 가능하다.
 */
 (function(){
-  const APP_V565 = 'V5.65';
+  const APP_V565 = 'V5.66';
   const CACHE_V565 = 'geolLeaderDataCacheV5_65';
   const ROLE_MANAGER = ['관리자','부관리자'];
   const FULL_ROLES = ['관리자','부관리자','목회자','위원장','임원'];
   const ROLE_OPTIONS = ['순장','임원','위원장','목회자','관리자','부관리자'];
-  const INITIAL_ADMIN_NAMES = ['이경민'];
+  const INITIAL_ADMIN_NAMES = ['김건일','이경민'];
 
   try{ window.versionText = function(){ return APP_V565; }; }catch(e){}
   try{ window.dataCacheKey = function(){ return CACHE_V565; }; }catch(e){}
@@ -9925,7 +9925,7 @@ applyLoadedData = function(r){
         <button class="primary-btn admin-save" onclick="saveAdminPermissionV565()">권한 저장</button>
       </div>
       <div class="card admin-card"><div class="section-head">현재 권한 목록</div>
-        ${list.length?list.map(p=>`<div class="perm-row"><div><b>${esc2(p.name||p['이름'])}</b><span>${esc2(p.role||p['직책'])} · ${esc2(p.assignedTeam||p.team||p['담당순']||'전체')}</span></div><button onclick="loadAdminPermissionV565('${esc2(p.name||p['이름'])}')">수정</button></div>`).join(''):'등록된 권한이 없습니다. 초기 관리자는 이경민입니다.'}
+        ${list.length?list.map(p=>`<div class="perm-row"><div><b>${esc2(p.name||p['이름'])}</b><span>${esc2(p.role||p['직책'])} · ${esc2(p.assignedTeam||p.team||p['담당순']||'전체')}</span></div><button onclick="loadAdminPermissionV565('${esc2(p.name||p['이름'])}')">수정</button></div>`).join(''):'등록된 권한이 없습니다. 초기 관리자는 김건일, 이경민입니다.'}
       </div>
     </section>`;
     ensureAdminNav();
@@ -9976,6 +9976,52 @@ applyLoadedData = function(r){
   }catch(e){}
 
   try{ enforceTeamState(); updateHeader(); ensureAdminNav(); }catch(e){}
+})();
+</script>
+
+
+<script>
+/* V5.66 admin/version bootstrap fix */
+(function(){
+  const FORCE_VERSION='V5.66';
+  const BOOT_ADMINS=['김건일','이경민'];
+  const clean=v=>String(v==null?'':v).replace(/\s/g,'').trim();
+  function currentName(){
+    try{ if(typeof profile==='function') return String((profile()||{}).leaderName||'').trim(); }catch(e){}
+    try{ return String((JSON.parse(localStorage.getItem('geolLeaderProfile')||'{}')||{}).leaderName||'').trim(); }catch(e){}
+    return '';
+  }
+  function isBootAdmin(){ return BOOT_ADMINS.map(clean).includes(clean(currentName())); }
+  function forceVersion(){
+    try{ document.querySelectorAll('.header-version-badge,.version-badge,[data-version]').forEach(el=>{ el.textContent=FORCE_VERSION; }); }catch(e){}
+    try{ const h=document.getElementById('headerDistrict'); if(h && !h.textContent.includes(FORCE_VERSION)) h.innerHTML='<span class="header-version-badge">'+FORCE_VERSION+'</span>'; }catch(e){}
+  }
+  function ensureAdminButton(){
+    if(!isBootAdmin()) return;
+    try{
+      const bottom=document.querySelector('.bottom'); if(!bottom) return;
+      bottom.style.gridTemplateColumns='repeat(5,1fr)';
+      let btn=bottom.querySelector('[data-tab="admin"]');
+      if(!btn){
+        btn=document.createElement('button');
+        btn.className='nav admin-nav'; btn.dataset.tab='admin';
+        btn.innerHTML='<span class="nav-ico">⚙️</span><span>관리자</span>';
+        btn.onclick=function(){ if(typeof go==='function') go('admin'); else if(typeof renderAdminModeV565==='function'){ state.tab='admin'; renderAdminModeV565(); } };
+        bottom.appendChild(btn);
+      }
+      btn.style.display='';
+    }catch(e){}
+  }
+  const oldUpdateHeader=typeof updateHeader==='function'?updateHeader:null;
+  window.updateHeader=function(){ if(oldUpdateHeader) try{ oldUpdateHeader(); }catch(e){} forceVersion(); ensureAdminButton(); };
+  const oldUpdateNav=typeof updateNav==='function'?updateNav:null;
+  if(oldUpdateNav){ window.updateNav=function(){ const r=oldUpdateNav(); forceVersion(); ensureAdminButton(); return r; }; }
+  const oldRender=typeof render==='function'?render:null;
+  if(oldRender){ window.render=function(){ const r=oldRender(); forceVersion(); ensureAdminButton(); return r; }; }
+  window.geolForceAdminBootstrapV566=function(){ forceVersion(); ensureAdminButton(); return {ok:true, version:FORCE_VERSION, currentName:currentName(), bootAdmin:isBootAdmin()}; };
+  setTimeout(function(){ forceVersion(); ensureAdminButton(); },50);
+  setTimeout(function(){ forceVersion(); ensureAdminButton(); },500);
+  setTimeout(function(){ forceVersion(); ensureAdminButton(); },1500);
 })();
 </script>
 
