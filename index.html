@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.63 시작", API_URL);
+console.log("결 LEADER V5.69 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.63';
+      vInput.value = 'V5.69';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.63")
+      + "&v=" + encodeURIComponent("V5.69")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -9983,7 +9983,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.68 admin/version bootstrap fix */
 (function(){
-  const FORCE_VERSION='V5.68';
+  const FORCE_VERSION='V5.69';
   const BOOT_ADMINS=['김건일'];
   const clean=v=>String(v==null?'':v).replace(/\s/g,'').trim();
   function currentName(){
@@ -10121,6 +10121,138 @@ applyLoadedData = function(r){
     style.textContent='.admin-logout-v567{text-align:center;margin:12px 0 20px}.admin-logout-v567 button{border:0;border-radius:14px;background:#f5f0ff;color:#5b46a6;font-weight:900;padding:10px 14px}';
     document.head.appendChild(style);
   }catch(e){}
+})();
+</script>
+
+
+
+<script>
+/* V5.69 관리자 비밀번호 최종 보정: 초기관리자 김건일만, 비밀번호 4545 고정 */
+(function(){
+  const VERSION='V5.69';
+  const ADMIN_PASSWORD='4545';
+  const ADMIN_SESSION_KEY='geolAdminAuthV569';
+  const ADMIN_PASS_KEY='geolAdminPassV569';
+  function clean(v){ return String(v==null?'':v).replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g,'').trim(); }
+  function normalizePw(v){
+    return clean(v).replace(/[０-９]/g,function(ch){return String.fromCharCode(ch.charCodeAt(0)-0xFEE0);});
+  }
+  function profileObj(){
+    try{ if(typeof getLocalProfile==='function') return getLocalProfile()||{}; }catch(e){}
+    try{ return JSON.parse(localStorage.getItem('geolLeaderProfile')||'{}')||{}; }catch(e){}
+    return {};
+  }
+  function profileName(){ return clean(profileObj().leaderName || profileObj().name || ''); }
+  function isKimInitialAdmin(){ return clean(profileName())===clean('김건일'); }
+  function isRoleManager(){
+    try{ if(typeof geolIsRoleManagerV565==='function' && geolIsRoleManagerV565()) return true; }catch(e){}
+    try{
+      const p=profileObj();
+      const role=clean(p.leaderRole || p.role || '');
+      return ['관리자','부관리자'].indexOf(role)>=0;
+    }catch(e){}
+    return false;
+  }
+  function canSeeAdmin(){ return isKimInitialAdmin() || isRoleManager(); }
+  function setStoredPass(p){ try{sessionStorage.setItem(ADMIN_PASS_KEY,normalizePw(p)); sessionStorage.setItem(ADMIN_SESSION_KEY,'Y');}catch(e){} }
+  function storedPass(){ try{return normalizePw(sessionStorage.getItem(ADMIN_PASS_KEY)||'');}catch(e){return '';} }
+  function clearStoredPass(){ try{sessionStorage.removeItem(ADMIN_PASS_KEY); sessionStorage.removeItem(ADMIN_SESSION_KEY);}catch(e){} }
+  async function verifyAdminPasswordV569(pw){
+    const normalized=normalizePw(pw);
+    if(normalized!==ADMIN_PASSWORD) return false;
+    // 서버 배포가 늦어도 관리자 화면 진입은 막히지 않게 로컬 기준으로 승인한다.
+    // 권한 저장 시에는 같은 비밀번호가 payload로 서버에 전달된다.
+    return true;
+  }
+  async function requireAdminPasswordV569(){
+    if(!canSeeAdmin()){
+      alert('관리자 권한이 없습니다. 초기관리자는 김건일만 가능합니다.');
+      return false;
+    }
+    const cached=storedPass();
+    if(cached && await verifyAdminPasswordV569(cached)) return true;
+    clearStoredPass();
+    const pw=prompt('관리자 비밀번호를 입력해주세요.');
+    if(pw==null) return false;
+    if(await verifyAdminPasswordV569(pw)){
+      setStoredPass(pw);
+      return true;
+    }
+    alert('관리자 비밀번호가 올바르지 않습니다.');
+    return false;
+  }
+  window.requireAdminPasswordV67=requireAdminPasswordV569;
+  window.requireAdminPasswordV68=requireAdminPasswordV569;
+  window.requireAdminPasswordV69=requireAdminPasswordV569;
+  window.getAdminPasswordV67=storedPass;
+  window.getAdminPasswordV68=storedPass;
+  window.getAdminPasswordV69=storedPass;
+  window.logoutAdminModeV69=function(){ clearStoredPass(); alert('관리자 인증이 해제되었습니다.'); };
+
+  function forceVersion(){
+    try{
+      document.querySelectorAll('.version-badge,.version,.app-version').forEach(function(el){
+        if((el.textContent||'').match(/V\d+\.\d+/)) el.textContent=VERSION;
+      });
+      document.querySelectorAll('*').forEach(function(el){
+        if(el.childNodes && el.childNodes.length===1 && el.textContent && /^V\d+\.\d+/.test(el.textContent.trim())) el.textContent=VERSION;
+      });
+    }catch(e){}
+  }
+  function ensureAdminButtonV569(){
+    try{
+      const bottom=document.querySelector('.bottom-nav,.nav-bar,.tabbar,.bottom-menu');
+      let btn=document.querySelector('[data-tab="admin"], .admin-nav-btn-v565, .admin-nav-btn-v569');
+      if(!canSeeAdmin()){
+        if(btn) btn.style.display='none';
+        return;
+      }
+      if(!btn && bottom){
+        btn=document.createElement('button');
+        btn.className='nav admin-nav-btn-v569';
+        btn.setAttribute('data-tab','admin');
+        btn.innerHTML='<span style="font-size:22px;line-height:22px;display:block">🔐</span><span>관리자</span>';
+        bottom.appendChild(btn);
+      }
+      if(btn){
+        btn.style.display='';
+        btn.onclick=function(ev){ ev&&ev.preventDefault&&ev.preventDefault(); window.go('admin'); };
+      }
+    }catch(e){}
+  }
+  const oldGo=typeof window.go==='function'?window.go:null;
+  window.go=function(tab){
+    if(tab==='admin'){
+      requireAdminPasswordV569().then(function(ok){
+        if(!ok) return;
+        if(oldGo) oldGo('admin');
+        else if(typeof renderAdminModeV565==='function'){
+          if(typeof state!=='undefined') state.tab='admin';
+          renderAdminModeV565();
+          if(typeof updateNav==='function') updateNav();
+        }
+      });
+      return;
+    }
+    return oldGo?oldGo(tab):undefined;
+  };
+  const oldSave=window.saveAdminPermissionV565;
+  if(typeof oldSave==='function'){
+    window.saveAdminPermissionV565=async function(){
+      if(!(await requireAdminPasswordV569())) return;
+      return oldSave.apply(this,arguments);
+    };
+  }
+  const oldRender=typeof window.render==='function'?window.render:null;
+  if(oldRender){ window.render=function(){ const r=oldRender.apply(this,arguments); forceVersion(); ensureAdminButtonV569(); return r; }; }
+  const oldUpdateHeader=typeof window.updateHeader==='function'?window.updateHeader:null;
+  if(oldUpdateHeader){ window.updateHeader=function(){ const r=oldUpdateHeader.apply(this,arguments); forceVersion(); ensureAdminButtonV569(); return r; }; }
+  const oldUpdateNav=typeof window.updateNav==='function'?window.updateNav:null;
+  if(oldUpdateNav){ window.updateNav=function(){ const r=oldUpdateNav.apply(this,arguments); forceVersion(); ensureAdminButtonV569(); return r; }; }
+  document.addEventListener('DOMContentLoaded',function(){ forceVersion(); ensureAdminButtonV569(); });
+  setTimeout(function(){ forceVersion(); ensureAdminButtonV569(); },50);
+  setTimeout(function(){ forceVersion(); ensureAdminButtonV569(); },500);
+  setTimeout(function(){ forceVersion(); ensureAdminButtonV569(); },1500);
 })();
 </script>
 
