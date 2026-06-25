@@ -9667,5 +9667,317 @@ applyLoadedData = function(r){
 })();
 </script>
 
+
+<script>
+/* V5.65 admin permission mode
+   - 관리자/부관리자만 직책과 담당순을 지정한다.
+   - 순장은 담당 순만 출석체크/순원등록/정보수정 가능하다.
+   - 목회자/위원장/임원/관리자/부관리자는 전체 조회/등록/수정 가능하다.
+*/
+(function(){
+  const APP_V565 = 'V5.65';
+  const CACHE_V565 = 'geolLeaderDataCacheV5_65';
+  const ROLE_MANAGER = ['관리자','부관리자'];
+  const FULL_ROLES = ['관리자','부관리자','목회자','위원장','임원'];
+  const ROLE_OPTIONS = ['순장','임원','위원장','목회자','관리자','부관리자'];
+  const INITIAL_ADMIN_NAMES = ['이경민'];
+
+  try{ window.versionText = function(){ return APP_V565; }; }catch(e){}
+  try{ window.dataCacheKey = function(){ return CACHE_V565; }; }catch(e){}
+
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function txt(v){ return v == null ? '' : String(v).trim(); }
+  function cleanName(v){ return txt(v).replace(/\s/g,'').replace(/(목사님|전도사님|순장님|순장|목사|전도사|집사|권사|장로|성도|님)$/g,''); }
+  function esc2(v){ try{ return typeof esc==='function' ? esc(v) : txt(v).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }catch(e){ return txt(v); } }
+  function profile(){
+    try{ if(typeof getLocalProfile==='function'){ const p=getLocalProfile()||{}; if(p.leaderName||p.leaderRole||p.leaderTeam) return p; } }catch(e){}
+    const s=(window.DATA&&DATA.settings)||{};
+    return {leaderName:s.leaderName||'', leaderRole:s.leaderRole||'', leaderTeam:s.leaderTeam||''};
+  }
+  function perms(){ return arr(window.DATA && (DATA.permissions || DATA.permissionList || DATA.rolePermissions)); }
+  function permissionForName(name){
+    const key=cleanName(name);
+    if(!key) return null;
+    return perms().find(p=> cleanName(p.name||p['이름']||p.memberName)===key && txt(p.active||p['활성']||'Y')!=='N') || null;
+  }
+  function currentPermission(){
+    const p=profile();
+    const direct=permissionForName(p.leaderName);
+    if(direct) return Object.assign({source:'권한관리'}, direct);
+    const nameKey=cleanName(p.leaderName);
+    if(INITIAL_ADMIN_NAMES.map(cleanName).includes(nameKey)) return {name:p.leaderName, role:'관리자', assignedTeam:'전체', team:'전체', source:'초기관리자'};
+    // 기존 로컬 프로필 호환: 목회자/임원/위원장은 전체권한으로 보되, 권한 지정은 관리자모드에서만 가능하게 한다.
+    const role=txt(p.leaderRole||'순장');
+    return {name:p.leaderName||'', role:role, assignedTeam:p.leaderTeam||'', team:p.leaderTeam||'', source:'프로필'};
+  }
+  function roleOfCurrent(){ return txt(currentPermission().role || currentPermission()['직책'] || '순장'); }
+  function assignedTeamOfCurrent(){ const c=currentPermission(); return txt(c.assignedTeam||c.team||c['담당순']||c['순']||profile().leaderTeam||''); }
+  function isRoleManager(){ return ROLE_MANAGER.includes(roleOfCurrent()) || INITIAL_ADMIN_NAMES.map(cleanName).includes(cleanName(profile().leaderName)); }
+  function hasFullAccess(){ return FULL_ROLES.includes(roleOfCurrent()) || isRoleManager(); }
+  function canAccessTeam(team){ if(hasFullAccess()) return true; return txt(team) && txt(team)===assignedTeamOfCurrent(); }
+  function canEditMember(m){ if(hasFullAccess()) return true; return m && canAccessTeam(m.team||m['순']); }
+  function memberById(id){ return arr(DATA&&DATA.members).find(m=>String(m.id)===String(id)); }
+
+  window.geolCurrentPermissionV565 = currentPermission;
+  window.geolHasFullAccessV565 = hasFullAccess;
+  window.geolIsRoleManagerV565 = isRoleManager;
+
+  function enforceTeamState(){
+    if(hasFullAccess()) return;
+    const t=assignedTeamOfCurrent();
+    if(t) state.team=t;
+  }
+
+  const oldTeamMembers = typeof teamMembers==='function' ? teamMembers : null;
+  if(oldTeamMembers){
+    window.teamMembers = function(){
+      let list=[];
+      try{ list=oldTeamMembers(); }catch(e){ list=[]; }
+      if(hasFullAccess()) return list;
+      const t=assignedTeamOfCurrent();
+      return arr(DATA&&DATA.members).filter(m=>txt(m.team)===t);
+    };
+  }
+
+  const oldTeamSelect = typeof teamSelect==='function' ? teamSelect : null;
+  if(oldTeamSelect){
+    window.teamSelect = function(){
+      if(hasFullAccess()) return oldTeamSelect();
+      const t=assignedTeamOfCurrent();
+      return `<select class="select" disabled><option>${esc2(t||'담당 순 없음')}</option></select>`;
+    };
+  }
+
+  const oldRenderHome = typeof renderHome==='function' ? renderHome : null;
+  if(oldRenderHome){
+    window.renderHome = function(){ enforceTeamState(); return oldRenderHome(); };
+  }
+
+  const oldRenderStats = typeof renderStats==='function' ? renderStats : null;
+  if(oldRenderStats){
+    window.renderStats = function(){
+      if(hasFullAccess()) return oldRenderStats();
+      const t=assignedTeamOfCurrent();
+      const oldMembers=DATA.members;
+      const oldTeam=state.team;
+      try{
+        DATA.members=arr(oldMembers).filter(m=>txt(m.team)===t);
+        state.team=t;
+        return oldRenderStats();
+      }finally{
+        DATA.members=oldMembers;
+        state.team=oldTeam;
+      }
+    };
+  }
+
+  const oldRenderRegister = typeof renderRegister==='function' ? renderRegister : null;
+  if(oldRenderRegister){
+    window.renderRegister = function(){
+      const ret=oldRenderRegister();
+      setTimeout(function(){
+        if(!hasFullAccess()){
+          const t=assignedTeamOfCurrent();
+          const sel=document.getElementById('fmTeam') || document.querySelector('#memberForm select[name="team"], select#team, select[name="순"]');
+          if(sel){ sel.value=t; sel.disabled=true; }
+        }
+        lockRoleFieldsInNormalForms();
+      },30);
+      return ret;
+    };
+  }
+
+  function permissionDenied(){ alert('권한이 없습니다. 순장은 지정된 본인 순만 출석체크/순원등록/정보수정할 수 있습니다. 직책 지정은 관리자만 가능합니다.'); }
+
+  const oldOpenMemberDetail = typeof openMemberDetail==='function' ? openMemberDetail : null;
+  if(oldOpenMemberDetail){
+    window.openMemberDetail = function(id){
+      const m=memberById(id);
+      if(m && !canEditMember(m)) return permissionDenied();
+      return oldOpenMemberDetail(id);
+    };
+  }
+  const oldOpenMemberForm = typeof openMemberForm==='function' ? openMemberForm : null;
+  if(oldOpenMemberForm){
+    window.openMemberForm = function(id, opts){
+      const m=id ? memberById(id) : null;
+      if(m && !canEditMember(m)) return permissionDenied();
+      const ret=oldOpenMemberForm(id, opts);
+      setTimeout(function(){
+        if(!hasFullAccess()){
+          const t=assignedTeamOfCurrent();
+          const sel=document.getElementById('fmTeam');
+          if(sel){ sel.value=t; sel.disabled=true; }
+        }
+        lockRoleFieldsInNormalForms();
+      },30);
+      return ret;
+    };
+  }
+
+  function lockRoleFieldsInNormalForms(){
+    try{
+      const labels=['직책','권한','역할','담당순'];
+      document.querySelectorAll('input,select,textarea').forEach(el=>{
+        const id=(el.id||'')+(el.name||'')+(el.placeholder||'');
+        const near=(el.closest('label,.field,.form-row,.edit-grid,.card')||{}).textContent||'';
+        if(labels.some(x=>id.indexOf(x)>=0 || near.indexOf(x)>=0)){
+          if(!el.closest('#adminModePage')){ el.disabled=true; el.title='직책/권한은 관리자모드에서만 수정할 수 있습니다.'; }
+        }
+      });
+    }catch(e){}
+  }
+
+  const oldToggleAttend = typeof toggleAttend==='function' ? toggleAttend : null;
+  if(oldToggleAttend){
+    window.toggleAttend = async function(id){
+      const m=memberById(id);
+      if(m && !canAccessTeam(m.team)) return permissionDenied();
+      return oldToggleAttend(id);
+    };
+  }
+  const oldToggleChild = typeof toggleChild==='function' ? toggleChild : null;
+  if(oldToggleChild){
+    window.toggleChild = async function(parentId, childName, childBirth){
+      const m=memberById(parentId);
+      if(m && !canAccessTeam(m.team)) return permissionDenied();
+      return oldToggleChild(parentId, childName, childBirth);
+    };
+  }
+
+  const oldSaveMemberUi = typeof saveMemberUi==='function' ? saveMemberUi : null;
+  if(oldSaveMemberUi){
+    window.saveMemberUi = async function(id){
+      try{
+        const m=id ? memberById(id) : null;
+        const teamEl=document.getElementById('fmTeam');
+        const targetTeam = teamEl ? teamEl.value : (m&&m.team)||state.team;
+        if(!hasFullAccess() && !canAccessTeam(targetTeam)) return permissionDenied();
+      }catch(e){}
+      return oldSaveMemberUi(id);
+    };
+  }
+
+  function ensureAdminNav(){
+    try{
+      const bottom=document.querySelector('.bottom');
+      if(!bottom) return;
+      bottom.style.gridTemplateColumns = isRoleManager() ? 'repeat(5,1fr)' : 'repeat(4,1fr)';
+      let btn=bottom.querySelector('[data-tab="admin"]');
+      if(isRoleManager()){
+        if(!btn){
+          btn=document.createElement('button');
+          btn.className='nav admin-nav'; btn.dataset.tab='admin';
+          btn.innerHTML='<span class="nav-ico">⚙️</span><span>관리자</span>';
+          btn.onclick=function(){ go('admin'); };
+          bottom.appendChild(btn);
+        }
+        btn.classList.toggle('active', state.tab==='admin');
+      }else if(btn){ btn.remove(); }
+    }catch(e){}
+  }
+
+  const oldUpdateNav = typeof updateNav==='function' ? updateNav : null;
+  if(oldUpdateNav){
+    window.updateNav = function(){ const r=oldUpdateNav(); ensureAdminNav(); return r; };
+  }
+  const oldGo = typeof go==='function' ? go : null;
+  window.go = function(tab){
+    if(tab==='admin'){
+      if(!isRoleManager()) return permissionDenied();
+      state.tab='admin';
+      renderAdminModeV565();
+      if(typeof updateNav==='function') updateNav(); else ensureAdminNav();
+      return;
+    }
+    if(tab==='home') enforceTeamState();
+    return oldGo ? oldGo(tab) : undefined;
+  };
+  const oldRender = typeof render==='function' ? render : null;
+  if(oldRender){
+    window.render = function(){
+      if(state.tab==='admin') return renderAdminModeV565();
+      const r=oldRender();
+      ensureAdminNav();
+      return r;
+    };
+  }
+
+  function memberOptions(){
+    return arr(DATA&&DATA.members).map(m=>`<option value="${esc2(m.name)}" data-team="${esc2(m.team)}">${esc2(m.team||'-')} · ${esc2(m.name||'')}</option>`).join('');
+  }
+  function teamOptions(selected){ return arr(DATA&&DATA.teams).map(t=>`<option value="${esc2(t)}" ${txt(selected)===txt(t)?'selected':''}>${esc2(t)}</option>`).join(''); }
+  function roleOptions(selected){ return ROLE_OPTIONS.map(r=>`<option value="${r}" ${txt(selected)===r?'selected':''}>${r}</option>`).join(''); }
+  function renderAdminModeV565(){
+    const list=perms().slice().sort((a,b)=>txt(a.team||a.assignedTeam||a['담당순']).localeCompare(txt(b.team||b.assignedTeam||b['담당순']),'ko') || txt(a.name||a['이름']).localeCompare(txt(b.name||b['이름']),'ko'));
+    view.innerHTML = `<section id="adminModePage" class="page admin-mode-page">
+      <div class="leader-name">관리자모드</div>
+      <div class="sub">직책과 담당 순은 관리자/부관리자만 지정할 수 있습니다.</div>
+      <div class="card admin-card">
+        <div class="section-head">권한 지정</div>
+        <label class="admin-label">순원 선택</label>
+        <select id="adminMemberName" class="input">${memberOptions()}</select>
+        <div class="admin-grid">
+          <div><label class="admin-label">직책</label><select id="adminRole" class="input">${roleOptions('순장')}</select></div>
+          <div><label class="admin-label">담당 순</label><select id="adminTeam" class="input"><option value="전체">전체</option>${teamOptions('')}</select></div>
+        </div>
+        <div class="admin-help">순장을 지정할 때는 담당 순을 반드시 선택하세요. 관리자/부관리자/목회자/위원장/임원은 전체 권한으로 처리됩니다.</div>
+        <button class="primary-btn admin-save" onclick="saveAdminPermissionV565()">권한 저장</button>
+      </div>
+      <div class="card admin-card"><div class="section-head">현재 권한 목록</div>
+        ${list.length?list.map(p=>`<div class="perm-row"><div><b>${esc2(p.name||p['이름'])}</b><span>${esc2(p.role||p['직책'])} · ${esc2(p.assignedTeam||p.team||p['담당순']||'전체')}</span></div><button onclick="loadAdminPermissionV565('${esc2(p.name||p['이름'])}')">수정</button></div>`).join(''):'등록된 권한이 없습니다. 초기 관리자는 이경민입니다.'}
+      </div>
+    </section>`;
+    ensureAdminNav();
+  }
+  window.renderAdminModeV565 = renderAdminModeV565;
+
+  window.loadAdminPermissionV565 = function(name){
+    const p=permissionForName(name); if(!p) return;
+    const n=document.getElementById('adminMemberName'), r=document.getElementById('adminRole'), t=document.getElementById('adminTeam');
+    if(n) n.value=p.name||p['이름']||name;
+    if(r) r.value=p.role||p['직책']||'순장';
+    if(t) t.value=p.assignedTeam||p.team||p['담당순']||'전체';
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+  window.saveAdminPermissionV565 = async function(){
+    if(!isRoleManager()) return permissionDenied();
+    const name=txt(document.getElementById('adminMemberName')?.value);
+    const role=txt(document.getElementById('adminRole')?.value||'순장');
+    let team=txt(document.getElementById('adminTeam')?.value||'전체');
+    if(!name) return alert('순원을 선택해주세요.');
+    if(role==='순장' && (!team || team==='전체')) return alert('순장 지정 시 담당 순을 선택해주세요.');
+    if(role!=='순장') team='전체';
+    const p=profile();
+    try{
+      if(window.loadingToast) loadingToast.classList.remove('hidden');
+      const res=await call('savePermissionRecordV65',{name,role,assignedTeam:team,active:'Y',editorName:p.leaderName,editorRole:roleOfCurrent()});
+      if(res && res.ok===false) throw new Error(res.error||'권한 저장 실패');
+      const fresh=await call('getDataJson');
+      if(typeof applyLoadedData==='function') applyLoadedData(fresh); else DATA=fresh;
+      alert('권한이 저장되었습니다.');
+      renderAdminModeV565();
+    }catch(e){ alert('권한 저장 중 오류가 발생했습니다: '+(e.message||e)); }
+    finally{ try{ loadingToast.classList.add('hidden'); }catch(e){} }
+  };
+
+  const oldUpdateHeader = typeof updateHeader==='function' ? updateHeader : null;
+  window.updateHeader = function(){
+    if(oldUpdateHeader) try{ oldUpdateHeader(); }catch(e){}
+    try{ const d=document.getElementById('headerDistrict'); if(d) d.innerHTML='<span class="header-version-badge">'+APP_V565+'</span>'; }catch(e){}
+    try{ ensureAdminNav(); }catch(e){}
+  };
+
+  try{
+    const style=document.createElement('style');
+    style.textContent=`
+      .admin-mode-page .admin-card{padding:16px;border-radius:22px}.admin-label{display:block;font-size:12px;font-weight:950;color:#5b4aa0;margin:8px 0 6px}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.admin-help{font-size:12px;color:#777;line-height:1.45;margin:10px 0}.admin-save{width:100%;margin-top:8px}.perm-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #eee8ff;background:#fbfaff;border-radius:14px;padding:10px;margin:8px 0}.perm-row b{display:block;color:#222}.perm-row span{display:block;font-size:12px;color:#6b5aa8;margin-top:3px}.perm-row button{border:0;border-radius:12px;background:#eee7ff;color:#5b46a6;font-weight:900;padding:8px 12px}.admin-nav .nav-ico{font-size:23px}`;
+    document.head.appendChild(style);
+  }catch(e){}
+
+  try{ enforceTeamState(); updateHeader(); ensureAdminNav(); }catch(e){}
+})();
+</script>
+
 </body>
 </html>
