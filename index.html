@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.76 시작", API_URL);
+console.log("결 LEADER V5.77 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.76';
+      vInput.value = 'V5.77';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.76")
+      + "&v=" + encodeURIComponent("V5.77")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -6939,7 +6939,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.76&t=V5.76"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.77&t=V5.77"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -9329,7 +9329,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.64 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.76';
+  const APP_VERSION = 'V5.77';
   const CACHE_KEY = 'geolLeaderDataCacheV5_66';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9675,7 +9675,7 @@ applyLoadedData = function(r){
    - 목회자/위원장/임원/관리자/부관리자는 전체 조회/등록/수정 가능하다.
 */
 (function(){
-  const APP_V565 = 'V5.76';
+  const APP_V565 = 'V5.77';
   const CACHE_V565 = 'geolLeaderDataCacheV5_67';
   const ROLE_MANAGER = ['관리자','부관리자'];
   const FULL_ROLES = ['관리자','부관리자','목회자','위원장','임원'];
@@ -9981,9 +9981,9 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.76 admin/version bootstrap fix */
+/* V5.77 admin/version bootstrap fix */
 (function(){
-  const FORCE_VERSION='V5.76';
+  const FORCE_VERSION='V5.77';
   const BOOT_ADMINS=['김건일'];
   const clean=v=>String(v==null?'':v).replace(/\s/g,'').trim();
   function currentName(){
@@ -10029,9 +10029,9 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.76 관리자 비밀번호 최종 문법검수: 초기관리자 김건일만 / 비밀번호 4545 / 과거 래퍼 우회 */
+/* V5.77 관리자 비밀번호 최종 문법검수: 초기관리자 김건일만 / 비밀번호 4545 / 과거 래퍼 우회 */
 (function(){
-  const VERSION='V5.76';
+  const VERSION='V5.77';
   const ADMIN_PASSWORD='4545';
   const AUTH_KEYS=['geolAdminAuthV567','geolAdminAuthV568','geolAdminAuthV569','geolAdminAuthV570'];
   const PASS_KEYS=['geolAdminPassV567','geolAdminPassV568','geolAdminPassV569','geolAdminPassV570'];
@@ -10187,9 +10187,9 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.76 관리자모드 재검수: 직책/권한 분리, 초기관리자 김건일, 비밀번호 4545 */
+/* V5.77 관리자모드 재검수: 직책/권한 분리, 초기관리자 김건일, 비밀번호 4545 */
 (function(){
-  const VERSION='V5.76';
+  const VERSION='V5.77';
   const ADMIN_PASSWORD='4545';
   const ADMIN_NAME='김건일';
   const POSITION_OPTIONS=['순장','임원','위원장','목회자'];
@@ -10354,10 +10354,10 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.76 관리자모드 최종 라우터 보정: 이전 관리자 스크립트 충돌 방지 */
+/* V5.77 관리자모드 최종 라우터 보정: 이전 관리자 스크립트 충돌 방지 */
 (function(){
   const ADMIN_PASSWORD_V576 = '4545';
-  const APP_VERSION_V576 = 'V5.76';
+  const APP_VERSION_V576 = 'V5.77';
   function clean575(v){ return String(v == null ? '' : v).replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).trim(); }
   function currentUserName575(){
     try{
@@ -10480,6 +10480,128 @@ applyLoadedData = function(r){
   try{ const st=document.createElement('style'); st.textContent='.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.admin-label{display:block;font-size:12px;font-weight:900;color:#5b4aa0;margin:8px 0 6px}.admin-help{font-size:12px;color:#777;line-height:1.45;margin:10px 0}.perm-row{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid #eee8ff;background:#fbfaff;border-radius:14px;padding:10px;margin:8px 0}.perm-row span{display:block;font-size:12px;color:#6b5aa8;margin-top:3px}.perm-row button{border:0;border-radius:12px;background:#eee7ff;color:#5b46a6;font-weight:900;padding:8px 12px}'; document.head.appendChild(st); }catch(e){}
   document.addEventListener('DOMContentLoaded',function(){ forceVersion575(); ensureAdminButton575(); });
   [120,400,1000,2000].forEach(ms=>setTimeout(function(){ forceVersion575(); ensureAdminButton575(); },ms));
+})();
+</script>
+
+
+<script>
+/* V5.77 관리자 기능 초기화: 관리자모드는 비밀번호 4545로 잠그고, 권한관리는 새로 지정 가능 */
+(function(){
+  const APP_VERSION='V5.77';
+  const ADMIN_PW='4545';
+  function clean(v){ return String(v==null?'':v).replace(/[０-９]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).trim(); }
+  function forceVersion(){ try{ document.querySelectorAll('.header-version-badge,.version-badge,.app-version').forEach(el=>el.textContent=APP_VERSION); }catch(e){} }
+  function getName(){
+    try{ if(typeof profileName==='function') return clean(profileName()).replace(/\s+(관리자|부관리자|임원|순장|목회자|위원장)$/,''); }catch(e){}
+    try{ if(typeof currentName==='function') return clean(currentName()).replace(/\s+(관리자|부관리자|임원|순장|목회자|위원장)$/,''); }catch(e){}
+    try{ const p=typeof profile==='function'?(profile()||{}):{}; return clean(p.leaderName||p.name||p.userName).replace(/\s+(관리자|부관리자|임원|순장|목회자|위원장)$/,''); }catch(e){}
+    return '';
+  }
+  function auth(){ try{return sessionStorage.getItem('geol_admin_auth_v577')==='Y';}catch(e){return false;} }
+  function mark(){ try{sessionStorage.setItem('geol_admin_auth_v577','Y');}catch(e){} }
+  async function requirePw(){
+    if(auth()) return true;
+    const pw=clean(prompt('관리자 비밀번호를 입력해주세요.'));
+    if(pw!==ADMIN_PW){ alert('관리자 비밀번호가 올바르지 않습니다.'); return false; }
+    mark(); return true;
+  }
+  function permissions(){ try{ return (window.DATA&&DATA.permissions)||[]; }catch(e){return [];} }
+  function teams(sel){
+    let t=[]; try{t=(window.DATA&&DATA.teams)||[];}catch(e){}
+    if(!t.length) t=['새순','임마누엘순','성엽사랑순','에스더사랑순','세젤예순','여일사랑순','경욱사랑순'];
+    return ['전체'].concat(t.filter(Boolean)).map(x=>`<option value="${x}" ${x===sel?'selected':''}>${x}</option>`).join('');
+  }
+  function members(sel){
+    let m=[]; try{m=(window.DATA&&DATA.members)||[];}catch(e){}
+    return m.map(v=>{const n=v.name||v['이름']||''; const team=v.team||v['순']||''; return `<option value="${n}" ${n===sel?'selected':''}>${team} · ${n}</option>`}).join('');
+  }
+  function hasAdmin(){
+    const nm=getName().replace(/\s/g,'');
+    if(nm==='김건일') return true;
+    return permissions().some(p=>{
+      const n=clean(p.name||p['이름']).replace(/\s/g,'');
+      const perm=clean(p.permission||p['권한']);
+      const act=clean(p.active||p['활성']||'Y');
+      return n===nm && act!=='N' && (perm==='관리자'||perm==='부관리자');
+    });
+  }
+  function renderAdmin(selectedName){
+    const list=permissions();
+    const found=list.find(p=>clean(p.name||p['이름'])===clean(selectedName))||{};
+    const name=selectedName||found.name||found['이름']||'';
+    const position=clean(found.position||found['직책']||found.role||'순장');
+    const permission=clean(found.permission||found['권한']||'일반');
+    const team=clean(found.assignedTeam||found.team||found['담당순']||'전체');
+    const html=`<section class="page admin-mode-page"><div class="leader-name">관리자모드 <span class="version-badge">${APP_VERSION}</span></div>
+      <p class="muted">관리자 기능을 초기화한 뒤, 직책과 권한을 새로 지정할 수 있습니다.</p>
+      <div class="card admin-card"><div class="section-head">관리자 기능 초기화</div>
+        <p class="muted">문제가 생겼을 때 권한관리 시트를 초기화하고 김건일만 초기 관리자로 복구합니다.</p>
+        <button class="danger-btn" onclick="resetAdminPermissionsV77()">관리자 권한 초기화</button>
+      </div>
+      <div class="card admin-card"><div class="section-head">권한 지정</div>
+        <label class="admin-label">순원 선택</label><select id="adminMemberName" class="input">${members(name)}</select>
+        <div class="admin-grid"><div><label class="admin-label">직책</label><select id="adminPosition" class="input"><option ${position==='순장'?'selected':''}>순장</option><option ${position==='임원'?'selected':''}>임원</option><option ${position==='위원장'?'selected':''}>위원장</option><option ${position==='목회자'?'selected':''}>목회자</option></select></div>
+        <div><label class="admin-label">권한</label><select id="adminPermission" class="input"><option ${permission==='일반'?'selected':''}>일반</option><option ${permission==='관리자'?'selected':''}>관리자</option><option ${permission==='부관리자'?'selected':''}>부관리자</option></select></div></div>
+        <label class="admin-label">담당 순</label><select id="adminTeam" class="input">${teams(team)}</select>
+        <div class="admin-help">직책과 권한은 분리됩니다. 관리자/부관리자는 전체 권한을 갖고, 일반 순장은 담당 순만 관리합니다.</div>
+        <button class="primary-btn admin-save" onclick="saveAdminPermissionV77()">권한 저장</button>
+      </div>
+      <div class="card admin-card"><div class="section-head">현재 권한 목록</div>
+      ${list.length?list.map(p=>`<div class="perm-row"><div><b>${p.name||p['이름']||''}</b><span>직책: ${p.position||p['직책']||p.role||''} · 권한: ${p.permission||p['권한']||''} · 담당순: ${p.assignedTeam||p.team||p['담당순']||''}</span></div><button onclick="renderAdminModeV577('${p.name||p['이름']||''}')">수정</button></div>`).join(''):'등록된 권한이 없습니다. 초기 관리자는 김건일입니다.'}
+      </div></section>`;
+    const view=document.getElementById('view')||document.querySelector('main')||document.querySelector('.app'); if(view) view.innerHTML=html;
+    forceVersion();
+  }
+  window.renderAdminModeV577=renderAdmin;
+  window.saveAdminPermissionV77=async function(){
+    if(!(await requirePw())) return;
+    const name=clean(document.getElementById('adminMemberName')?.value);
+    const position=clean(document.getElementById('adminPosition')?.value||'순장');
+    const permission=clean(document.getElementById('adminPermission')?.value||'일반');
+    let team=clean(document.getElementById('adminTeam')?.value||'전체');
+    if(!name) return alert('순원을 선택해주세요.');
+    if(position==='순장' && (!team||team==='전체') && permission==='일반') return alert('일반 순장은 담당 순을 선택해주세요.');
+    if(position!=='순장') team='전체';
+    try{
+      if(window.loadingToast) loadingToast.classList.remove('hidden');
+      const res=await call('savePermissionRecord',{name,position,role:position,permission,assignedTeam:team,active:'Y',editorName:getName(),adminPassword:ADMIN_PW});
+      if(res&&res.ok===false) throw new Error(res.error||'권한 저장 실패');
+      let fresh=null; try{fresh=await call('getDataJson');}catch(e){}
+      if(fresh){ if(typeof applyLoadedData==='function') applyLoadedData(fresh); else window.DATA=fresh; }
+      alert('권한이 저장되었습니다.'); renderAdmin(name);
+    }catch(e){ alert('권한 저장 중 오류가 발생했습니다: '+(e.message||e)); }
+    finally{ try{loadingToast.classList.add('hidden');}catch(e){} }
+  };
+  window.resetAdminPermissionsV77=async function(){
+    if(!(await requirePw())) return;
+    if(!confirm('관리자 권한관리를 초기화하고 김건일만 관리자로 복구할까요?')) return;
+    try{
+      if(window.loadingToast) loadingToast.classList.remove('hidden');
+      const res=await call('resetAdminPermissionsV77',{adminPassword:ADMIN_PW,editorName:getName()});
+      if(res&&res.ok===false) throw new Error(res.error||'초기화 실패');
+      let fresh=null; try{fresh=await call('getDataJson');}catch(e){}
+      if(fresh){ if(typeof applyLoadedData==='function') applyLoadedData(fresh); else window.DATA=fresh; }
+      alert('관리자 권한이 초기화되었습니다.'); renderAdmin('김건일');
+    }catch(e){ alert('관리자 초기화 중 오류가 발생했습니다: '+(e.message||e)); }
+    finally{ try{loadingToast.classList.add('hidden');}catch(e){} }
+  };
+  async function openAdmin(){ if(await requirePw()) renderAdmin(); }
+  const oldGo=window.go; window.go=function(tab){ if(tab==='admin'){ openAdmin(); return; } return oldGo?oldGo.apply(this,arguments):undefined; };
+  function ensureAdminButton(){
+    try{
+      const bottom=document.querySelector('.bottom'); if(!bottom) return;
+      let btn=bottom.querySelector('[data-tab="admin"],.admin-nav,.admin-nav-btn-v577,.admin-nav-btn-v575,.admin-nav-btn-v571');
+      if(!hasAdmin()){ if(btn) btn.style.display='none'; return; }
+      bottom.style.gridTemplateColumns='repeat(5,1fr)';
+      if(!btn){ btn=document.createElement('button'); btn.className='nav admin-nav-btn-v577'; btn.dataset.tab='admin'; btn.innerHTML='<span class="ico">🔐</span><span>관리자</span>'; bottom.appendChild(btn); }
+      btn.style.display=''; btn.onclick=function(e){ if(e&&e.preventDefault)e.preventDefault(); openAdmin(); };
+    }catch(e){}
+  }
+  const oldRender=window.render; if(oldRender) window.render=function(){ const r=oldRender.apply(this,arguments); forceVersion(); ensureAdminButton(); return r; };
+  const oldNav=window.updateNav; if(oldNav) window.updateNav=function(){ const r=oldNav.apply(this,arguments); forceVersion(); ensureAdminButton(); return r; };
+  try{ const st=document.createElement('style'); st.textContent='.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.admin-label{display:block;font-size:12px;font-weight:900;color:#5b4aa0;margin:8px 0 6px}.admin-help{font-size:12px;color:#777;line-height:1.45;margin:10px 0}.perm-row{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid #eee8ff;background:#fbfaff;border-radius:14px;padding:10px;margin:8px 0}.perm-row span{display:block;font-size:12px;color:#6b5aa8;margin-top:3px}.perm-row button{border:0;border-radius:12px;background:#eee7ff;color:#5b46a6;font-weight:900;padding:8px 12px}.danger-btn{border:1px solid #ffb8b8;border-radius:14px;background:#fff1f1;color:#c0392b;font-weight:900;padding:12px 14px;width:100%;}'; document.head.appendChild(st); }catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){ forceVersion(); ensureAdminButton(); });
+  [100,400,1000,2000].forEach(ms=>setTimeout(function(){forceVersion();ensureAdminButton();},ms));
 })();
 </script>
 
