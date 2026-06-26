@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.87 시작", API_URL);
+console.log("결 LEADER V5.88 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.87';
+      vInput.value = 'V5.88';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.87")
+      + "&v=" + encodeURIComponent("V5.88")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4014,7 +4014,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.87';
+  return 'V5.88';
 }
 
 
@@ -6939,7 +6939,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.87&t=V5.87"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.88&t=V5.88"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -9329,7 +9329,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.87';
+  const APP_VERSION = 'V5.88';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9669,12 +9669,12 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.87 clean admin rebuild
+/* V5.88 admin nav + initial super admin lock
    기준: V5.85 no-admin stable + 권한관리 단일 구조
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V587 = 'V5.87';
+  const V587 = 'V5.88';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9701,9 +9701,11 @@ applyLoadedData = function(r){
   }
   function adminRoles(){
     const source = arr(DATA && DATA.adminRoles).slice();
-    if(!source.find(r=>key(r.name)===key(INITIAL_ADMIN.name))){ source.unshift(Object.assign({isInitial:true}, INITIAL_ADMIN)); }
+    // 김건일 초기 관리자는 권한관리 시트에 일반/다른 직책으로 남아 있어도 항상 관리자 기준으로 고정한다.
+    const filteredSource = source.filter(r=>key(r && r.name)!==key(INITIAL_ADMIN.name));
+    filteredSource.unshift(Object.assign({isInitial:true}, INITIAL_ADMIN));
     const seen = {};
-    return source.filter(r=>{
+    return filteredSource.filter(r=>{
       const k=key(r && r.name);
       if(!k || seen[k]) return false;
       seen[k]=true;
@@ -9715,7 +9717,9 @@ applyLoadedData = function(r){
   function roleFor(name){
     const k = key(name);
     if(!k) return null;
-    return adminRoles().find(r=>key(r.name)===k) || (k===key(INITIAL_ADMIN.name) ? INITIAL_ADMIN : null);
+    // 초기 관리자 김건일은 화면에서도 항상 관리자/에스더사랑순 순장으로 인정한다.
+    if(k===key(INITIAL_ADMIN.name)) return Object.assign({isInitial:true}, INITIAL_ADMIN);
+    return adminRoles().find(r=>key(r.name)===k) || null;
   }
   function myAccess(){
     const p = currentProfile();
@@ -9921,8 +9925,8 @@ applyLoadedData = function(r){
       const raw = await call('debugStatus', {});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
-      if(ver.indexOf('V5.87_ADMIN_ROLE_PERMISSION_CODEGS') < 0){
-        throw new Error('Apps Script 서버가 V5.87이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      if(ver.indexOf('V5.88_ADMIN_NAV_INITIAL_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.88이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
       }
       return true;
     }catch(e){
@@ -10029,6 +10033,8 @@ applyLoadedData = function(r){
   }
   window.addEventListener('load', bootPatch);
   setTimeout(bootPatch, 300);
+  setTimeout(bootPatch, 900);
+  setTimeout(bootPatch, 1800);
 
   const style = document.createElement('style');
   style.id = 'v586-admin-style';
