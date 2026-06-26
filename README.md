@@ -1,1 +1,2 @@
-45결 LEADER V5.65 CLEAN ADMIN - GitHub 전체 덮어쓰기용
+GEOL LEADER V5.85 CLEAN NO ADMIN
+관리자 기능 제거 안정화 기준 파일입니다.
