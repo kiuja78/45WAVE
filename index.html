@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.63 시작", API_URL);
+console.log("결 LEADER V5.86 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.63';
+      vInput.value = 'V5.86';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.63")
+      + "&v=" + encodeURIComponent("V5.86")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4014,7 +4014,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.63';
+  return 'V5.86';
 }
 
 
@@ -6939,7 +6939,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.63&t=V5.63"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.86&t=V5.86"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -9329,7 +9329,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.85';
+  const APP_VERSION = 'V5.86';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9664,6 +9664,365 @@ applyLoadedData = function(r){
   }catch(e){}
 
   try{ updateHeader(); }catch(e){}
+})();
+</script>
+
+
+<script>
+/* V5.86 clean admin rebuild
+   기준: V5.85 no-admin stable + 권한관리 단일 구조
+   권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
+*/
+(function(){
+  const V586 = 'V5.86';
+  const ADMIN_PW = '4545';
+  const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
+  const DUTIES = ['','순장','임원','목회자','위원장'];
+  const PERMS = ['일반','관리자','부관리자'];
+
+  function t(v){ return String(v == null ? '' : v).trim(); }
+  function key(v){ return t(v).replace(/\s+/g,''); }
+  function h(v){ return typeof esc === 'function' ? esc(v) : String(v ?? '').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function memberNameList(){
+    const seen = {};
+    return arr(DATA && DATA.members).map(m=>t(m.name)).filter(n=>{ const k=key(n); if(!k || seen[k]) return false; seen[k]=true; return true; }).sort((a,b)=>a.localeCompare(b,'ko'));
+  }
+  function teams(){ return arr(DATA && DATA.teams).filter(Boolean); }
+  function currentProfile(){
+    let p = {};
+    try{ p = JSON.parse(localStorage.getItem('waveLeaderProfile') || '{}') || {}; }catch(e){}
+    const s = (DATA && DATA.settings) || {};
+    return {
+      name: t(s.leaderName || p.leaderName),
+      team: t(s.leaderTeam || p.leaderTeam),
+      role: t(s.leaderRole || p.leaderRole)
+    };
+  }
+  function adminRoles(){
+    const source = arr(DATA && DATA.adminRoles).slice();
+    if(!source.find(r=>key(r.name)===key(INITIAL_ADMIN.name))){ source.unshift(Object.assign({isInitial:true}, INITIAL_ADMIN)); }
+    const seen = {};
+    return source.filter(r=>{
+      const k=key(r && r.name);
+      if(!k || seen[k]) return false;
+      seen[k]=true;
+      return t(r.active || 'Y') !== 'N';
+    }).map(r=>({
+      name:t(r.name), duty:t(r.duty || r['직책']), permission:t(r.permission || r['권한'] || '일반') || '일반', team:t(r.team || r['담당순'] || r['순이름']), active:t(r.active || r['활성'] || 'Y') || 'Y', updatedAt:t(r.updatedAt || r['수정일시']), updatedBy:t(r.updatedBy || r['수정자'])
+    }));
+  }
+  function roleFor(name){
+    const k = key(name);
+    if(!k) return null;
+    return adminRoles().find(r=>key(r.name)===k) || (k===key(INITIAL_ADMIN.name) ? INITIAL_ADMIN : null);
+  }
+  function myAccess(){
+    const p = currentProfile();
+    const r = roleFor(p.name);
+    const duty = t(r && r.duty);
+    const permission = t(r && r.permission) || '일반';
+    const team = t(r && r.team) || p.team;
+    const isAdmin = permission === '관리자';
+    const isSubAdmin = permission === '부관리자';
+    const isManager = isAdmin || isSubAdmin;
+    const isLeader = duty === '순장';
+    const isReadOnlyAll = ['임원','목회자','위원장'].includes(duty) && !isManager;
+    const canUseApp = isManager || isLeader || isReadOnlyAll;
+    return {profile:p, role:r, name:p.name, duty, permission, team, isAdmin, isSubAdmin, isManager, isLeader, isReadOnlyAll, canUseApp};
+  }
+  function ensureAccessState(){
+    const a = myAccess();
+    if(!a.canUseApp) return a;
+    if(a.isManager){
+      if(!state.team) state.team = a.team || '전체';
+    }else if(a.isLeader){
+      state.team = a.team || a.profile.team || '';
+    }else if(a.isReadOnlyAll){
+      if(!state.team || state.team === a.team) state.team = '전체';
+    }
+    return a;
+  }
+  function canViewTeam(team){
+    const a = myAccess();
+    if(a.isManager || a.isReadOnlyAll) return true;
+    if(a.isLeader) return t(team) === t(a.team || a.profile.team);
+    return false;
+  }
+  function canEditMember(m){
+    const a = myAccess();
+    if(a.isManager) return true;
+    if(a.isLeader) return t(m && m.team) === t(a.team || a.profile.team);
+    return false;
+  }
+  function canCheckMember(m){
+    const a = myAccess();
+    if(a.isManager) return true;
+    if(a.isLeader) return t(m && m.team) === t(a.team || a.profile.team);
+    return false;
+  }
+  function canRegister(){ const a=myAccess(); return a.isManager || a.isLeader; }
+  function canDelete(){ return myAccess().isManager; }
+  function accessBlockedHtml(){
+    const p = currentProfile();
+    return `<section class="page"><div class="card"><div class="section-head">앱 사용 권한이 없습니다</div><div class="count">일반 순원은 이 앱을 사용할 수 없습니다.<br>순장, 임원, 목회자, 위원장, 관리자, 부관리자로 지정된 사람만 접속할 수 있습니다.</div><div class="count">현재 사용자: <b>${h(p.name || '미설정')}</b></div><button class="save" style="width:100%;margin-top:12px" onclick="openProfile(true)">사용자 다시 선택</button></div></section>`;
+  }
+
+  const baseTeamMembers = window.teamMembers;
+  window.teamMembers = function(){
+    const a = ensureAccessState();
+    if(!a.canUseApp) return [];
+    const ms = typeof baseTeamMembers === 'function' ? baseTeamMembers() : arr(DATA && DATA.members);
+    if(a.isManager || a.isReadOnlyAll) return ms;
+    if(a.isLeader) return arr(ms).filter(m=>t(m.team)===t(a.team || a.profile.team));
+    return [];
+  };
+
+  window.teamSelect = function(){
+    const a = ensureAccessState();
+    if(!a.canUseApp) return '';
+    if(a.isLeader && !a.isManager){
+      const team = a.team || a.profile.team || '';
+      return `<select class="input aurora-select" disabled><option>${h(team || '담당순 없음')}</option></select>`;
+    }
+    const opts = ['전체'].concat(teams());
+    return `<select class="input aurora-select" onchange="state.team=this.value;render()">${opts.map(x=>`<option value="${h(x)}" ${state.team===x?'selected':''}>${h(x)}</option>`).join('')}</select>`;
+  };
+
+  const baseStatsTeamSelect = window.statsTeamSelect;
+  window.statsTeamSelect = function(){
+    const a = ensureAccessState();
+    if(a.isLeader && !a.isManager){
+      const team = a.team || a.profile.team || '';
+      return `<select class="input aurora-select" disabled><option>${h(team || '담당순 없음')}</option></select>`;
+    }
+    return typeof baseStatsTeamSelect === 'function' ? baseStatsTeamSelect() : window.teamSelect();
+  };
+
+  function readOnlyMemberRow(m,date){
+    const st = typeof statusOn === 'function' ? statusOn(m.id,date) : '';
+    const cd = typeof childDisplay === 'function' ? childDisplay(m) : '';
+    const opened = !!(state.openChildren && state.openChildren[m.id]);
+    const childToggle = cd ? `<div class="meta" onclick="toggleChildren('${h(m.id)}')">${h(cd)} ${opened?'▲':'▼'}</div>` : '';
+    const photo = typeof avatarHtml === 'function' ? avatarHtml(m) : '';
+    const ng = typeof nameGender === 'function' ? nameGender(m) : h(m.name || '');
+    const birth = typeof birthAgeLine === 'function' ? birthAgeLine(m.birth) : '';
+    const rate = typeof memberRateUntil === 'function' ? memberRateUntil(m, state.currentYm) : 0;
+    const ring = typeof rateRing === 'function' ? rateRing(rate) : '';
+    const panel = opened && typeof childPanel === 'function' ? childPanel(m,date) : '';
+    return `<div class="member-row readonly-row-v586"><div class="photo member-avatar" onclick="openMemberDetail('${h(m.id)}')">${photo}</div><div><div class="name" onclick="openMemberDetail('${h(m.id)}')">${ng}</div><div class="birth-line">${h(birth)}</div>${childToggle}</div><span class="readonly-badge-v586">보기</span>${ring}<button class="phone-btn" onclick="openContact('${h(m.name)}','${h(m.phone)}')"><img class="phone-btn-img" src="${ICONS.phoneMobile}" alt="전화"></button></div>${panel}`;
+  }
+
+  const baseMemberRow = window.memberRow;
+  window.memberRow = function(m,date){
+    const a = myAccess();
+    if(a.isReadOnlyAll) return readOnlyMemberRow(m,date);
+    return typeof baseMemberRow === 'function' ? baseMemberRow(m,date) : readOnlyMemberRow(m,date);
+  };
+
+  const baseToggleAttend = window.toggleAttend;
+  window.toggleAttend = async function(id){
+    const m = arr(DATA && DATA.members).find(x=>String(x.id)===String(id));
+    if(!canCheckMember(m)){ alert('출석체크 권한이 없습니다.'); return; }
+    return baseToggleAttend.apply(this, arguments);
+  };
+  const baseToggleChild = window.toggleChild;
+  window.toggleChild = async function(parentId){
+    const m = arr(DATA && DATA.members).find(x=>String(x.id)===String(parentId));
+    if(!canCheckMember(m)){ alert('어린이결 출석체크 권한이 없습니다.'); return; }
+    return baseToggleChild.apply(this, arguments);
+  };
+  const baseSaveMemberUi = window.saveMemberUi;
+  window.saveMemberUi = async function(id){
+    const a = myAccess();
+    if(!canRegister()){ alert('순원등록/수정 권한이 없습니다.'); return; }
+    try{
+      const targetTeam = typeof fmTeam !== 'undefined' ? t(fmTeam.value) : '';
+      if(a.isLeader && !a.isManager){
+        const myTeam = t(a.team || a.profile.team);
+        if(id){
+          const old = arr(DATA && DATA.members).find(x=>String(x.id)===String(id));
+          if(old && t(old.team)!==myTeam){ alert('순장은 본인 순원만 수정할 수 있습니다.'); return; }
+        }
+        if(typeof fmTeam !== 'undefined') fmTeam.value = myTeam;
+        if(targetTeam && targetTeam !== myTeam){ alert('순장은 본인 순으로만 등록할 수 있습니다.'); return; }
+      }
+    }catch(e){}
+    return baseSaveMemberUi.apply(this, arguments);
+  };
+  const baseDeleteMemberUi = window.deleteMemberUi;
+  window.deleteMemberUi = async function(id){
+    if(!canDelete()){ alert('순원삭제는 관리자 또는 부관리자만 가능합니다.'); return; }
+    return baseDeleteMemberUi.apply(this, arguments);
+  };
+
+  window.renderRegister = function(){
+    if(!canRegister()){ view.innerHTML = `<section class="page"><div class="card"><div class="section-head">순원등록 권한 없음</div><div class="count">임원/목회자/위원장은 전체 조회만 가능하며 등록·수정·삭제는 할 수 없습니다.</div></div></section>`; return; }
+    const a = myAccess();
+    view.innerHTML = `<section class="page register-page"><div class="register-title">📝 순원등록</div>${memberFormHtml('', true)}</section>`;
+    setTimeout(()=>{ try{ if(a.isLeader && !a.isManager && typeof fmTeam !== 'undefined'){ fmTeam.value = a.team || a.profile.team || ''; fmTeam.disabled = true; } }catch(e){} }, 0);
+  };
+
+  function ensureAdminNav(){
+    const nav = document.querySelector('.bottom');
+    if(!nav) return;
+    const a = myAccess();
+    Array.from(nav.querySelectorAll('[data-tab="admin"]')).forEach(x=>x.remove());
+    nav.style.gridTemplateColumns = a.isManager ? 'repeat(5,1fr)' : 'repeat(4,1fr)';
+    if(!a.isManager) return;
+    const b = document.createElement('button');
+    b.className = 'nav';
+    b.dataset.tab = 'admin';
+    b.type = 'button';
+    b.innerHTML = '<span class="ico">⚙️</span>관리자';
+    b.onclick = function(){ go('admin'); };
+    nav.appendChild(b);
+  }
+
+  async function requireAdminPassword(){
+    const a = myAccess();
+    if(!a.isManager){ alert('관리자 또는 부관리자만 접속할 수 있습니다.'); return false; }
+    if(sessionStorage.getItem('geolAdminPwV586') === ADMIN_PW) return true;
+    const pw = prompt('관리자 비밀번호를 입력해주세요.');
+    if(pw !== ADMIN_PW){ alert('비밀번호가 맞지 않습니다.'); return false; }
+    sessionStorage.setItem('geolAdminPwV586', ADMIN_PW);
+    return true;
+  }
+
+  window.renderAdmin = async function(){
+    const ok = await requireAdminPassword();
+    if(!ok){ state.tab='home'; render(); return; }
+    try{
+      const raw = await call('getAdminRoleList', {actorName:currentProfile().name, password:ADMIN_PW});
+      const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
+      if(res && res.ok === false) throw new Error(res.error || '권한 목록을 불러오지 못했습니다.');
+      DATA.adminRoles = arr(res.roles);
+    }catch(e){ console.warn(e); }
+    renderAdminPage();
+  };
+
+  function options(list, selected){ return list.map(x=>`<option value="${h(x)}" ${t(selected)===t(x)?'selected':''}>${h(x || '선택 없음')}</option>`).join(''); }
+  function selectedAdminName(){ const el=document.getElementById('adminMemberSelectV586'); return el ? el.value : ''; }
+  function fillAdminForm(name){
+    const r = roleFor(name) || {name, duty:'', permission:'일반', team:'', active:'Y'};
+    const a = myAccess();
+    const duty=document.getElementById('adminDutyV586'), perm=document.getElementById('adminPermV586'), team=document.getElementById('adminTeamV586'), active=document.getElementById('adminActiveV586');
+    if(duty) duty.value = r.duty || '';
+    if(perm){ perm.value = r.permission || '일반'; perm.disabled = !a.isAdmin; }
+    if(team) team.value = r.team || '';
+    if(active) active.value = r.active || 'Y';
+    const note = document.getElementById('adminPermissionNoteV586');
+    if(note) note.textContent = a.isAdmin ? '관리자는 직책/권한/순이름을 모두 저장할 수 있습니다.' : '부관리자는 직책과 순이름만 저장할 수 있고 권한은 변경할 수 없습니다.';
+  }
+  window.fillAdminFormV586 = fillAdminForm;
+
+  window.saveAdminRoleV586 = async function(){
+    const name = selectedAdminName();
+    if(!name){ alert('순원을 선택해주세요.'); return; }
+    const rec = {
+      name,
+      duty: t(document.getElementById('adminDutyV586')?.value),
+      permission: t(document.getElementById('adminPermV586')?.value || '일반'),
+      team: t(document.getElementById('adminTeamV586')?.value),
+      active: t(document.getElementById('adminActiveV586')?.value || 'Y')
+    };
+    if(!rec.duty){ alert('직책을 선택해주세요.'); return; }
+    if(rec.duty === '순장' && !rec.team){ alert('순장은 담당 순이름을 선택해야 합니다.'); return; }
+    const a = myAccess();
+    if(!a.isAdmin){
+      const old = roleFor(name) || {permission:'일반'};
+      rec.permission = old.permission || '일반';
+    }
+    loadingToast.classList.remove('hidden');
+    try{
+      const raw = await call('saveAdminRole', {actorName:a.name, password:ADMIN_PW, record:rec});
+      const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
+      if(res && res.ok === false) throw new Error(res.error || '저장 실패');
+      DATA.adminRoles = arr(res.roles);
+      alert('저장되었습니다.');
+      renderAdminPage();
+    }catch(e){ alert('저장 중 오류: '+(e.message||e)); }
+    finally{ loadingToast.classList.add('hidden'); }
+  };
+
+  window.resetAdminRoleV586 = async function(){
+    const a = myAccess();
+    if(!a.isAdmin){ alert('관리자만 초기화할 수 있습니다.'); return; }
+    if(!confirm('권한관리 시트를 김건일 관리자 기준으로 초기화할까요?')) return;
+    loadingToast.classList.remove('hidden');
+    try{
+      const raw = await call('resetAdminRole', {actorName:a.name, password:ADMIN_PW});
+      const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
+      if(res && res.ok === false) throw new Error(res.error || '초기화 실패');
+      DATA.adminRoles = arr(res.roles);
+      alert('초기화되었습니다.');
+      renderAdminPage();
+    }catch(e){ alert('초기화 오류: '+(e.message||e)); }
+    finally{ loadingToast.classList.add('hidden'); }
+  };
+
+  function renderAdminPage(){
+    const a = myAccess();
+    const roles = adminRoles();
+    const names = memberNameList();
+    const name0 = selectedAdminName() || a.name || names[0] || '';
+    const roleRows = roles.map(r=>`<tr><td>${h(r.name)}</td><td>${h(r.duty)}</td><td><b>${h(r.permission)}</b></td><td>${h(r.team)}</td><td>${h(r.active||'Y')}</td></tr>`).join('');
+    view.innerHTML = `<section class="page admin-page-v586">
+      <div class="section-head">관리자 기능</div>
+      <div class="card"><div class="count"><b>${h(a.name)}</b> / ${h(a.duty)} / ${h(a.permission)} / ${h(a.team || '담당순 없음')}</div><div class="count" id="adminPermissionNoteV586"></div></div>
+      <div class="card"><div class="section-head">직책 · 권한 · 순이름 지정</div>
+        <label>순원 선택</label><select id="adminMemberSelectV586" class="input aurora-select" onchange="fillAdminFormV586(this.value)">${names.map(n=>`<option value="${h(n)}" ${n===name0?'selected':''}>${h(n)}</option>`).join('')}</select>
+        <label>직책</label><select id="adminDutyV586" class="input aurora-select">${options(DUTIES,'')}</select>
+        <label>권한</label><select id="adminPermV586" class="input aurora-select">${options(PERMS,'일반')}</select>
+        <label>순이름</label><select id="adminTeamV586" class="input aurora-select"><option value="">선택 없음</option><option value="전체">전체</option>${teams().map(t=>`<option value="${h(t)}">${h(t)}</option>`).join('')}</select>
+        <label>활성</label><select id="adminActiveV586" class="input aurora-select"><option value="Y">Y</option><option value="N">N</option></select>
+        <button class="save" style="width:100%;margin-top:13px" onclick="saveAdminRoleV586()">저장</button>
+        ${a.isAdmin?'<button class="soft-btn danger" style="width:100%;margin-top:8px" onclick="resetAdminRoleV586()">권한관리 초기화</button>':''}
+      </div>
+      <div class="card"><div class="section-head">현재 권한관리</div><div class="admin-table-wrap-v586"><table class="admin-table-v586"><thead><tr><th>이름</th><th>직책</th><th>권한</th><th>담당순</th><th>활성</th></tr></thead><tbody>${roleRows || '<tr><td colspan="5">저장된 권한이 없습니다.</td></tr>'}</tbody></table></div></div>
+    </section>`;
+    setTimeout(()=>fillAdminForm(name0),0);
+  }
+
+  const baseRender = window.render;
+  window.render = function(){
+    const a = ensureAccessState();
+    ensureAdminNav();
+    if(state.tab === 'admin') return renderAdmin();
+    if(!a.canUseApp){ view.innerHTML = accessBlockedHtml(); return; }
+    return baseRender.apply(this, arguments);
+  };
+  const baseGo = window.go;
+  window.go = function(tab){
+    if(tab === 'admin'){
+      state.tab='admin';
+      ensureAdminNav();
+      renderAdmin();
+      if(typeof updateNav === 'function') updateNav();
+      return;
+    }
+    const a = ensureAccessState();
+    if(tab === 'register' && !canRegister()){ alert('순원등록 권한이 없습니다.'); return; }
+    return baseGo.apply(this, arguments);
+  };
+  const baseUpdateNav = window.updateNav;
+  window.updateNav = function(){ ensureAdminNav(); return baseUpdateNav.apply(this, arguments); };
+
+  function bootPatch(){
+    try{ DATA.adminRoles = DATA.adminRoles || [Object.assign({}, INITIAL_ADMIN)]; }catch(e){}
+    try{ ensureAccessState(); ensureAdminNav(); updateHeader(); }catch(e){}
+  }
+  window.addEventListener('load', bootPatch);
+  setTimeout(bootPatch, 300);
+
+  const style = document.createElement('style');
+  style.id = 'v586-admin-style';
+  style.textContent = `
+    .readonly-badge-v586{display:inline-flex;align-items:center;justify-content:center;width:48px;min-height:30px;border-radius:10px;background:#f1eff8;color:#7367a8;font-weight:950;font-size:12px}
+    .admin-page-v586 label{display:block;margin:12px 0 6px;font-size:13px;font-weight:950;color:#4b3b89}
+    .admin-table-wrap-v586{overflow-x:auto;-webkit-overflow-scrolling:touch}.admin-table-v586{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:430px;font-size:13px}.admin-table-v586 th{background:#efe9ff;color:#5f50d8;font-weight:950;padding:9px;border-radius:9px}.admin-table-v586 td{background:#faf9ff;border:1px solid #eee9ff;padding:8px;border-radius:9px;text-align:center}.admin-table-v586 td:first-child{text-align:left;font-weight:900;color:#232136}
+  `;
+  document.head.appendChild(style);
 })();
 </script>
 
