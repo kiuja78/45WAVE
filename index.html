@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.86 시작", API_URL);
+console.log("결 LEADER V5.87 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.86';
+      vInput.value = 'V5.87';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.86")
+      + "&v=" + encodeURIComponent("V5.87")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4014,7 +4014,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.86';
+  return 'V5.87';
 }
 
 
@@ -6939,7 +6939,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.86&t=V5.86"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.87&t=V5.87"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -9329,7 +9329,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.86';
+  const APP_VERSION = 'V5.87';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9669,12 +9669,12 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.86 clean admin rebuild
+/* V5.87 clean admin rebuild
    기준: V5.85 no-admin stable + 권한관리 단일 구조
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V586 = 'V5.86';
+  const V587 = 'V5.87';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9882,10 +9882,10 @@ applyLoadedData = function(r){
   async function requireAdminPassword(){
     const a = myAccess();
     if(!a.isManager){ alert('관리자 또는 부관리자만 접속할 수 있습니다.'); return false; }
-    if(sessionStorage.getItem('geolAdminPwV586') === ADMIN_PW) return true;
+    if(sessionStorage.getItem('geolAdminPwV587') === ADMIN_PW) return true;
     const pw = prompt('관리자 비밀번호를 입력해주세요.');
     if(pw !== ADMIN_PW){ alert('비밀번호가 맞지 않습니다.'); return false; }
-    sessionStorage.setItem('geolAdminPwV586', ADMIN_PW);
+    sessionStorage.setItem('geolAdminPwV587', ADMIN_PW);
     return true;
   }
 
@@ -9902,29 +9902,43 @@ applyLoadedData = function(r){
   };
 
   function options(list, selected){ return list.map(x=>`<option value="${h(x)}" ${t(selected)===t(x)?'selected':''}>${h(x || '선택 없음')}</option>`).join(''); }
-  function selectedAdminName(){ const el=document.getElementById('adminMemberSelectV586'); return el ? el.value : ''; }
+  function selectedAdminName(){ const el=document.getElementById('adminMemberSelectV587'); return el ? el.value : ''; }
   function fillAdminForm(name){
     const r = roleFor(name) || {name, duty:'', permission:'일반', team:'', active:'Y'};
     const a = myAccess();
-    const duty=document.getElementById('adminDutyV586'), perm=document.getElementById('adminPermV586'), team=document.getElementById('adminTeamV586'), active=document.getElementById('adminActiveV586');
+    const duty=document.getElementById('adminDutyV587'), perm=document.getElementById('adminPermV587'), team=document.getElementById('adminTeamV587'), active=document.getElementById('adminActiveV587');
     if(duty) duty.value = r.duty || '';
     if(perm){ perm.value = r.permission || '일반'; perm.disabled = !a.isAdmin; }
     if(team) team.value = r.team || '';
     if(active) active.value = r.active || 'Y';
-    const note = document.getElementById('adminPermissionNoteV586');
+    const note = document.getElementById('adminPermissionNoteV587');
     if(note) note.textContent = a.isAdmin ? '관리자는 직책/권한/순이름을 모두 저장할 수 있습니다.' : '부관리자는 직책과 순이름만 저장할 수 있고 권한은 변경할 수 없습니다.';
   }
-  window.fillAdminFormV586 = fillAdminForm;
+  window.fillAdminFormV587 = fillAdminForm;
 
-  window.saveAdminRoleV586 = async function(){
+  async function checkAdminServerV587(){
+    try{
+      const raw = await call('debugStatus', {});
+      const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
+      const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
+      if(ver.indexOf('V5.87_ADMIN_ROLE_PERMISSION_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.87이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      }
+      return true;
+    }catch(e){
+      throw new Error(e && e.message ? e.message : String(e));
+    }
+  }
+
+  window.saveAdminRoleV587 = async function(){
     const name = selectedAdminName();
     if(!name){ alert('순원을 선택해주세요.'); return; }
     const rec = {
       name,
-      duty: t(document.getElementById('adminDutyV586')?.value),
-      permission: t(document.getElementById('adminPermV586')?.value || '일반'),
-      team: t(document.getElementById('adminTeamV586')?.value),
-      active: t(document.getElementById('adminActiveV586')?.value || 'Y')
+      duty: t(document.getElementById('adminDutyV587')?.value),
+      permission: t(document.getElementById('adminPermV587')?.value || '일반'),
+      team: t(document.getElementById('adminTeamV587')?.value),
+      active: t(document.getElementById('adminActiveV587')?.value || 'Y')
     };
     if(!rec.duty){ alert('직책을 선택해주세요.'); return; }
     if(rec.duty === '순장' && !rec.team){ alert('순장은 담당 순이름을 선택해야 합니다.'); return; }
@@ -9935,17 +9949,18 @@ applyLoadedData = function(r){
     }
     loadingToast.classList.remove('hidden');
     try{
+      await checkAdminServerV587();
       const raw = await call('saveAdminRole', {actorName:a.name, password:ADMIN_PW, record:rec});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       if(res && res.ok === false) throw new Error(res.error || '저장 실패');
       DATA.adminRoles = arr(res.roles);
       alert('저장되었습니다.');
       renderAdminPage();
-    }catch(e){ alert('저장 중 오류: '+(e.message||e)); }
+    }catch(e){ alert('저장 중 오류:\n'+(e.message||e)); }
     finally{ loadingToast.classList.add('hidden'); }
   };
 
-  window.resetAdminRoleV586 = async function(){
+  window.resetAdminRoleV587 = async function(){
     const a = myAccess();
     if(!a.isAdmin){ alert('관리자만 초기화할 수 있습니다.'); return; }
     if(!confirm('권한관리 시트를 김건일 관리자 기준으로 초기화할까요?')) return;
@@ -9969,15 +9984,15 @@ applyLoadedData = function(r){
     const roleRows = roles.map(r=>`<tr><td>${h(r.name)}</td><td>${h(r.duty)}</td><td><b>${h(r.permission)}</b></td><td>${h(r.team)}</td><td>${h(r.active||'Y')}</td></tr>`).join('');
     view.innerHTML = `<section class="page admin-page-v586">
       <div class="section-head">관리자 기능</div>
-      <div class="card"><div class="count"><b>${h(a.name)}</b> / ${h(a.duty)} / ${h(a.permission)} / ${h(a.team || '담당순 없음')}</div><div class="count" id="adminPermissionNoteV586"></div></div>
+      <div class="card"><div class="count"><b>${h(a.name)}</b> / ${h(a.duty)} / ${h(a.permission)} / ${h(a.team || '담당순 없음')}</div><div class="count" id="adminPermissionNoteV587"></div></div>
       <div class="card"><div class="section-head">직책 · 권한 · 순이름 지정</div>
-        <label>순원 선택</label><select id="adminMemberSelectV586" class="input aurora-select" onchange="fillAdminFormV586(this.value)">${names.map(n=>`<option value="${h(n)}" ${n===name0?'selected':''}>${h(n)}</option>`).join('')}</select>
-        <label>직책</label><select id="adminDutyV586" class="input aurora-select">${options(DUTIES,'')}</select>
-        <label>권한</label><select id="adminPermV586" class="input aurora-select">${options(PERMS,'일반')}</select>
-        <label>순이름</label><select id="adminTeamV586" class="input aurora-select"><option value="">선택 없음</option><option value="전체">전체</option>${teams().map(t=>`<option value="${h(t)}">${h(t)}</option>`).join('')}</select>
-        <label>활성</label><select id="adminActiveV586" class="input aurora-select"><option value="Y">Y</option><option value="N">N</option></select>
-        <button class="save" style="width:100%;margin-top:13px" onclick="saveAdminRoleV586()">저장</button>
-        ${a.isAdmin?'<button class="soft-btn danger" style="width:100%;margin-top:8px" onclick="resetAdminRoleV586()">권한관리 초기화</button>':''}
+        <label>순원 선택</label><select id="adminMemberSelectV587" class="input aurora-select" onchange="fillAdminFormV587(this.value)">${names.map(n=>`<option value="${h(n)}" ${n===name0?'selected':''}>${h(n)}</option>`).join('')}</select>
+        <label>직책</label><select id="adminDutyV587" class="input aurora-select">${options(DUTIES,'')}</select>
+        <label>권한</label><select id="adminPermV587" class="input aurora-select">${options(PERMS,'일반')}</select>
+        <label>순이름</label><select id="adminTeamV587" class="input aurora-select"><option value="">선택 없음</option><option value="전체">전체</option>${teams().map(t=>`<option value="${h(t)}">${h(t)}</option>`).join('')}</select>
+        <label>활성</label><select id="adminActiveV587" class="input aurora-select"><option value="Y">Y</option><option value="N">N</option></select>
+        <button class="save" style="width:100%;margin-top:13px" onclick="saveAdminRoleV587()">저장</button>
+        ${a.isAdmin?'<button class="soft-btn danger" style="width:100%;margin-top:8px" onclick="resetAdminRoleV587()">권한관리 초기화</button>':''}
       </div>
       <div class="card"><div class="section-head">현재 권한관리</div><div class="admin-table-wrap-v586"><table class="admin-table-v586"><thead><tr><th>이름</th><th>직책</th><th>권한</th><th>담당순</th><th>활성</th></tr></thead><tbody>${roleRows || '<tr><td colspan="5">저장된 권한이 없습니다.</td></tr>'}</tbody></table></div></div>
     </section>`;
