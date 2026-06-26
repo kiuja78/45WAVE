@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.88 시작", API_URL);
+console.log("결 LEADER V5.89 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.88';
+      vInput.value = 'V5.89';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.88")
+      + "&v=" + encodeURIComponent("V5.89")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -2260,9 +2260,23 @@ function setUrlProfile(profile){
 }
 
 function validProfile(p){
-  if(!p || !p.leaderName || !p.leaderRole) return false;
-  if(p.leaderRole === '순장') return !!(p.leaderTeam && p.leaderTeam !== '전체' && p.leaderTeam !== '순을 선택하세요');
-  return true;
+  // V5.89: 사용자 정보는 이름만 저장한다. 직책/권한/담당순은 권한관리 시트에서만 관리한다.
+  return !!(p && String(p.leaderName || '').trim());
+}
+
+
+function deriveProfileRoleByNameV589(leaderName){
+  const name = String(leaderName || '').trim();
+  const norm = v => String(v || '').replace(/\s+/g,'').trim();
+  if(!name) return {leaderRole:'', leaderTeam:''};
+  if(norm(name) === norm('김건일')) return {leaderRole:'순장', leaderTeam:'에스더사랑순'};
+  const rows = Array.isArray(DATA && DATA.adminRoles) ? DATA.adminRoles : [];
+  const r = rows.find(x => norm(x && (x.name || x['이름'])) === norm(name) && String((x && (x.active || x['활성'])) || 'Y').trim() !== 'N');
+  if(!r) return {leaderRole:'', leaderTeam:''};
+  return {
+    leaderRole: String(r.duty || r['직책'] || '').trim(),
+    leaderTeam: String(r.team || r['담당순'] || r['순이름'] || '').trim()
+  };
 }
 
 
@@ -2297,13 +2311,14 @@ function applyLocalProfile(){
   DATA.settings = DATA.settings || {};
   const p = getLocalProfile();
   if(validProfile(p)){
-    DATA.settings.leaderName = p.leaderName;
-    DATA.settings.leaderTeam = p.leaderRole === '순장' ? p.leaderTeam : '전체';
-    DATA.settings.leaderRole = p.leaderRole || roleByNameTeam(p.leaderName, p.leaderTeam);
+    const derived = deriveProfileRoleByNameV589(p.leaderName);
+    DATA.settings.leaderName = String(p.leaderName || '').trim();
+    DATA.settings.leaderTeam = derived.leaderTeam || '';
+    DATA.settings.leaderRole = derived.leaderRole || '';
     return true;
   }
   DATA.settings.leaderName = '';
-  DATA.settings.leaderTeam = '순을 선택하세요';
+  DATA.settings.leaderTeam = '';
   DATA.settings.leaderRole = '';
   return false;
 }
@@ -3733,21 +3748,15 @@ function profileRoleOptions(current){
 }
 
 function openProfile(force=false){
-  const teams = orderedTeams();
   const p = getLocalProfile ? getLocalProfile() : {};
   const settings = DATA.settings || {};
-  const currentTeam = p.leaderTeam || settings.leaderTeam || '순을 선택하세요';
-  const currentRole = p.leaderRole || settings.leaderRole || '순장';
 
   const modalCard = profileModal.querySelector('.modal-card');
   if(modalCard){
     modalCard.innerHTML = `
       <div class="section-head">${force ? '처음 사용자 등록' : '사용자 정보수정'}</div>
+      <div class="count" style="margin:4px 0 8px">이름만 입력합니다. 직책/권한/담당순은 관리자 기능에서만 지정됩니다.</div>
       <input id="pLeaderName" class="input" placeholder="이름을 입력하세요" style="margin-top:8px">
-      <select id="pLeaderRole" class="input" style="margin-top:8px" onchange="toggleProfileTeam()">
-        ${profileRoleOptions(currentRole)}
-      </select>
-      <select id="pLeaderTeam" class="input" style="margin-top:8px"></select>
       <button class="save" onclick="saveProfile()" style="width:100%;margin-top:10px">저장</button>
       <button class="outline" onclick="resetLocalProfile()" style="width:100%;margin-top:8px">이 기기 사용자정보 초기화</button>
       <button class="outline" id="profileCloseBtn" onclick="closeProfile()" style="width:100%;margin-top:8px">닫기</button>
@@ -3755,20 +3764,8 @@ function openProfile(force=false){
   }
 
   const nameEl = document.getElementById('pLeaderName');
-  const roleEl = document.getElementById('pLeaderRole');
-  const teamEl = document.getElementById('pLeaderTeam');
   const closeEl = document.getElementById('profileCloseBtn');
-
-  if(teamEl){
-    teamEl.innerHTML =
-      `<option value="" ${!currentTeam || currentTeam==='순을 선택하세요'||currentTeam==='전체'?'selected':''}>순을 선택하세요</option>`+
-      teams.map(t=>`<option value="${esc(t)}" ${currentTeam===t?'selected':''}>${esc(t)}</option>`).join('');
-  }
   if(nameEl) nameEl.value = p.leaderName || settings.leaderName || '';
-  if(roleEl) roleEl.value = currentRole || '순장';
-
-  toggleProfileTeam();
-
   if(closeEl) closeEl.classList.toggle('hidden',!!force);
   profileModal.classList.remove('hidden');
 }
@@ -3788,25 +3785,19 @@ function toggleProfileTeam(){
 
 function saveProfile(){
   const nameEl = document.getElementById('pLeaderName');
-  const teamEl = document.getElementById('pLeaderTeam');
-  const roleEl = document.getElementById('pLeaderRole');
-
   const leaderName = nameEl ? nameEl.value.trim() : '';
-  const leaderRole = roleEl ? roleEl.value : '순장';
-  const leaderTeam = leaderRole === '순장' ? (teamEl ? teamEl.value : '') : '';
-
   if(!leaderName) return alert('이름을 입력해주세요.');
-  if(leaderRole === '순장' && !leaderTeam) return alert('순을 선택해주세요.');
 
-  const profile = {leaderName, leaderTeam, leaderRole};
+  const derived = deriveProfileRoleByNameV589(leaderName);
+  const profile = {leaderName};
   if(typeof setLocalProfile === 'function') setLocalProfile(profile);
   else localStorage.setItem('waveLeaderProfile', JSON.stringify(profile));
 
   DATA.settings = DATA.settings || {};
   DATA.settings.leaderName = leaderName;
-  DATA.settings.leaderTeam = leaderTeam || '전체';
-  DATA.settings.leaderRole = leaderRole;
-  state.team = leaderTeam || '전체';
+  DATA.settings.leaderTeam = derived.leaderTeam || '';
+  DATA.settings.leaderRole = derived.leaderRole || '';
+  state.team = derived.leaderRole === '순장' ? (derived.leaderTeam || '') : (derived.leaderRole ? '전체' : '');
 
   closeProfile();
   updateHeader();
@@ -4014,7 +4005,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.88';
+  return 'V5.89';
 }
 
 
@@ -6939,7 +6930,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.88&t=V5.88"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.89&t=V5.89"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -9329,7 +9320,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.88';
+  const APP_VERSION = 'V5.89';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9669,12 +9660,12 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.88 admin nav + initial super admin lock
+/* V5.89 admin nav + initial super admin lock
    기준: V5.85 no-admin stable + 권한관리 단일 구조
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V587 = 'V5.88';
+  const V587 = 'V5.89';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9925,8 +9916,8 @@ applyLoadedData = function(r){
       const raw = await call('debugStatus', {});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
-      if(ver.indexOf('V5.88_ADMIN_NAV_INITIAL_CODEGS') < 0){
-        throw new Error('Apps Script 서버가 V5.88이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      if(ver.indexOf('V5.89_PROFILE_NAME_ONLY_ADMIN_BOX_CLEAN_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.89이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
       }
       return true;
     }catch(e){
@@ -9988,7 +9979,6 @@ applyLoadedData = function(r){
     const roleRows = roles.map(r=>`<tr><td>${h(r.name)}</td><td>${h(r.duty)}</td><td><b>${h(r.permission)}</b></td><td>${h(r.team)}</td><td>${h(r.active||'Y')}</td></tr>`).join('');
     view.innerHTML = `<section class="page admin-page-v586">
       <div class="section-head">관리자 기능</div>
-      <div class="card"><div class="count"><b>${h(a.name)}</b> / ${h(a.duty)} / ${h(a.permission)} / ${h(a.team || '담당순 없음')}</div><div class="count" id="adminPermissionNoteV587"></div></div>
       <div class="card"><div class="section-head">직책 · 권한 · 순이름 지정</div>
         <label>순원 선택</label><select id="adminMemberSelectV587" class="input aurora-select" onchange="fillAdminFormV587(this.value)">${names.map(n=>`<option value="${h(n)}" ${n===name0?'selected':''}>${h(n)}</option>`).join('')}</select>
         <label>직책</label><select id="adminDutyV587" class="input aurora-select">${options(DUTIES,'')}</select>
