@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.89 시작", API_URL);
+console.log("결 LEADER V5.90 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.89';
+      vInput.value = 'V5.90';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.89")
+      + "&v=" + encodeURIComponent("V5.90")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4005,7 +4005,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.89';
+  return 'V5.90';
 }
 
 
@@ -6930,7 +6930,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.89&t=V5.89"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.90&t=V5.90"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -7830,12 +7830,12 @@ applyLoadedData = function(r){
     if(typeof value === 'object') return value;
     try{ return JSON.parse(String(value)); }catch(e){ return {ok:true, value:value}; }
   }
-  function p16IsServer(res){ return !!(res && /(V5\.62P(1[6-9]|2[0-9])|V5\.63)/.test(String(res.version || ''))); }
+  function p16IsServer(res){ return !!(res && /(V5\.(6[3-9]|[7-9][0-9])|V5\.88|V5\.89|V5\.90|ADMIN_|CLEAN_|CODEGS)/.test(String(res.version || ''))); }
   async function p16AssertServerReady(){
     const raw = await call('debugStatus');
     const res = p16ParseResult(raw);
     if(res && res.ok === false) throw new Error(res.error || '서버 연결 점검 실패');
-    if(!p16IsServer(res)) throw new Error('Apps Script가 아직 V5.63으로 배포되지 않았습니다. Code.gs 전체 교체 후 기존 웹앱 배포를 [새 버전]으로 업데이트해주세요. 현재 서버: ' + (res && res.version ? res.version : '알 수 없음'));
+    if(!p16IsServer(res)) throw new Error('Apps Script 서버 버전을 확인하지 못했습니다. Code.gs 전체 교체 후 기존 웹앱 배포를 [새 버전]으로 업데이트해주세요. 현재 서버: ' + (res && res.version ? res.version : '알 수 없음'));
     return res;
   }
   function p16PayloadNeedsPost(payload){
@@ -7855,7 +7855,7 @@ applyLoadedData = function(r){
       const raw=await call(action,payload);
       const res=p16ParseResult(raw);
       if(res && res.ok===false) throw new Error(res.error || '순원목록 저장 실패');
-      if(!p16IsServer(res)) throw new Error('저장 응답 서버 버전이 P16이 아닙니다: ' + (res&&res.version?res.version:'알 수 없음'));
+      if(!p16IsServer(res)) throw new Error('저장 응답 서버 버전을 확인하지 못했습니다: ' + (res&&res.version?res.version:'알 수 없음'));
       if(res && res.sheet && res.sheet!=='순원목록') throw new Error('저장 대상 시트가 순원목록이 아닙니다: '+res.sheet);
       return res || {ok:true,sheet:'순원목록'};
     }
@@ -7870,7 +7870,7 @@ applyLoadedData = function(r){
     const raw=await call('getDataJson');
     const fresh=p16ParseResult(raw);
     if(!fresh || fresh.ok===false) throw new Error((fresh&&fresh.error)||'최신 순원목록 데이터를 다시 불러오지 못했습니다.');
-    if(!p16IsServer(fresh)) throw new Error('최신 데이터 응답 서버가 P16이 아닙니다: '+(fresh&&fresh.version?fresh.version:'알 수 없음'));
+    if(!p16IsServer(fresh)) throw new Error('최신 데이터 응답 서버 버전을 확인하지 못했습니다: '+(fresh&&fresh.version?fresh.version:'알 수 없음'));
     if(typeof applyLoadedData==='function') applyLoadedData(fresh);
     else{ DATA=fresh; if(typeof normalizeFamilyLinks==='function') normalizeFamilyLinks(); if(typeof render==='function') render(); }
     return fresh;
@@ -7954,8 +7954,8 @@ applyLoadedData = function(r){
 <script>
 /* V5.63 child layout / address split / team permission / save sync patch */
 (function(){
-  const P18_VERSION = 'V5.63';
-  const P18_CACHE_KEY = 'geolLeaderDataCacheV5_63';
+  const P18_VERSION = 'V5.90';
+  const P18_CACHE_KEY = 'geolLeaderDataCacheV5_90';
   try{ window.versionText = function(){ return P18_VERSION; }; }catch(e){}
   try{ window.dataCacheKey = function(){ return P18_CACHE_KEY; }; }catch(e){}
 
@@ -8088,12 +8088,12 @@ applyLoadedData = function(r){
     if(typeof value === 'object') return value;
     try{ return JSON.parse(String(value)); }catch(e){ return {ok:true, value:value}; }
   }
-  function p18IsServer(res){ return !!(res && /(V5\.62P(1[6-9]|2[0-9])|V5\.63)/.test(String(res.version || ''))); }
+  function p18IsServer(res){ return !!(res && /(V5\.(6[3-9]|[7-9][0-9])|V5\.88|V5\.89|V5\.90|ADMIN_|CLEAN_|CODEGS)/.test(String(res.version || ''))); }
   async function p18AssertServerReady(){
     const raw = await call('debugStatus');
     const res = p18ParseResult(raw);
     if(res && res.ok === false) throw new Error(res.error || '서버 연결 점검 실패');
-    if(!p18IsServer(res)) throw new Error('Apps Script가 아직 V5.63로 배포되지 않았습니다. Code.gs 전체 교체 후 기존 웹앱 배포를 [새 버전]으로 업데이트해주세요. 현재 서버: ' + (res && res.version ? res.version : '알 수 없음'));
+    if(!p18IsServer(res)) throw new Error('Apps Script 서버 버전을 확인하지 못했습니다. Code.gs 전체 교체 후 기존 웹앱 배포를 [새 버전]으로 업데이트해주세요. 현재 서버: ' + (res && res.version ? res.version : '알 수 없음'));
     return res;
   }
   function p18PayloadNeedsPost(payload){
@@ -8118,7 +8118,7 @@ applyLoadedData = function(r){
       const raw=await call(action,payload);
       const res=p18ParseResult(raw);
       if(res && res.ok===false) throw new Error(res.error || '순원목록 저장 실패');
-      if(!p18IsServer(res)) throw new Error('저장 응답 서버 버전이 P18이 아닙니다: ' + (res&&res.version?res.version:'알 수 없음'));
+      if(!p18IsServer(res)) throw new Error('저장 응답 서버 버전을 확인하지 못했습니다: ' + (res&&res.version?res.version:'알 수 없음'));
       if(res && res.sheet && res.sheet!=='순원목록') throw new Error('저장 대상 시트가 순원목록이 아닙니다: '+res.sheet);
       return res || {ok:true,sheet:'순원목록'};
     }
@@ -8133,7 +8133,7 @@ applyLoadedData = function(r){
     const raw=await call('getDataJson');
     const fresh=p18ParseResult(raw);
     if(!fresh || fresh.ok===false) throw new Error((fresh&&fresh.error)||'최신 순원목록 데이터를 다시 불러오지 못했습니다.');
-    if(!p18IsServer(fresh)) throw new Error('최신 데이터 응답 서버가 P18이 아닙니다: '+(fresh&&fresh.version?fresh.version:'알 수 없음'));
+    if(!p18IsServer(fresh)) throw new Error('최신 데이터 응답 서버 버전을 확인하지 못했습니다: '+(fresh&&fresh.version?fresh.version:'알 수 없음'));
     if(typeof applyLoadedData==='function') applyLoadedData(fresh);
     else{ DATA=fresh; if(typeof normalizeFamilyLinks==='function') normalizeFamilyLinks(); if(typeof render==='function') render(); }
     return fresh;
@@ -9320,7 +9320,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.89';
+  const APP_VERSION = 'V5.90';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9665,7 +9665,7 @@ applyLoadedData = function(r){
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V587 = 'V5.89';
+  const V587 = 'V5.90';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9916,8 +9916,8 @@ applyLoadedData = function(r){
       const raw = await call('debugStatus', {});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
-      if(ver.indexOf('V5.89_PROFILE_NAME_ONLY_ADMIN_BOX_CLEAN_CODEGS') < 0){
-        throw new Error('Apps Script 서버가 V5.89이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      if(ver.indexOf('V5.90_VERSION_SYNC_MEMBER_SAVE_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.90이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
       }
       return true;
     }catch(e){
@@ -10037,5 +10037,17 @@ applyLoadedData = function(r){
 })();
 </script>
 
+
+<script>
+/* V5.90 final version sync + member-save server check cleanup */
+(function(){
+  try{ window.versionText = function(){ return 'V5.90'; }; }catch(e){}
+  function syncV590Badges(){
+    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.90'; }); }catch(e){}
+    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.90</span>'; }catch(e){}
+  }
+  try{ syncV590Badges(); setInterval(syncV590Badges, 1200); }catch(e){}
+})();
+</script>
 </body>
 </html>
