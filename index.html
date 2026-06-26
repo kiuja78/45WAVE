@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.73 시작", API_URL);
+console.log("결 LEADER V5.74 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.73';
+      vInput.value = 'V5.74';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.73")
+      + "&v=" + encodeURIComponent("V5.74")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -6939,7 +6939,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.63&t=V5.63"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.74&t=V5.74"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -9329,7 +9329,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.64 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.73';
+  const APP_VERSION = 'V5.74';
   const CACHE_KEY = 'geolLeaderDataCacheV5_66';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9675,7 +9675,7 @@ applyLoadedData = function(r){
    - 목회자/위원장/임원/관리자/부관리자는 전체 조회/등록/수정 가능하다.
 */
 (function(){
-  const APP_V565 = 'V5.73';
+  const APP_V565 = 'V5.74';
   const CACHE_V565 = 'geolLeaderDataCacheV5_67';
   const ROLE_MANAGER = ['관리자','부관리자'];
   const FULL_ROLES = ['관리자','부관리자','목회자','위원장','임원'];
@@ -9981,9 +9981,9 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.73 admin/version bootstrap fix */
+/* V5.74 admin/version bootstrap fix */
 (function(){
-  const FORCE_VERSION='V5.73';
+  const FORCE_VERSION='V5.74';
   const BOOT_ADMINS=['김건일'];
   const clean=v=>String(v==null?'':v).replace(/\s/g,'').trim();
   function currentName(){
@@ -10029,9 +10029,9 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.73 관리자 비밀번호 최종 문법검수: 초기관리자 김건일만 / 비밀번호 4545 / 과거 래퍼 우회 */
+/* V5.74 관리자 비밀번호 최종 문법검수: 초기관리자 김건일만 / 비밀번호 4545 / 과거 래퍼 우회 */
 (function(){
-  const VERSION='V5.73';
+  const VERSION='V5.74';
   const ADMIN_PASSWORD='4545';
   const AUTH_KEYS=['geolAdminAuthV567','geolAdminAuthV568','geolAdminAuthV569','geolAdminAuthV570'];
   const PASS_KEYS=['geolAdminPassV567','geolAdminPassV568','geolAdminPassV569','geolAdminPassV570'];
@@ -10187,9 +10187,9 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.73 관리자모드 재검수: 직책/권한 분리, 초기관리자 김건일, 비밀번호 4545 */
+/* V5.74 관리자모드 재검수: 직책/권한 분리, 초기관리자 김건일, 비밀번호 4545 */
 (function(){
-  const VERSION='V5.73';
+  const VERSION='V5.74';
   const ADMIN_PASSWORD='4545';
   const ADMIN_NAME='김건일';
   const POSITION_OPTIONS=['순장','임원','위원장','목회자'];
@@ -10320,7 +10320,7 @@ applyLoadedData = function(r){
     if(position!=='순장') team='전체';
     try{
       if(window.loadingToast) loadingToast.classList.remove('hidden');
-      const res=await call('savePermissionRecordV73',{name,position,role:position,permission,assignedTeam:team,active:'Y',editorName:currentName(),adminPassword:ADMIN_PASSWORD});
+      const res=await call('savePermissionRecordV74',{name,position,role:position,permission,assignedTeam:team,active:'Y',editorName:currentName(),adminPassword:ADMIN_PASSWORD});
       if(res && res.ok===false) throw new Error(res.error||'권한 저장 실패');
       let fresh=null;
       try{ fresh=await call('getDataJson'); }catch(e){}
