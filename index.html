@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.93 시작", API_URL);
+console.log("결 LEADER V5.98 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.93';
+      vInput.value = 'V5.98';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.93")
+      + "&v=" + encodeURIComponent("V5.98")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4005,7 +4005,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.93';
+  return 'V5.98';
 }
 
 
@@ -6930,7 +6930,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.93&t=V5.93"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.98&t=V5.98"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -7954,7 +7954,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.63 child layout / address split / team permission / save sync patch */
 (function(){
-  const P18_VERSION = 'V5.93';
+  const P18_VERSION = 'V5.98';
   const P18_CACHE_KEY = 'geolLeaderDataCacheV5_90';
   try{ window.versionText = function(){ return P18_VERSION; }; }catch(e){}
   try{ window.dataCacheKey = function(){ return P18_CACHE_KEY; }; }catch(e){}
@@ -9320,7 +9320,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.95';
+  const APP_VERSION = 'V5.98';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9665,7 +9665,7 @@ applyLoadedData = function(r){
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V587 = 'V5.93';
+  const V587 = 'V5.98';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9916,8 +9916,8 @@ applyLoadedData = function(r){
       const raw = await call('debugStatus', {});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
-      if(ver.indexOf('V5.93_STICKY_HEADER_CODEGS') < 0){
-        throw new Error('Apps Script 서버가 V5.93이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      if(ver.indexOf('V5.98_STICKY_HEADER_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.98이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
       }
       return true;
     }catch(e){
@@ -10039,21 +10039,21 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.93 final version sync + member-save server check cleanup */
+/* V5.98 final version sync + member-save server check cleanup */
 (function(){
-  try{ window.versionText = function(){ return 'V5.93'; }; }catch(e){}
+  try{ window.versionText = function(){ return 'V5.98'; }; }catch(e){}
   function syncV590Badges(){
-    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.93'; }); }catch(e){}
-    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.93</span>'; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.98'; }); }catch(e){}
+    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.98</span>'; }catch(e){}
   }
   try{ syncV590Badges(); setInterval(syncV590Badges, 1200); }catch(e){}
 })();
 </script>
 
 <script>
-/* V5.93 final version/member-save router display sync */
+/* V5.98 final version/member-save router display sync */
 (function(){
-  const VER='V5.93';
+  const VER='V5.98';
   try{ window.versionText=function(){return VER;}; }catch(e){}
   function syncVersion(){
     document.querySelectorAll('.header-version-badge').forEach(el=>{ el.textContent=VER; });
@@ -10065,7 +10065,7 @@ applyLoadedData = function(r){
 </script>
 
 
-<!-- V5.93: 출석체크 리스트 누적 출석률 보정
+<!-- V5.98: 출석체크 리스트 누적 출석률 보정
      - 월 이동 시에도 선택월 3월~선택월 누적 기준으로 % 표시
      - 해당월 단일 출석 100/0 표시로 덮어쓰던 V5.63 보정 로직을 최종 재정의 -->
 <script>
@@ -10095,7 +10095,7 @@ applyLoadedData = function(r){
 
 
 
-<!-- V5.93: 상단/월변경 영역 고정 + 표 첫 열 고정 보정 -->
+<!-- V5.98: 상단/월변경 영역 고정 + 표 첫 열 고정 보정 -->
 <style id="v593-sticky-layout-style">
   :root{--v593-header-h:64px;--v593-bottom-h:76px;--v593-bg:#f3f3f5;}
   .header{position:sticky!important;top:0!important;z-index:900!important;background:#e8f7f5!important;}
@@ -10183,7 +10183,7 @@ applyLoadedData = function(r){
 </style>
 <script id="v593-sticky-layout-script">
 (function(){
-  const VER='V5.93';
+  const VER='V5.98';
   const h = v => (typeof esc === 'function' ? esc(v) : String(v == null ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
   function syncVersion(){
     try{ window.versionText=function(){return VER;}; }catch(e){}
@@ -10277,7 +10277,7 @@ applyLoadedData = function(r){
 
 
 
-<!-- V5.94: 출석통계 접이식 섹션 + 통계 표 정렬 복구 -->
+<!-- V5.98: 출석통계 접이식 섹션 + 통계 표 정렬 복구 -->
 <style id="v594-stats-collapse-style">
   .stats-page-v594 .stats-main-card-v594{margin-top:14px!important;}
   .stats-collapse-card-v594{padding:0!important;overflow:hidden!important;}
@@ -10300,12 +10300,12 @@ applyLoadedData = function(r){
   }
   .stats-table-v564 th:first-child{z-index:6!important;background:#efe9ff!important;}
   .stats-table-v564 .team-sep td:first-child{background:#f1ebff!important;}
-  /* V5.93 grid sticky가 일부 월별표를 깨뜨리는 경우 방지 */
+  /* V5.98 grid sticky가 일부 월별표를 깨뜨리는 경우 방지 */
   .month-table .name-col,.month-table-v563 .name-col{position:static!important;left:auto!important;box-shadow:none!important;}
 </style>
 <script id="v594-stats-collapse-script">
 (function(){
-  const VER='V5.95';
+  const VER='V5.98';
   window.__GEOL_STATS_COLLAPSE_V594 = window.__GEOL_STATS_COLLAPSE_V594 || {monthly:false, all:false};
   const h = v => (typeof esc === 'function' ? esc(v) : String(v == null ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
   function syncVersionV594(){
@@ -10374,11 +10374,394 @@ applyLoadedData = function(r){
 })();
 </script>
 
+
+<!-- V5.98: 출석통계 이름/순 첫 열 폭 축소 + 전체 순원 순별 접기/펼치기 -->
+<style id="v596-stats-width-team-collapse-style">
+  .stats-page-v596 .stats-main-card-v595{overflow:hidden!important;}
+  .stats-page-v596 .stats-table-scroll-v596{width:100%;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding:0 0 10px!important;}
+  .stats-page-v596 .stats-table-v596{border-collapse:separate!important;border-spacing:0 7px!important;table-layout:fixed!important;width:max-content!important;font-size:13px!important;}
+  .stats-page-v596 .stats-table-v596 th,.stats-page-v596 .stats-table-v596 td{box-sizing:border-box!important;text-align:center!important;vertical-align:middle!important;padding:8px 6px!important;border-radius:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  .stats-page-v596 .stats-table-v596 th{background:#efe9ff!important;color:#5f50d8!important;font-weight:950!important;}
+  .stats-page-v596 .stats-table-v596 td{background:#fbfaff!important;border:1px solid #eee9ff!important;color:#262236!important;font-weight:850!important;}
+  .stats-page-v596 .stats-table-v596 .sticky-col{position:sticky!important;left:0!important;z-index:5!important;text-align:left!important;background:#fbfaff!important;box-shadow:6px 0 10px rgba(255,255,255,.95)!important;}
+  .stats-page-v596 .stats-table-v596 th.sticky-col{z-index:7!important;text-align:center!important;background:#efe9ff!important;color:#5f50d8!important;}
+  .stats-page-v596 .stats-table-v596 .team-name{color:#4b3b89!important;font-weight:950!important;}
+  .stats-page-v596 .stats-table-v596 .rate-main{font-weight:950!important;color:#453b7c!important;display:block!important;line-height:1.1!important;}
+  .stats-page-v596 .stats-table-v596 .rate-sub{font-size:10px!important;color:#6f668f!important;display:block!important;margin-top:2px!important;line-height:1.1!important;}
+  .stats-page-v596 .team-collapse-v596{margin:10px 0!important;border:1px solid #eee9ff!important;border-radius:14px!important;overflow:hidden!important;background:#fff!important;}
+  .stats-page-v596 .team-collapse-head-v596{width:100%!important;border:0!important;background:#f1ebff!important;color:#4b3b89!important;font-size:17px!important;font-weight:950!important;text-align:left!important;padding:13px 14px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;cursor:pointer!important;}
+  .stats-page-v596 .team-collapse-head-v596 .arrow{color:#6a4cc2!important;transition:transform .18s ease!important;}
+  .stats-page-v596 .team-collapse-head-v596.open .arrow{transform:rotate(180deg)!important;}
+  .stats-page-v596 .team-collapse-body-v596{display:none!important;padding:8px 8px 0!important;background:#fff!important;}
+  .stats-page-v596 .team-collapse-body-v596.open{display:block!important;}
+  .stats-page-v596 .stat-ok-v595,.stats-page-v596 .stat-no-v595{width:24px!important;height:24px!important;font-size:17px!important;}
+  @media(max-width:430px){
+    .stats-page-v596 .stats-table-v596{font-size:12px!important;}
+    .stats-page-v596 .stats-table-v596 th,.stats-page-v596 .stats-table-v596 td{padding:7px 5px!important;}
+    .stats-page-v596 .team-collapse-head-v596{font-size:16px!important;padding:12px 13px!important;}
+  }
+</style>
+<script id="v596-stats-team-collapse-script">
+(function(){
+  const VER='V5.98';
+  window.__GEOL_STATS_COLLAPSE_V595 = window.__GEOL_STATS_COLLAPSE_V595 || {monthly:false, all:false};
+  window.__GEOL_STATS_TEAM_COLLAPSE_V596 = window.__GEOL_STATS_TEAM_COLLAPSE_V596 || {};
+  const txt = v => String(v == null ? '' : v).trim();
+  const arr = v => Array.isArray(v) ? v : [];
+  const h = v => (typeof esc === 'function' ? esc(v) : String(v == null ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
+  function syncVersionV596(){
+    try{ window.versionText=function(){return VER;}; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge,#versionBadge').forEach(el=>el.textContent=VER); }catch(e){}
+  }
+  function activeMemberV596(m){ return m && m.active !== 'N' && m.active !== '보류'; }
+  function monthsV596(){
+    try{ if(typeof visibleStatsMonths === 'function') return visibleStatsMonths(); }catch(e){}
+    try{ if(typeof monthNumbers === 'function') return monthNumbers(); }catch(e){}
+    return [3,4,5,6,7,8,9,10,11,12];
+  }
+  function teamListV596(){
+    const out=[];
+    arr(DATA && DATA.teams).forEach(t=>{t=txt(t); if(t && t!=='전체' && t!=='어린이결' && !out.includes(t)) out.push(t);});
+    arr(DATA && DATA.members).forEach(m=>{const t=txt(m&&m.team); if(t && t!=='전체' && t!=='어린이결' && !out.includes(t)) out.push(t);});
+    return out;
+  }
+  function membersOfTeamV596(team){
+    let list = arr(DATA && DATA.members).filter(m=>activeMemberV596(m) && txt(m.team)===txt(team));
+    try{ if(typeof sortMembersForList === 'function') list = sortMembersForList(list, team); }catch(e){}
+    return list;
+  }
+  function selectedMembersV596(){
+    if(!state || !state.team) return [];
+    if(state.team === '전체') return teamListV596().flatMap(t=>membersOfTeamV596(t));
+    try{ if(typeof teamMembers === 'function') return arr(teamMembers()).filter(activeMemberV596); }catch(e){}
+    return membersOfTeamV596(state.team);
+  }
+  function isDueV596(mon){ try{return !!isAttendanceDueMonth(mon);}catch(e){return true;} }
+  function memberStatusV596(m, mon){ try{return memberMonthStatus(m, mon);}catch(e){return '';} }
+  function childStatusV596(c, mon){ try{return childMonthStatus(c, mon);}catch(e){return '';} }
+  function statusIconV596(st, due){
+    if(st === '출석') return '<span class="stat-ok-v595">✓</span>';
+    if(due) return '<span class="stat-no-v595">×</span>';
+    return '<span class="stat-blank-v595"></span>';
+  }
+  function tableV596(firstTitle, rowsHtml, firstWidth, monthWidth){
+    const months = monthsV596();
+    firstWidth = firstWidth || 92; monthWidth = monthWidth || 58;
+    const min = Math.max(firstWidth + months.length * monthWidth, 390);
+    const colgroup = '<colgroup><col class="name-col-v596" style="width:'+firstWidth+'px">'+months.map(()=>'<col class="month-col-v596" style="width:'+monthWidth+'px">').join('')+'</colgroup>';
+    const head = '<thead><tr><th class="sticky-col">'+h(firstTitle)+'</th>'+months.map(m=>'<th>'+h(m+'월')+'</th>').join('')+'</tr></thead>';
+    return '<div class="stats-table-scroll-v596"><table class="stats-table-v596" style="min-width:'+min+'px">'+colgroup+head+'<tbody>'+rowsHtml+'</tbody></table></div>';
+  }
+  function countMembersV596(mon, members){
+    const list=arr(members); const present=list.filter(m=>memberStatusV596(m,mon)==='출석').length;
+    return {present,total:list.length,rate:list.length?Math.round(present/list.length*100):0};
+  }
+  function countChildrenV596(mon, children){
+    const list=arr(children); const present=list.filter(c=>childStatusV596(c,mon)==='출석').length;
+    return {present,total:list.length,rate:list.length?Math.round(present/list.length*100):0};
+  }
+  function memberTableV596(members){
+    const months=monthsV596();
+    const body = arr(members).map(m=>'<tr><td class="sticky-col">'+h(m.name||'')+'</td>'+months.map(mon=>'<td>'+statusIconV596(memberStatusV596(m,mon), isDueV596(mon))+'</td>').join('')+'</tr>').join('');
+    return tableV596('이름', body || '<tr><td colspan="'+(months.length+1)+'">표시할 순원이 없습니다.</td></tr>', 88, 58);
+  }
+  function teamRateTableV596(){
+    const months=monthsV596();
+    const body = teamListV596().map(team=>{
+      const members = membersOfTeamV596(team);
+      return '<tr><td class="sticky-col team-name">'+h(team)+'</td>'+months.map(mon=>{const c=countMembersV596(mon,members); return '<td><span class="rate-main">'+c.rate+'%</span><span class="rate-sub">'+c.present+'/'+c.total+'</span></td>';}).join('')+'</tr>';
+    }).join('');
+    return tableV596('순', body || '<tr><td colspan="'+(months.length+1)+'">표시할 순이 없습니다.</td></tr>', 104, 60);
+  }
+  function teamMemberTableV596(team, members){
+    const months=monthsV596();
+    const body = arr(members).map(m=>'<tr><td class="sticky-col">'+h(m.name||'')+'</td>'+months.map(mon=>'<td>'+statusIconV596(memberStatusV596(m,mon), isDueV596(mon))+'</td>').join('')+'</tr>').join('');
+    return tableV596('순원', body || '<tr><td colspan="'+(months.length+1)+'">표시할 순원이 없습니다.</td></tr>', 90, 58);
+  }
+  function allMemberTableV596(){
+    const teams=teamListV596();
+    if(!teams.length) return '<div class="muted">표시할 순원이 없습니다.</div>';
+    return teams.map((team, idx)=>{
+      const members=membersOfTeamV596(team); if(!members.length) return '';
+      const key='team_'+team;
+      const open=!!window.__GEOL_STATS_TEAM_COLLAPSE_V596[key];
+      return '<div class="team-collapse-v596"><button type="button" class="team-collapse-head-v596 '+(open?'open':'')+'" onclick="toggleTeamStatsV596('+JSON.stringify(key).replace(/"/g,'&quot;')+')"><span>'+h(team)+' <small>('+members.length+'명)</small></span><span class="arrow">⌄</span></button><div class="team-collapse-body-v596 '+(open?'open':'')+'">'+teamMemberTableV596(team,members)+'</div></div>';
+    }).join('') || '<div class="muted">표시할 순원이 없습니다.</div>';
+  }
+  window.toggleTeamStatsV596=function(key){ window.__GEOL_STATS_TEAM_COLLAPSE_V596[key]=!window.__GEOL_STATS_TEAM_COLLAPSE_V596[key]; renderStatsV596(); };
+  function childrenRowsV596(){
+    try{ if(typeof allChildrenRows === 'function') return arr(allChildrenRows()); }catch(e){}
+    return [];
+  }
+  function childTableV596(){
+    const months=monthsV596(); const by={}; childrenRowsV596().forEach(c=>{const t=txt(c.team)||'미지정'; (by[t]=by[t]||[]).push(c);});
+    let body=''; const teams=teamListV596().filter(t=>by[t]).concat(Object.keys(by).filter(t=>!teamListV596().includes(t)));
+    teams.forEach(team=>{ body += '<tr><td class="sticky-col team-name">'+h(team)+'</td>'+months.map(()=>'<td></td>').join('')+'</tr>'; by[team].forEach(c=>{ body += '<tr><td class="sticky-col">'+h(c.name||'')+'</td>'+months.map(mon=>'<td>'+statusIconV596(childStatusV596(c,mon), isDueV596(mon))+'</td>').join('')+'</tr>'; }); });
+    return tableV596('이름', body || '<tr><td colspan="'+(months.length+1)+'">어린이결 출석 대상 자녀가 없습니다.</td></tr>', 92, 58);
+  }
+  function monthlyRateRowsV596(kind, list){
+    const months=monthsV596(); const rows = months.map(mon=>{ const c = kind==='child' ? countChildrenV596(mon,list) : countMembersV596(mon,list); return '<div class="rate-row"><div class="rate-label">'+mon+'월</div><div class="rate-bar"><div class="rate-fill" style="width:'+c.rate+'%"></div></div><div class="rate-num">'+c.rate+'%<br><span>'+c.present+'/'+c.total+'명</span></div></div>'; }).join('');
+    return rows || '<div class="muted">표시할 월별 출석율이 없습니다.</div>';
+  }
+  function collapseCardV596(key, title, body){
+    const open=!!window.__GEOL_STATS_COLLAPSE_V595[key];
+    return '<div class="card stats-collapse-card-v595"><button type="button" class="stats-collapse-head-v595 '+(open?'open':'')+'" onclick="toggleStatsCollapseV596(\''+key+'\')"><span>'+h(title)+'</span><span class="arrow">⌄</span></button><div class="stats-collapse-body-v595 '+(open?'open':'')+'">'+(body||'')+'</div></div>';
+  }
+  window.toggleStatsCollapseV596=function(key){ window.__GEOL_STATS_COLLAPSE_V595[key]=!window.__GEOL_STATS_COLLAPSE_V595[key]; renderStatsV596(); };
+  window.renderStatsV596=function(){
+    const team = state && state.team;
+    const isChildren = team === '어린이결';
+    let title='2026년 출석 현황', mainTable='순을 선택하면 통계가 표시됩니다.', monthlyRate='순을 선택하면 월별 출석율이 표시됩니다.', extra='', countText='순을 선택해주세요.';
+    if(team){
+      if(isChildren){
+        const children=childrenRowsV596(); title='2026년 어린이결 출석 현황'; mainTable=childTableV596(); monthlyRate=monthlyRateRowsV596('child', children); countText='어린이결 통계: 출석 대상 자녀 '+children.length+'명';
+      }else if(team==='전체'){
+        const members=selectedMembersV596(); title='전체 순 월별 출석현황'; mainTable=teamRateTableV596(); monthlyRate=monthlyRateRowsV596('member', members); extra=collapseCardV596('all','전체 순원 월별 출석현황',allMemberTableV596()); countText='전체 순 통계: '+teamListV596().length+'개 순 / 전체 '+members.length+'명';
+      }else{
+        const members=selectedMembersV596(); title='2026년 출석 현황'; mainTable=memberTableV596(members); monthlyRate=monthlyRateRowsV596('member', members); countText='통계 대상: '+members.length+'명';
+      }
+    }
+    view.innerHTML='<section class="page stats-page-v593 stats-page-v595 stats-page-v596"><div class="stats-sticky-v593"><div class="section-head">출석통계</div>'+statsTeamSelect()+'<div class="count">'+countText+'</div></div><div class="card stats-main-card-v595"><div class="stats-main-title">'+h(title)+'</div>'+mainTable+'</div>'+collapseCardV596('monthly','월별 출석율',monthlyRate)+extra+'</section>';
+    syncVersionV596();
+  };
+  try{ window.renderStats=window.renderStatsV596; }catch(e){}
+  const oldRender=window.render;
+  window.render=function(){ syncVersionV596(); if(state && state.tab==='stats') return window.renderStatsV596(); return oldRender.apply(this, arguments); };
+  const oldGo=window.go;
+  window.go=function(tab){ if(tab==='stats'){ state.tab='stats'; window.renderStatsV596(); if(typeof updateNav==='function') updateNav(); return; } return oldGo.apply(this, arguments); };
+  document.addEventListener('DOMContentLoaded', syncVersionV596);
+  setTimeout(syncVersionV596,0); setTimeout(syncVersionV596,700); setTimeout(syncVersionV596,1500);
+})();
+</script>
+
+
+<script>
+(function(){
+  const VER='V5.98';
+  const SERVER_VER='V5.98_ADMIN_INLINE_DELETE_ZINDEX_CODEGS';
+  const ADMIN_PW='4545';
+  function $id(id){return document.getElementById(id)}
+  function txt(v){return String(v==null?'':v).trim()}
+  function esc(v){return txt(v).replace(/[&<>"]/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));}
+  function arr(v){return Array.isArray(v)?v:[]}
+  function norm(v){return txt(v).replace(/\s+/g,'');}
+  function duties(){return ['순장','임원','목회자','위원장'];}
+  function perms(){return ['일반','관리자','부관리자'];}
+  function teams98(){
+    try{ if(typeof teams==='function') return arr(teams()).filter(Boolean); }catch(e){}
+    const set=new Set(); arr((window.DATA||{}).members).forEach(m=>{const t=txt(m.team||m.순||m['순이름']); if(t) set.add(t);});
+    return Array.from(set);
+  }
+  function members98(){return arr((window.DATA||{}).members);}
+  function memberNames98(){
+    const set=new Set(); members98().forEach(m=>{const n=txt(m.name||m.이름); if(n) set.add(n);});
+    arr((window.DATA||{}).adminRoles).forEach(r=>{const n=txt(r.name||r.이름); if(n) set.add(n);});
+    return Array.from(set).sort((a,b)=>a.localeCompare(b,'ko'));
+  }
+  function initialAdmin(){return {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};}
+  function adminRoles98(){
+    const list=[]; const seen=new Set();
+    list.push(initialAdmin()); seen.add(norm('김건일'));
+    arr((window.DATA||{}).adminRoles).forEach(r=>{
+      const name=txt(r.name||r.이름); if(!name) return;
+      const k=norm(name); if(seen.has(k)) return; seen.add(k);
+      list.push({name, duty:txt(r.duty||r.직책), permission:txt(r.permission||r.권한||'일반')||'일반', team:txt(r.team||r.담당순||r.순이름), active:txt(r.active||r.활성||'Y')||'Y'});
+    });
+    return list;
+  }
+  function roleFor98(name){ const k=norm(name); return adminRoles98().find(r=>norm(r.name)===k)||null; }
+  function profileName98(){try{return txt((JSON.parse(localStorage.getItem('geolLeaderProfile')||'{}')||{}).name || (window.state&&state.profile&&state.profile.name));}catch(e){return ''}}
+  function access98(){
+    let name=profileName98();
+    try{ if(typeof currentProfile==='function') name=txt(currentProfile().name)||name; }catch(e){}
+    const r=roleFor98(name) || (norm(name)===norm('김건일')?initialAdmin():null);
+    const duty=txt(r&&r.duty), permission=txt(r&&r.permission)||'일반', team=txt(r&&r.team), active=txt(r&&r.active)||'Y';
+    return {name,duty,permission,team,active,isAdmin:permission==='관리자',isSubAdmin:permission==='부관리자',isManager:permission==='관리자'||permission==='부관리자'};
+  }
+  function opts(list, selected, includeBlank){
+    let out=includeBlank?'<option value="">선택 없음</option>':'';
+    out += list.map(x=>`<option value="${esc(x)}" ${txt(x)===txt(selected)?'selected':''}>${esc(x)}</option>`).join('');
+    return out;
+  }
+  function syncVersion98(){
+    document.querySelectorAll('.version,.ver,.version-badge,.app-version,[data-version],.pill').forEach(el=>{
+      if(/V\d+\.\d+/.test(el.textContent||'')) el.textContent=VER;
+    });
+    document.querySelectorAll('*').forEach(el=>{
+      if(el.childNodes && el.childNodes.length===1 && el.childNodes[0].nodeType===3 && /V5\./.test(el.textContent||'')){
+        el.textContent=el.textContent.replace(/V5\.\d+/g,VER);
+      }
+    });
+  }
+  async function call98(action, payload){
+    if(typeof call==='function') return await call(action, payload||{});
+    throw new Error('API 호출 함수를 찾을 수 없습니다.');
+  }
+  async function refreshAdminRoles98(){
+    const a=access98();
+    try{
+      const raw=await call98('getAdminRoleList',{actorName:a.name,password:ADMIN_PW});
+      const res=typeof raw==='object'?raw:JSON.parse(String(raw));
+      if(res&&res.ok===false) throw new Error(res.error||'권한 목록 오류');
+      window.DATA=window.DATA||{}; DATA.adminRoles=arr(res.roles);
+    }catch(e){ console.warn('권한목록 갱신 실패',e); }
+  }
+  function roleRowHtml98(r, i){
+    const a=access98(); const isInitial=norm(r.name)===norm('김건일');
+    const permDisabled = (!a.isAdmin || isInitial) ? 'disabled' : '';
+    const dutyDisabled = isInitial ? 'disabled' : '';
+    const teamDisabled = isInitial ? 'disabled' : '';
+    const activeDisabled = isInitial ? 'disabled' : '';
+    return `<tr data-admin-name="${esc(r.name)}">
+      <td><button type="button" class="admin-name-btn-v598" onclick="openAdminRoleEditorV598('${esc(r.name)}')">${esc(r.name)}</button></td>
+      <td><select class="admin-inline-v598" id="arDuty${i}" ${dutyDisabled}>${opts(duties(),r.duty,true)}</select></td>
+      <td><select class="admin-inline-v598" id="arPerm${i}" ${permDisabled}>${opts(perms(),r.permission||'일반',false)}</select></td>
+      <td><select class="admin-inline-v598" id="arTeam${i}" ${teamDisabled}><option value="">선택 없음</option><option value="전체" ${r.team==='전체'?'selected':''}>전체</option>${opts(teams98(),r.team,false)}</select></td>
+      <td><select class="admin-inline-v598" id="arActive${i}" ${activeDisabled}><option value="Y" ${(r.active||'Y')==='Y'?'selected':''}>Y</option><option value="N" ${r.active==='N'?'selected':''}>N</option></select></td>
+      <td><button type="button" class="mini-save-v598" onclick="saveAdminInlineV598(${i}, '${esc(r.name)}')">저장</button></td>
+    </tr>`;
+  }
+  function renderAdminPage98(){
+    const a=access98(); const roles=adminRoles98(); const names=memberNames98();
+    const first=names.includes(a.name)?a.name:(names[0]||a.name||'');
+    const body=roles.map((r,i)=>roleRowHtml98(r,i)).join('') || '<tr><td colspan="6">저장된 권한이 없습니다.</td></tr>';
+    const viewEl=window.view||$id('view')||document.querySelector('main'); if(!viewEl) return;
+    viewEl.innerHTML=`<section class="page admin-page-v598">
+      <div class="section-head">관리자 기능</div>
+      <div class="card admin-editor-card-v598">
+        <div class="section-head">직책 · 권한 · 순이름 지정</div>
+        <label>순원 선택</label><select id="adminMemberSelectV598" class="input aurora-select" onchange="fillAdminTopFormV598(this.value)">${names.map(n=>`<option value="${esc(n)}" ${n===first?'selected':''}>${esc(n)}</option>`).join('')}</select>
+        <label>직책</label><select id="adminDutyV598" class="input aurora-select">${opts(duties(),'',true)}</select>
+        <label>권한</label><select id="adminPermV598" class="input aurora-select">${opts(perms(),'일반',false)}</select>
+        <label>순이름</label><select id="adminTeamV598" class="input aurora-select"><option value="">선택 없음</option><option value="전체">전체</option>${opts(teams98(),'',false)}</select>
+        <label>활성</label><select id="adminActiveV598" class="input aurora-select"><option value="Y">Y</option><option value="N">N</option></select>
+        <button class="save" style="width:100%;margin-top:13px" onclick="saveAdminTopFormV598()">저장</button>
+        ${a.isAdmin?'<button class="soft-btn danger" style="width:100%;margin-top:8px" onclick="resetAdminRoleV598()">권한관리 초기화</button>':''}
+      </div>
+      <div class="card"><div class="section-head">현재 권한관리</div>
+        <div class="count">이름을 누르면 수정창이 열립니다. 표 안에서도 바로 수정 후 저장할 수 있습니다.</div>
+        <div class="admin-table-wrap-v598"><table class="admin-table-v598"><thead><tr><th>이름</th><th>직책</th><th>권한</th><th>담당순</th><th>활성</th><th>저장</th></tr></thead><tbody>${body}</tbody></table></div>
+      </div>
+    </section>`;
+    setTimeout(()=>fillAdminTopFormV598(first),0); syncVersion98();
+  }
+  window.fillAdminTopFormV598=function(name){
+    const r=roleFor98(name)||{name,duty:'',permission:'일반',team:'',active:'Y'}; const a=access98(); const isInitial=norm(name)===norm('김건일');
+    const d=$id('adminDutyV598'), p=$id('adminPermV598'), t=$id('adminTeamV598'), ac=$id('adminActiveV598');
+    if(d){d.value=r.duty||''; d.disabled=isInitial;}
+    if(p){p.value=r.permission||'일반'; p.disabled=!a.isAdmin||isInitial;}
+    if(t){t.value=r.team||''; t.disabled=isInitial;}
+    if(ac){ac.value=r.active||'Y'; ac.disabled=isInitial;}
+  };
+  function validateRole98(rec){
+    if(!txt(rec.name)) throw new Error('이름이 비어 있습니다.');
+    if(!txt(rec.duty)) throw new Error('직책을 선택해주세요.');
+    if(rec.duty==='순장' && !txt(rec.team)) throw new Error('순장은 담당 순이름을 선택해야 합니다.');
+    if(['임원','목회자','위원장'].includes(rec.duty) && !txt(rec.team)) rec.team='전체';
+    return rec;
+  }
+  async function saveRole98(rec){
+    const a=access98();
+    if(!a.isManager) throw new Error('관리자 또는 부관리자만 저장할 수 있습니다.');
+    if(!a.isAdmin){ const old=roleFor98(rec.name)||{permission:'일반'}; rec.permission=old.permission||'일반'; }
+    rec=validateRole98(rec);
+    const raw=await call98('saveAdminRole',{actorName:a.name,password:ADMIN_PW,record:rec});
+    const res=typeof raw==='object'?raw:JSON.parse(String(raw));
+    if(res&&res.ok===false) throw new Error(res.error||'저장 실패');
+    window.DATA=window.DATA||{}; DATA.adminRoles=arr(res.roles);
+    return res;
+  }
+  window.saveAdminTopFormV598=async function(){
+    const name=txt($id('adminMemberSelectV598')?.value);
+    const rec={name,duty:txt($id('adminDutyV598')?.value),permission:txt($id('adminPermV598')?.value||'일반'),team:txt($id('adminTeamV598')?.value),active:txt($id('adminActiveV598')?.value||'Y')};
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); await saveRole98(rec); alert('저장되었습니다.'); renderAdminPage98(); }catch(e){ alert('저장 오류: '+(e.message||e)); }finally{ window.loadingToast&&loadingToast.classList.add('hidden'); }
+  };
+  window.saveAdminInlineV598=async function(i,name){
+    const rec={name,duty:txt($id('arDuty'+i)?.value),permission:txt($id('arPerm'+i)?.value||'일반'),team:txt($id('arTeam'+i)?.value),active:txt($id('arActive'+i)?.value||'Y')};
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); await saveRole98(rec); alert('저장되었습니다.'); renderAdminPage98(); }catch(e){ alert('저장 오류: '+(e.message||e)); }finally{ window.loadingToast&&loadingToast.classList.add('hidden'); }
+  };
+  window.openAdminRoleEditorV598=function(name){
+    const r=roleFor98(name)||{name,duty:'',permission:'일반',team:'',active:'Y'}; const a=access98(); const isInitial=norm(name)===norm('김건일');
+    const old=document.getElementById('adminRoleModalV598'); if(old) old.remove();
+    const modal=document.createElement('div'); modal.id='adminRoleModalV598'; modal.className='admin-role-modal-v598';
+    modal.innerHTML=`<div class="admin-role-dialog-v598"><div class="section-head">권한 수정</div>
+      <div class="admin-modal-name-v598">${esc(name)}</div>
+      <label>직책</label><select id="modalDutyV598" class="input aurora-select" ${isInitial?'disabled':''}>${opts(duties(),r.duty,true)}</select>
+      <label>권한</label><select id="modalPermV598" class="input aurora-select" ${(!a.isAdmin||isInitial)?'disabled':''}>${opts(perms(),r.permission||'일반',false)}</select>
+      <label>담당순</label><select id="modalTeamV598" class="input aurora-select" ${isInitial?'disabled':''}><option value="">선택 없음</option><option value="전체" ${r.team==='전체'?'selected':''}>전체</option>${opts(teams98(),r.team,false)}</select>
+      <label>활성</label><select id="modalActiveV598" class="input aurora-select" ${isInitial?'disabled':''}><option value="Y" ${(r.active||'Y')==='Y'?'selected':''}>Y</option><option value="N" ${r.active==='N'?'selected':''}>N</option></select>
+      <button class="save" onclick="saveAdminModalV598('${esc(name)}')">저장</button>
+      ${(!isInitial&&a.isAdmin)?'<button class="soft-btn danger" onclick="deleteAdminRoleV598(\''+esc(name)+'\')">삭제</button>':''}
+      <button class="soft-btn" onclick="closeAdminRoleModalV598()">닫기</button>
+    </div>`;
+    document.body.appendChild(modal);
+  };
+  window.closeAdminRoleModalV598=function(){ const m=$id('adminRoleModalV598'); if(m)m.remove(); };
+  window.saveAdminModalV598=async function(name){
+    const rec={name,duty:txt($id('modalDutyV598')?.value),permission:txt($id('modalPermV598')?.value||'일반'),team:txt($id('modalTeamV598')?.value),active:txt($id('modalActiveV598')?.value||'Y')};
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); await saveRole98(rec); closeAdminRoleModalV598(); alert('저장되었습니다.'); renderAdminPage98(); }catch(e){ alert('저장 오류: '+(e.message||e)); }finally{ window.loadingToast&&loadingToast.classList.add('hidden'); }
+  };
+  window.deleteAdminRoleV598=async function(name){
+    const a=access98(); if(!a.isAdmin){alert('관리자만 삭제할 수 있습니다.');return;} if(norm(name)===norm('김건일')){alert('초기 관리자는 삭제할 수 없습니다.');return;}
+    if(!confirm(name+' 권한관리 항목을 삭제할까요?')) return;
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); const raw=await call98('deleteAdminRole',{actorName:a.name,password:ADMIN_PW,name}); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'삭제 실패'); DATA.adminRoles=arr(res.roles); closeAdminRoleModalV598(); alert('삭제되었습니다.'); renderAdminPage98(); }catch(e){ alert('삭제 오류: '+(e.message||e)); }finally{ window.loadingToast&&loadingToast.classList.add('hidden'); }
+  };
+  window.resetAdminRoleV598=async function(){
+    const a=access98(); if(!a.isAdmin){alert('관리자만 초기화할 수 있습니다.'); return;} if(!confirm('권한관리 시트를 김건일 관리자 기준으로 초기화할까요?')) return;
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); const raw=await call98('resetAdminRole',{actorName:a.name,password:ADMIN_PW}); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'초기화 실패'); DATA.adminRoles=arr(res.roles); alert('초기화되었습니다.'); renderAdminPage98(); }catch(e){alert('초기화 오류: '+(e.message||e));}finally{ window.loadingToast&&loadingToast.classList.add('hidden'); }
+  };
+  window.renderAdmin=async function(){
+    const a=access98();
+    if(!a.isManager){ alert('관리자 또는 부관리자만 접속할 수 있습니다.'); try{state.tab='home'; render();}catch(e){} return; }
+    if(sessionStorage.getItem('geolAdminPwV598')!==ADMIN_PW){ const pw=prompt('관리자 비밀번호를 입력해주세요.'); if(pw!==ADMIN_PW){alert('비밀번호가 맞지 않습니다.'); try{state.tab='home'; render();}catch(e){} return;} sessionStorage.setItem('geolAdminPwV598',ADMIN_PW); }
+    await refreshAdminRoles98(); renderAdminPage98();
+  };
+
+  // 출석통계: 첫 열 폭을 이름 길이에 맞게 축소하고, 전체 순원 현황은 순별 접기/펼치기
+  window.__TEAM_OPEN_V598=window.__TEAM_OPEN_V598||{};
+  window.toggleTeamStatsV598=function(team){ window.__TEAM_OPEN_V598[team]=!window.__TEAM_OPEN_V598[team]; try{renderStatsV598Override();}catch(e){ if(typeof renderStatsV595==='function') renderStatsV595(); } };
+  function months98(){ try{ if(typeof monthsV595==='function') return monthsV595(); }catch(e){} return [3,4,5,6,7,8,9,10,11,12]; }
+  function memberStatus98(m,mon){ try{ if(typeof memberStatusV595==='function') return memberStatusV595(m,mon); }catch(e){} return (m.attendance&&m.attendance[mon])||''; }
+  function due98(mon){ try{ if(typeof isDueV595==='function') return isDueV595(mon); }catch(e){} return true; }
+  function icon98(st,due){ try{ if(typeof statusIconV595==='function') return statusIconV595(st,due); }catch(e){} return st==='출석'?'✅':'❌'; }
+  function teamList98(){ try{ if(typeof teamListV595==='function') return teamListV595(); }catch(e){} return teams98(); }
+  function membersOfTeam98(team){ try{ if(typeof membersOfTeamV595==='function') return membersOfTeamV595(team); }catch(e){} return members98().filter(m=>txt(m.team||m.순||m['순이름'])===team); }
+  function table98(firstTitle, body, firstWidth){ const months=months98(); const min=(firstWidth||88)+months.length*64; const cols='<colgroup><col style="width:'+(firstWidth||88)+'px">'+months.map(()=>'<col style="width:64px">').join('')+'</colgroup>'; const head='<thead><tr><th class="sticky-col">'+esc(firstTitle)+'</th>'+months.map(m=>'<th>'+m+'월</th>').join('')+'</tr></thead>'; return '<div class="stats-table-scroll-v598"><table class="stats-table-v598" style="min-width:'+min+'px">'+cols+head+'<tbody>'+body+'</tbody></table></div>'; }
+  function allMemberTable98(){ const months=months98(); let body=''; teamList98().forEach(team=>{ const members=membersOfTeam98(team); if(!members.length) return; const open=!!window.__TEAM_OPEN_V598[team]; body += '<tr class="team-toggle-v598" onclick="toggleTeamStatsV598(\''+esc(team)+'\')"><td class="sticky-col" colspan="'+(months.length+1)+'"><span>'+esc(team)+'</span><b>'+(open?'닫기':'펼치기')+'</b></td></tr>'; if(open){ members.forEach(m=>{body+='<tr><td class="sticky-col name-short-v598">'+esc(m.name||'')+'</td>'+months.map(mon=>'<td>'+icon98(memberStatus98(m,mon), due98(mon))+'</td>').join('')+'</tr>';}); }}); return table98('순원', body||'<tr><td>표시할 순원이 없습니다.</td></tr>', 88); }
+  window.renderStatsV598Override=function(){
+    if(typeof renderStatsV595!=='function'){return;}
+    renderStatsV595();
+    setTimeout(()=>{
+      try{
+        document.querySelectorAll('.stats-table-v595,.stats-table-v598').forEach(tbl=>tbl.classList.add('stats-table-v598'));
+        document.querySelectorAll('.stats-table-v595 col.name-col-v595').forEach(c=>c.style.width='88px');
+        document.querySelectorAll('.stats-table-v595 col:first-child').forEach(c=>c.style.width='88px');
+        const cards=[...document.querySelectorAll('.stats-collapse-card-v595')];
+        const allCard=cards.find(c=>(c.textContent||'').includes('전체 순원 월별 출석현황'));
+        if(allCard){ const body=allCard.querySelector('.stats-collapse-body-v595'); if(body&&body.classList.contains('open')) body.innerHTML=allMemberTable98(); }
+        syncVersion98();
+      }catch(e){console.warn(e)}
+    },0);
+  };
+  const oldRender98=window.render;
+  window.render=function(){ syncVersion98(); if(window.state&&state.tab==='admin') return window.renderAdmin(); if(window.state&&state.tab==='stats') return window.renderStatsV598Override(); return oldRender98.apply(this,arguments); };
+  const oldGo98=window.go;
+  window.go=function(tab){ if(tab==='admin'){state.tab='admin'; window.renderAdmin(); if(typeof updateNav==='function') updateNav(); return;} if(tab==='stats'){state.tab='stats'; window.renderStatsV598Override(); if(typeof updateNav==='function') updateNav(); return;} return oldGo98.apply(this,arguments); };
+  const style=document.createElement('style'); style.id='v598-style'; style.textContent=`
+    .version,.ver,.version-badge,.app-version{white-space:nowrap!important}
+    .admin-table-wrap-v598{overflow-x:auto;-webkit-overflow-scrolling:touch}.admin-table-v598{width:100%;min-width:560px;border-collapse:separate;border-spacing:0 6px;font-size:13px}.admin-table-v598 th{background:#efe9ff;color:#5f50d8;font-weight:950;padding:9px;border-radius:9px;white-space:nowrap}.admin-table-v598 td{background:#faf9ff;border:1px solid #eee9ff;padding:5px;border-radius:9px;text-align:center}.admin-table-v598 td:first-child{text-align:left;font-weight:950}.admin-name-btn-v598{border:0;background:transparent;font-weight:950;color:#161629;font-size:13px;text-decoration:underline;text-underline-offset:3px}.admin-inline-v598{width:100%;min-width:72px;border:0;background:transparent;font-weight:850;text-align:center;color:#221b3a}.mini-save-v598{border:0;border-radius:10px;padding:7px 9px;background:#6d54be;color:#fff;font-weight:900}.admin-role-modal-v598{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px}.admin-role-dialog-v598{width:min(420px,94vw);max-height:86vh;overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.25)}.admin-role-dialog-v598 label{display:block;margin:12px 0 6px;font-size:13px;font-weight:950;color:#4b3b89}.admin-role-dialog-v598 .save,.admin-role-dialog-v598 .soft-btn{width:100%;margin-top:10px}.admin-modal-name-v598{font-size:20px;font-weight:950;color:#2c2350;margin:8px 0 12px}
+    .modal,.sheet,.dialog,.popup,.profile-modal,.profile-sheet,[role="dialog"]{z-index:999990!important}.modal select,.sheet select,.dialog select,.popup select,[role="dialog"] select{position:relative;z-index:999991!important}.ios-picker,.select-menu,.dropdown-menu{z-index:999992!important}
+    .stats-table-scroll-v598{overflow-x:auto;-webkit-overflow-scrolling:touch}.stats-table-v598{border-collapse:separate!important;border-spacing:0 6px!important;font-size:13px!important}.stats-table-v598 th{background:#efe9ff;color:#5f50d8;font-weight:950;padding:9px 7px;border-radius:8px;white-space:nowrap}.stats-table-v598 td{background:#faf9ff;border:1px solid #eee9ff;padding:7px 6px;border-radius:8px;text-align:center}.stats-table-v598 .sticky-col{position:sticky;left:0;z-index:5;background:#faf9ff!important;text-align:left!important;min-width:78px!important;max-width:110px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats-table-v598 th.sticky-col{background:#efe9ff!important;text-align:center!important}.team-toggle-v598 td{background:#efe9ff!important;color:#4f3ca3!important;font-weight:950!important;cursor:pointer}.team-toggle-v598 td span{float:left}.team-toggle-v598 td b{float:right;font-size:12px;color:#6d54be}.stats-table-v595 .sticky-col{min-width:78px!important;max-width:110px!important}.stats-table-v595{font-size:13px!important}
+  `; document.head.appendChild(style);
+  document.addEventListener('DOMContentLoaded',()=>{syncVersion98(); setTimeout(syncVersion98,500);}); setTimeout(syncVersion98,0); setTimeout(syncVersion98,1000);
+})();
+</script>
+
 </body>
 </html>
 
 
-<!-- V5.95: 출석통계 표 렌더링 완전 재정리 + 접이식 섹션 안정화 -->
+<!-- V5.98: 출석통계 표 렌더링 완전 재정리 + 접이식 섹션 안정화 -->
 <style id="v595-stats-stable-style">
   .stats-page-v595 .stats-main-card-v595{margin-top:14px!important;overflow:hidden!important;}
   .stats-table-scroll-v595{width:100%;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding:0 0 10px!important;}
@@ -10406,7 +10789,7 @@ applyLoadedData = function(r){
 </style>
 <script id="v595-stats-stable-script">
 (function(){
-  const VER='V5.95';
+  const VER='V5.98';
   window.__GEOL_STATS_COLLAPSE_V595 = window.__GEOL_STATS_COLLAPSE_V595 || {monthly:false, all:false};
   const txt = v => String(v == null ? '' : v).trim();
   const arr = v => Array.isArray(v) ? v : [];
