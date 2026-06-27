@@ -10757,6 +10757,132 @@ applyLoadedData = function(r){
 })();
 </script>
 
+
+
+<style id="v599-final-fix-style">
+  .header-version-badge,.version-badge,.app-version,#versionBadge{font-weight:950!important;}
+  .admin-modal-v599{position:fixed!important;inset:0!important;z-index:2147483000!important;background:rgba(0,0,0,.35)!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:18px!important;}
+  .admin-modal-v599 .modal-card{width:min(460px,96vw)!important;max-height:86vh!important;overflow:auto!important;background:#fff!important;border-radius:24px!important;padding:20px!important;box-shadow:0 18px 60px rgba(0,0,0,.26)!important;}
+  .profile-modal,.modal,.sheet,.dialog,[role="dialog"]{z-index:2147482000!important;}
+  .profile-modal select,.modal select,.sheet select,.dialog select{position:relative!important;z-index:2147482100!important;}
+  .stats-page-v599 .stats-main-card{margin-top:14px!important;overflow:hidden!important;}
+  .stats-table-scroll-v599{width:100%;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding:0 0 8px!important;}
+  .stats-table-v599{border-collapse:separate!important;border-spacing:0 6px!important;table-layout:fixed!important;width:max-content!important;font-size:13px!important;}
+  .stats-table-v599 th,.stats-table-v599 td{box-sizing:border-box!important;text-align:center!important;vertical-align:middle!important;padding:8px 6px!important;border-radius:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  .stats-table-v599 th{background:#efe9ff!important;color:#5f50d8!important;font-weight:950!important;}
+  .stats-table-v599 td{background:#fbfaff!important;border:1px solid #eee9ff!important;color:#262236!important;font-weight:850!important;}
+  .stats-table-v599 .first-col{position:sticky!important;left:0!important;z-index:5!important;text-align:left!important;background:#fbfaff!important;box-shadow:6px 0 10px rgba(255,255,255,.95)!important;}
+  .stats-table-v599 th.first-col{z-index:7!important;text-align:center!important;background:#efe9ff!important;color:#5f50d8!important;}
+  .stats-table-v599 .rate-main{font-weight:950!important;color:#453b7c!important;display:block!important;line-height:1.05!important;}
+  .stats-table-v599 .rate-sub{font-size:10px!important;color:#6f668f!important;display:block!important;margin-top:2px!important;line-height:1.05!important;}
+  .stat-ok-v599,.stat-no-v599{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:25px!important;height:25px!important;border-radius:50%!important;font-weight:950!important;color:#fff!important;font-size:18px!important;line-height:1!important;}
+  .stat-ok-v599{background:#43bd83!important}.stat-no-v599{background:#f04b45!important}.stat-blank-v599{display:inline-block!important;width:25px!important;height:25px!important;border-radius:8px!important;background:#f1eff8!important;}
+  .stats-collapse-card-v599{padding:0!important;overflow:hidden!important;}
+  .stats-collapse-head-v599{width:100%!important;border:0!important;background:#fff!important;color:#232136!important;font-size:20px!important;font-weight:950!important;text-align:left!important;padding:18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border-radius:22px!important;cursor:pointer!important;}
+  .stats-collapse-head-v599 .arrow{font-size:18px!important;color:#6a4cc2!important;transition:transform .18s ease!important;}
+  .stats-collapse-head-v599.open .arrow{transform:rotate(180deg)!important;}
+  .stats-collapse-body-v599{padding:0 16px 16px!important;display:none!important;}
+  .stats-collapse-body-v599.open{display:block!important;}
+  .team-collapse-v599{margin:10px 0!important;border:1px solid #eee9ff!important;border-radius:14px!important;overflow:hidden!important;background:#fff!important;}
+  .team-collapse-head-v599{width:100%!important;border:0!important;background:#f1ebff!important;color:#4b3b89!important;font-size:17px!important;font-weight:950!important;text-align:left!important;padding:13px 14px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;cursor:pointer!important;}
+  .team-collapse-head-v599 .arrow{color:#6a4cc2!important;transition:transform .18s ease!important;}
+  .team-collapse-head-v599.open .arrow{transform:rotate(180deg)!important;}
+  .team-collapse-body-v599{display:none!important;padding:8px 8px 0!important;background:#fff!important;}
+  .team-collapse-body-v599.open{display:block!important;}
+  @media(max-width:430px){.stats-table-v599{font-size:12px!important}.stats-table-v599 th,.stats-table-v599 td{padding:7px 5px!important}.stats-collapse-head-v599{font-size:19px!important;padding:17px!important}.team-collapse-head-v599{font-size:16px!important}}
+</style>
+<script id="v599-final-fix-script">
+(function(){
+  const VER='V5.99';
+  const SERVER_VER='V5.99_FINAL_STABLE_CODEGS';
+  const ADMIN_PW='4545';
+  const INITIAL={name:'김건일',duty:'순장',permission:'관리자',team:'에스더사랑순',active:'Y'};
+  const DUTIES=['순장','임원','목회자','위원장'];
+  const PERMS=['일반','관리자','부관리자'];
+  const txt=v=>String(v==null?'':v).trim();
+  const norm=v=>txt(v).replace(/\s+/g,'');
+  const arr=v=>Array.isArray(v)?v:[];
+  const esc=v=>txt(v).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  function setVersion(){
+    try{ window.versionText=function(){return VER;}; }catch(e){}
+    document.querySelectorAll('.header-version-badge,#versionBadge,.version-badge,.app-version,.version,.ver,.pill,[data-version]').forEach(el=>{ if(/V\d+\.\d+/.test(el.textContent||'')) el.textContent=VER; });
+    document.querySelectorAll('*').forEach(el=>{ try{ if(el.childNodes&&el.childNodes.length===1&&el.childNodes[0].nodeType===3&&/V5\./.test(el.textContent||'')) el.textContent=el.textContent.replace(/V5\.\d+/g,VER); }catch(e){} });
+  }
+  function readJson(k){try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(e){return {};}}
+  function profile(){
+    const s=(window.DATA&&DATA.settings)||{};
+    const p1=readJson('waveLeaderProfile');
+    const p2=readJson('geolLeaderProfile');
+    let name=txt(s.leaderName||p1.leaderName||p1.name||p2.leaderName||p2.name);
+    if(!name){ const el=document.getElementById('headerLeader'); if(el) name=txt(el.textContent).replace(/님$/,'').replace(/\s*(순장|임원|목회자|위원장)$/,''); }
+    let team=txt(s.leaderTeam||p1.leaderTeam||p1.team||p2.leaderTeam||p2.team);
+    let duty=txt(s.leaderRole||p1.leaderRole||p1.role||p2.leaderRole||p2.role);
+    return {name,team,duty};
+  }
+  function teamList(){
+    const out=[];
+    arr(window.DATA&&DATA.teams).forEach(t=>{t=txt(t); if(t&&t!=='전체'&&t!=='어린이결'&&!out.includes(t)) out.push(t);});
+    arr(window.DATA&&DATA.members).forEach(m=>{const t=txt(m&&m.team); if(t&&t!=='전체'&&t!=='어린이결'&&!out.includes(t)) out.push(t);});
+    return out;
+  }
+  function memberNames(){
+    const set=new Set();
+    arr(window.DATA&&DATA.members).forEach(m=>{const n=txt(m&&m.name); if(n) set.add(n);});
+    arr(window.DATA&&DATA.adminRoles).forEach(r=>{const n=txt(r.name||r.이름); if(n) set.add(n);});
+    return Array.from(set).sort((a,b)=>a.localeCompare(b,'ko'));
+  }
+  function roles(){
+    const out=[Object.assign({isInitial:true},INITIAL)], seen=new Set([norm(INITIAL.name)]);
+    arr(window.DATA&&DATA.adminRoles).forEach(r=>{ const name=txt(r.name||r.이름); if(!name) return; const k=norm(name); if(seen.has(k)) return; seen.add(k); const active=txt(r.active||r.활성||'Y')||'Y'; out.push({name,duty:txt(r.duty||r.직책),permission:txt(r.permission||r.권한||'일반')||'일반',team:txt(r.team||r.담당순||r.순이름),active,updatedAt:txt(r.updatedAt||r.수정일시),updatedBy:txt(r.updatedBy||r.수정자)}); });
+    return out;
+  }
+  function roleFor(name){ if(norm(name)===norm(INITIAL.name)) return Object.assign({isInitial:true},INITIAL); return roles().find(r=>norm(r.name)===norm(name)&&txt(r.active||'Y')!=='N')||null; }
+  function access(){ const p=profile(); const r=roleFor(p.name); const duty=txt((r&&r.duty)||p.duty); const permission=txt((r&&r.permission)||'일반')||'일반'; const team=txt((r&&r.team)||p.team); const isAdmin=permission==='관리자'; const isSubAdmin=permission==='부관리자'; return {name:p.name,duty,permission,team,isAdmin,isSubAdmin,isManager:isAdmin||isSubAdmin,isLeader:duty==='순장',isReadOnlyAll:['임원','목회자','위원장'].includes(duty)&&!(isAdmin||isSubAdmin)}; }
+  async function api(action,payload){ if(typeof call==='function') return await call(action,payload||{}); throw new Error('API 호출 함수를 찾을 수 없습니다.'); }
+  async function refreshRoles(){ const a=access(); const raw=await api('getAdminRoleList',{actorName:a.name,password:ADMIN_PW}); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'권한 목록을 불러오지 못했습니다.'); window.DATA=window.DATA||{}; DATA.adminRoles=arr(res.roles); return res; }
+  function opt(list,sel,blank){ let s=blank?'<option value="">선택 없음</option>':''; return s+list.map(x=>`<option value="${esc(x)}" ${txt(x)===txt(sel)?'selected':''}>${esc(x)}</option>`).join(''); }
+  function row(r,i){ const a=access(); const init=norm(r.name)===norm(INITIAL.name); return `<tr><td><button type="button" class="admin-name-btn-v598" onclick="openAdminRoleEditorV599('${esc(r.name)}')">${esc(r.name)}</button></td><td><select id="v599d${i}" class="admin-inline-v598" ${init?'disabled':''}>${opt(DUTIES,r.duty,true)}</select></td><td><select id="v599p${i}" class="admin-inline-v598" ${(!a.isAdmin||init)?'disabled':''}>${opt(PERMS,r.permission||'일반',false)}</select></td><td><select id="v599t${i}" class="admin-inline-v598" ${init?'disabled':''}><option value="">선택 없음</option><option value="전체" ${r.team==='전체'?'selected':''}>전체</option>${opt(teamList(),r.team,false)}</select></td><td><select id="v599a${i}" class="admin-inline-v598" ${init?'disabled':''}><option value="Y" ${r.active!=='N'?'selected':''}>Y</option><option value="N" ${r.active==='N'?'selected':''}>N</option></select></td><td><button type="button" class="mini-save-v598" onclick="saveAdminInlineV599(${i},'${esc(r.name)}')" ${init?'disabled':''}>저장</button></td></tr>`; }
+  function adminHtml(){ const a=access(); const rs=roles(); return `<section class="page admin-page-v586 admin-page-v598"><div class="section-head">관리자 기능</div><div class="card"><div class="section-head">직책 · 권한 · 순이름 지정</div><label>순원 선택</label><select id="adminMemberV599" class="input aurora-select" onchange="fillAdminFormV599(this.value)">${memberNames().map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select><label>직책</label><select id="adminDutyV599" class="input aurora-select">${opt(DUTIES,'',true)}</select><label>권한</label><select id="adminPermV599" class="input aurora-select" ${a.isAdmin?'':'disabled'}>${opt(PERMS,'일반',false)}</select><label>순이름</label><select id="adminTeamV599" class="input aurora-select"><option value="">선택 없음</option><option value="전체">전체</option>${opt(teamList(),'',false)}</select><label>활성</label><select id="adminActiveV599" class="input aurora-select"><option value="Y">Y</option><option value="N">N</option></select><button class="save" style="width:100%;margin-top:13px" onclick="saveAdminFormV599()">저장</button>${a.isAdmin?'<button class="soft-btn danger" style="width:100%;margin-top:8px" onclick="resetAdminRoleV599()">권한관리 초기화</button>':''}</div><div class="card"><div class="section-head">현재 권한관리</div><div class="admin-table-wrap-v586"><table class="admin-table-v586 admin-table-v598"><thead><tr><th>이름</th><th>직책</th><th>권한</th><th>담당순</th><th>활성</th><th>저장</th></tr></thead><tbody>${rs.map(row).join('')}</tbody></table></div></div></section>`; }
+  window.fillAdminFormV599=function(name){ const r=roleFor(name)||{name,duty:'',permission:'일반',team:'',active:'Y'}; const a=access(); const set=(id,v)=>{const el=document.getElementById(id); if(el) el.value=v||''}; set('adminDutyV599',r.duty); set('adminPermV599',r.permission||'일반'); set('adminTeamV599',r.team); set('adminActiveV599',r.active||'Y'); const p=document.getElementById('adminPermV599'); if(p) p.disabled=!a.isAdmin; };
+  async function saveRole(rec){ const a=access(); if(!a.isManager) throw new Error('관리자 또는 부관리자만 저장할 수 있습니다.'); if(!a.isAdmin){ const old=roleFor(rec.name)||{permission:'일반'}; rec.permission=old.permission||'일반'; } const raw=await api('saveAdminRole',{actorName:a.name,password:ADMIN_PW,record:rec}); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'저장 실패'); DATA.adminRoles=arr(res.roles); return res; }
+  window.saveAdminFormV599=async function(){ const name=txt(document.getElementById('adminMemberV599')&&document.getElementById('adminMemberV599').value); if(!name) return alert('순원을 선택해주세요.'); const rec={name,duty:txt(document.getElementById('adminDutyV599').value),permission:txt(document.getElementById('adminPermV599').value||'일반'),team:txt(document.getElementById('adminTeamV599').value),active:txt(document.getElementById('adminActiveV599').value||'Y')}; if(!rec.duty) return alert('직책을 선택해주세요.'); try{ loadingToast&&loadingToast.classList.remove('hidden'); await saveRole(rec); alert('저장되었습니다.'); renderAdminV599(); }catch(e){ alert('저장 오류: '+(e.message||e)); }finally{ loadingToast&&loadingToast.classList.add('hidden'); } };
+  window.saveAdminInlineV599=async function(i,name){ const rec={name,duty:txt(document.getElementById('v599d'+i).value),permission:txt(document.getElementById('v599p'+i).value||'일반'),team:txt(document.getElementById('v599t'+i).value),active:txt(document.getElementById('v599a'+i).value||'Y')}; try{ loadingToast&&loadingToast.classList.remove('hidden'); await saveRole(rec); alert('저장되었습니다.'); renderAdminV599(); }catch(e){ alert('저장 오류: '+(e.message||e)); }finally{ loadingToast&&loadingToast.classList.add('hidden'); } };
+  window.openAdminRoleEditorV599=function(name){ const a=access(), r=roleFor(name)||{name,duty:'',permission:'일반',team:'',active:'Y'}, init=norm(name)===norm(INITIAL.name); document.getElementById('adminRoleModalV599')?.remove(); const div=document.createElement('div'); div.id='adminRoleModalV599'; div.className='admin-modal-v599'; div.innerHTML=`<div class="modal-card"><div class="section-head">권한 수정</div><label>이름</label><input class="input" value="${esc(name)}" disabled><label>직책</label><select id="modalDutyV599" class="input aurora-select" ${init?'disabled':''}>${opt(DUTIES,r.duty,true)}</select><label>권한</label><select id="modalPermV599" class="input aurora-select" ${(!a.isAdmin||init)?'disabled':''}>${opt(PERMS,r.permission||'일반',false)}</select><label>담당순</label><select id="modalTeamV599" class="input aurora-select" ${init?'disabled':''}><option value="">선택 없음</option><option value="전체" ${r.team==='전체'?'selected':''}>전체</option>${opt(teamList(),r.team,false)}</select><label>활성</label><select id="modalActiveV599" class="input aurora-select" ${init?'disabled':''}><option value="Y" ${r.active!=='N'?'selected':''}>Y</option><option value="N" ${r.active==='N'?'selected':''}>N</option></select><button class="save" style="width:100%;margin-top:13px" onclick="saveAdminModalV599('${esc(name)}')" ${init?'disabled':''}>저장</button>${(!init&&a.isAdmin)?`<button class="soft-btn danger" style="width:100%;margin-top:8px" onclick="deleteAdminRoleV599('${esc(name)}')">삭제</button>`:''}<button class="soft-btn" style="width:100%;margin-top:8px" onclick="closeAdminRoleModalV599()">닫기</button></div>`; document.body.appendChild(div); };
+  window.closeAdminRoleModalV599=function(){document.getElementById('adminRoleModalV599')?.remove();};
+  window.saveAdminModalV599=async function(name){ const rec={name,duty:txt(document.getElementById('modalDutyV599').value),permission:txt(document.getElementById('modalPermV599').value||'일반'),team:txt(document.getElementById('modalTeamV599').value),active:txt(document.getElementById('modalActiveV599').value||'Y')}; try{ loadingToast&&loadingToast.classList.remove('hidden'); await saveRole(rec); closeAdminRoleModalV599(); alert('저장되었습니다.'); renderAdminV599(); }catch(e){ alert('저장 오류: '+(e.message||e)); }finally{ loadingToast&&loadingToast.classList.add('hidden'); } };
+  window.deleteAdminRoleV599=async function(name){ const a=access(); if(!a.isAdmin) return alert('관리자만 삭제할 수 있습니다.'); if(!confirm(name+' 권한관리 항목을 삭제할까요?')) return; try{ loadingToast&&loadingToast.classList.remove('hidden'); const raw=await api('deleteAdminRole',{actorName:a.name,password:ADMIN_PW,name}); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'삭제 실패'); DATA.adminRoles=arr(res.roles); closeAdminRoleModalV599(); alert('삭제되었습니다.'); renderAdminV599(); }catch(e){ alert('삭제 오류: '+(e.message||e)); }finally{ loadingToast&&loadingToast.classList.add('hidden'); } };
+  window.resetAdminRoleV599=async function(){ const a=access(); if(!a.isAdmin) return alert('관리자만 초기화할 수 있습니다.'); if(!confirm('권한관리 시트를 김건일 관리자 기준으로 초기화할까요?')) return; try{ loadingToast&&loadingToast.classList.remove('hidden'); const raw=await api('resetAdminRole',{actorName:a.name,password:ADMIN_PW}); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'초기화 실패'); DATA.adminRoles=arr(res.roles); alert('초기화되었습니다.'); renderAdminV599(); }catch(e){ alert('초기화 오류: '+(e.message||e)); }finally{ loadingToast&&loadingToast.classList.add('hidden'); } };
+  async function renderAdminV599(){ const a=access(); if(!a.isManager){ alert('관리자 또는 부관리자만 접속할 수 있습니다.'); if(window.state) state.tab='home'; return window.render&&window.render(); } if(sessionStorage.getItem('geolAdminPwV599')!==ADMIN_PW){ const pw=prompt('관리자 비밀번호를 입력해주세요.'); if(pw!==ADMIN_PW){ alert('비밀번호가 맞지 않습니다.'); if(window.state) state.tab='home'; return window.render&&window.render(); } sessionStorage.setItem('geolAdminPwV599',ADMIN_PW); } try{ await refreshRoles(); }catch(e){ console.warn(e); } view.innerHTML=adminHtml(); setTimeout(()=>{ const sel=document.getElementById('adminMemberV599'); if(sel){ sel.value=a.name||sel.value; fillAdminFormV599(sel.value); } },0); setVersion(); ensureAdminNavV599(); }
+  window.renderAdminV599=renderAdminV599; window.renderAdmin=renderAdminV599;
+  function ensureAdminNavV599(){ const nav=document.querySelector('.bottom'); if(!nav) return; const a=access(); Array.from(nav.querySelectorAll('[data-tab="admin"]')).forEach(x=>x.remove()); nav.style.gridTemplateColumns=a.isManager?'repeat(5,1fr)':'repeat(4,1fr)'; if(a.isManager){ const b=document.createElement('button'); b.type='button'; b.className='nav'; b.dataset.tab='admin'; b.innerHTML='<span class="ico">⚙️</span>관리자'; b.onclick=function(){ if(window.state) state.tab='admin'; renderAdminV599(); if(typeof updateNav==='function') updateNav(); }; nav.appendChild(b); } }
+  function active(m){return m&&m.active!=='N'&&m.active!=='보류';}
+  function months(){try{if(typeof visibleStatsMonths==='function') return visibleStatsMonths();}catch(e){} try{if(typeof monthNumbers==='function') return monthNumbers();}catch(e){} return [3,4,5,6,7,8,9,10,11,12];}
+  function memberStatus(m,mon){try{return memberMonthStatus(m,mon);}catch(e){return '';}}
+  function childStatus(c,mon){try{return childMonthStatus(c,mon);}catch(e){return '';}}
+  function due(mon){try{return !!isAttendanceDueMonth(mon);}catch(e){return true;}}
+  function icon(st,d){ if(st==='출석') return '<span class="stat-ok-v599">✓</span>'; if(d) return '<span class="stat-no-v599">×</span>'; return '<span class="stat-blank-v599"></span>'; }
+  function membersOf(team){let list=arr(DATA&&DATA.members).filter(m=>active(m)&&txt(m.team)===txt(team)); try{if(typeof sortMembersForList==='function') list=sortMembersForList(list,team);}catch(e){} return list;}
+  function selectedMembers(){ if(!state||!state.team) return []; if(state.team==='전체') return teamList().flatMap(membersOf); try{if(typeof teamMembers==='function') return arr(teamMembers()).filter(active);}catch(e){} return membersOf(state.team); }
+  function table(first,body,firstW,monW){ const ms=months(); const min=(firstW||88)+ms.length*(monW||58); const cols='<colgroup><col style="width:'+(firstW||88)+'px">'+ms.map(()=>'<col style="width:'+(monW||58)+'px">').join('')+'</colgroup>'; const head='<thead><tr><th class="first-col">'+esc(first)+'</th>'+ms.map(m=>'<th>'+m+'월</th>').join('')+'</tr></thead>'; return '<div class="stats-table-scroll-v599"><table class="stats-table-v599" style="min-width:'+min+'px">'+cols+head+'<tbody>'+body+'</tbody></table></div>'; }
+  function count(mon,list){list=arr(list); const p=list.filter(m=>memberStatus(m,mon)==='출석').length; return {present:p,total:list.length,rate:list.length?Math.round(p/list.length*100):0};}
+  function memberTable(list){ const ms=months(); const body=arr(list).map(m=>'<tr><td class="first-col">'+esc(m.name||'')+'</td>'+ms.map(mon=>'<td>'+icon(memberStatus(m,mon),due(mon))+'</td>').join('')+'</tr>').join(''); return table('이름',body||'<tr><td colspan="'+(ms.length+1)+'">표시할 순원이 없습니다.</td></tr>',90,58); }
+  function teamRateTable(){ const ms=months(); const body=teamList().map(team=>{const list=membersOf(team); return '<tr><td class="first-col">'+esc(team)+'</td>'+ms.map(mon=>{const c=count(mon,list); return '<td><span class="rate-main">'+c.rate+'%</span><span class="rate-sub">'+c.present+'/'+c.total+'</span></td>';}).join('')+'</tr>';}).join(''); return table('순',body||'<tr><td colspan="'+(ms.length+1)+'">표시할 순이 없습니다.</td></tr>',86,58); }
+  window.__GEOL_STATS_OPEN_V599=window.__GEOL_STATS_OPEN_V599||{monthly:false,all:false}; window.__GEOL_TEAM_OPEN_V599=window.__GEOL_TEAM_OPEN_V599||{};
+  function monthlyRows(kind,list){ const ms=months(); return ms.map(mon=>{let c;if(kind==='child'){const l=arr(list); const p=l.filter(x=>childStatus(x,mon)==='출석').length; c={present:p,total:l.length,rate:l.length?Math.round(p/l.length*100):0};}else c=count(mon,list); return '<div class="rate-row"><div class="rate-label">'+mon+'월</div><div class="rate-bar"><div class="rate-fill" style="width:'+c.rate+'%"></div></div><div class="rate-num">'+c.rate+'%<br><span>'+c.present+'/'+c.total+'명</span></div></div>';}).join(''); }
+  function collapse(key,title,body){ const open=!!window.__GEOL_STATS_OPEN_V599[key]; return '<div class="card stats-collapse-card-v599"><button type="button" class="stats-collapse-head-v599 '+(open?'open':'')+'" onclick="toggleStatsCollapseV599(\''+key+'\')"><span>'+esc(title)+'</span><span class="arrow">⌄</span></button><div class="stats-collapse-body-v599 '+(open?'open':'')+'">'+(body||'')+'</div></div>'; }
+  window.toggleStatsCollapseV599=function(key){window.__GEOL_STATS_OPEN_V599[key]=!window.__GEOL_STATS_OPEN_V599[key]; renderStatsV599();};
+  window.toggleTeamStatsV599=function(key){window.__GEOL_TEAM_OPEN_V599[key]=!window.__GEOL_TEAM_OPEN_V599[key]; renderStatsV599();};
+  function allMemberCollapses(){ return teamList().map(team=>{ const list=membersOf(team); const key='team_'+team; const open=!!window.__GEOL_TEAM_OPEN_V599[key]; return '<div class="team-collapse-v599"><button type="button" class="team-collapse-head-v599 '+(open?'open':'')+'" onclick="toggleTeamStatsV599('+JSON.stringify(key).replace(/"/g,'&quot;')+')"><span>'+esc(team)+' <small>('+list.length+'명)</small></span><span class="arrow">⌄</span></button><div class="team-collapse-body-v599 '+(open?'open':'')+'">'+memberTable(list)+'</div></div>'; }).join('')||'<div class="muted">표시할 순원이 없습니다.</div>'; }
+  function childRows(){try{if(typeof allChildrenRows==='function') return arr(allChildrenRows());}catch(e){} return [];}
+  function childTable(){ const cs=childRows(); const ms=months(); const body=cs.map(c=>'<tr><td class="first-col">'+esc(c.name||'')+'</td>'+ms.map(mon=>'<td>'+icon(childStatus(c,mon),due(mon))+'</td>').join('')+'</tr>').join(''); return table('이름',body||'<tr><td colspan="'+(ms.length+1)+'">어린이결 출석 대상 자녀가 없습니다.</td></tr>',90,58); }
+  window.renderStatsV599=function(){ const team=state&&state.team; let title='2026년 출석 현황', main='순을 선택하면 통계가 표시됩니다.', rate='순을 선택하면 월별 출석율이 표시됩니다.', extra='', countText='순을 선택해주세요.'; if(team){ if(team==='어린이결'){ const cs=childRows(); title='2026년 어린이결 출석 현황'; main=childTable(); rate=monthlyRows('child',cs); countText='어린이결 통계: 출석 대상 자녀 '+cs.length+'명'; } else if(team==='전체'){ const list=selectedMembers(); title='전체 순 월별 출석현황'; main=teamRateTable(); rate=monthlyRows('member',list); extra=collapse('all','전체 순원 월별 출석현황',allMemberCollapses()); countText='전체 순 통계: '+teamList().length+'개 순 / 전체 '+list.length+'명'; } else { const list=selectedMembers(); title='2026년 출석 현황'; main=memberTable(list); rate=monthlyRows('member',list); countText='통계 대상: '+list.length+'명'; } } view.innerHTML='<section class="page stats-page-v599"><div class="stats-sticky-v593"><div class="section-head">출석통계</div>'+statsTeamSelect()+'<div class="count">'+countText+'</div></div><div class="card stats-main-card"><div class="stats-main-title">'+esc(title)+'</div>'+main+'</div>'+collapse('monthly','월별 출석율',rate)+extra+'</section>'; setVersion(); };
+  const oldRender=window.render; window.render=function(){ setVersion(); ensureAdminNavV599(); if(window.state&&state.tab==='admin') return renderAdminV599(); if(window.state&&state.tab==='stats') return renderStatsV599(); return oldRender.apply(this,arguments); };
+  const oldGo=window.go; window.go=function(tab){ if(tab==='admin'){ if(window.state) state.tab='admin'; renderAdminV599(); if(typeof updateNav==='function') updateNav(); return; } if(tab==='stats'){ if(window.state) state.tab='stats'; renderStatsV599(); if(typeof updateNav==='function') updateNav(); return; } return oldGo.apply(this,arguments); };
+  const oldNav=window.updateNav; window.updateNav=function(){ try{oldNav&&oldNav.apply(this,arguments);}catch(e){} ensureAdminNavV599(); setVersion(); };
+  setVersion(); setTimeout(()=>{setVersion();ensureAdminNavV599();},0); setTimeout(()=>{setVersion();ensureAdminNavV599();},700); setTimeout(()=>{setVersion();ensureAdminNavV599();},1800);
+})();
+</script>
+
 </body>
 </html>
 
