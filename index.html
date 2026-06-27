@@ -10275,5 +10275,104 @@ applyLoadedData = function(r){
 })();
 </script>
 
+
+
+<!-- V5.94: 출석통계 접이식 섹션 + 통계 표 정렬 복구 -->
+<style id="v594-stats-collapse-style">
+  .stats-page-v594 .stats-main-card-v594{margin-top:14px!important;}
+  .stats-collapse-card-v594{padding:0!important;overflow:hidden!important;}
+  .stats-collapse-head-v594{
+    width:100%;border:0;background:#fff!important;color:#232136!important;
+    font-size:20px;font-weight:950;text-align:left;padding:18px 18px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    border-radius:22px;cursor:pointer;
+  }
+  .stats-collapse-head-v594 .arrow{font-size:20px;color:#6a4cc2;transition:transform .18s ease;}
+  .stats-collapse-head-v594.open .arrow{transform:rotate(180deg);}
+  .stats-collapse-body-v594{padding:0 16px 16px;display:none;}
+  .stats-collapse-body-v594.open{display:block;}
+  .stats-table-scroll-v564{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:8px!important;}
+  .stats-table-v564{border-collapse:separate!important;border-spacing:0 6px!important;table-layout:auto!important;}
+  .stats-table-v564 th:first-child,
+  .stats-table-v564 td:first-child{
+    position:sticky!important;left:0!important;z-index:4!important;background:#faf9ff!important;
+    box-shadow:6px 0 10px rgba(255,255,255,.95)!important;
+  }
+  .stats-table-v564 th:first-child{z-index:6!important;background:#efe9ff!important;}
+  .stats-table-v564 .team-sep td:first-child{background:#f1ebff!important;}
+  /* V5.93 grid sticky가 일부 월별표를 깨뜨리는 경우 방지 */
+  .month-table .name-col,.month-table-v563 .name-col{position:static!important;left:auto!important;box-shadow:none!important;}
+</style>
+<script id="v594-stats-collapse-script">
+(function(){
+  const VER='V5.94';
+  window.__GEOL_STATS_COLLAPSE_V594 = window.__GEOL_STATS_COLLAPSE_V594 || {monthly:false, all:false};
+  const h = v => (typeof esc === 'function' ? esc(v) : String(v == null ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
+  function syncVersionV594(){
+    try{ window.versionText=function(){return VER;}; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge,#versionBadge').forEach(el=>el.textContent=VER); }catch(e){}
+  }
+  function collapseCardV594(key, title, body){
+    const open = !!window.__GEOL_STATS_COLLAPSE_V594[key];
+    return `<div class="card stats-collapse-card-v594">
+      <button type="button" class="stats-collapse-head-v594 ${open?'open':''}" onclick="toggleStatsCollapseV594('${key}')">
+        <span>${h(title)}</span><span class="arrow">⌄</span>
+      </button>
+      <div class="stats-collapse-body-v594 ${open?'open':''}">${body || ''}</div>
+    </div>`;
+  }
+  window.toggleStatsCollapseV594 = function(key){
+    window.__GEOL_STATS_COLLAPSE_V594[key] = !window.__GEOL_STATS_COLLAPSE_V594[key];
+    if(typeof renderStatsV594 === 'function') renderStatsV594();
+  };
+  window.renderStatsV594 = function(){
+    const isChildren = state.team === '어린이결';
+    const members = isChildren ? [] : (state.team === '전체' ? (DATA.members||[]) : (typeof teamMembers === 'function' ? teamMembers() : []));
+    const children = isChildren ? (typeof allChildrenRows === 'function' ? allChildrenRows() : []) : [];
+    let mainTable='', title='', monthlyRate='', extraBody='';
+    if(!state.team){
+      title='2026년 출석 현황';
+      mainTable='순을 선택하면 통계가 표시됩니다.';
+      monthlyRate='순을 선택하면 월별 출석율이 표시됩니다.';
+    }else if(isChildren){
+      title='2026년 어린이결 출석 현황';
+      mainTable = typeof renderChildTableV564 === 'function' ? renderChildTableV564() : (typeof renderChildTable === 'function' ? renderChildTable() : '');
+      monthlyRate = typeof monthlyRateRows === 'function' ? monthlyRateRows('child', children) : '';
+    }else if(state.team === '전체'){
+      title='전체 순 월별 출석현황';
+      mainTable = typeof renderAllTeamsTableV564 === 'function' ? renderAllTeamsTableV564() : (typeof renderMonthTable === 'function' ? renderMonthTable(getStatsRows(), true) : '');
+      monthlyRate = typeof monthlyRateRows === 'function' ? monthlyRateRows('member', members) : '';
+      extraBody = typeof renderAllMembersByTeamTableV564 === 'function' ? renderAllMembersByTeamTableV564() : '';
+    }else{
+      title='2026년 출석 현황';
+      mainTable = typeof renderMemberTableV564 === 'function' ? renderMemberTableV564(members) : (typeof renderMonthTable === 'function' ? renderMonthTable(getStatsRows(), false) : '');
+      monthlyRate = typeof monthlyRateRows === 'function' ? monthlyRateRows('member', members) : '';
+    }
+    const countText = !state.team ? '순을 선택해주세요.' : isChildren ? `어린이결 통계: 전체 자녀 ${children.length}명` : state.team === '전체' ? `전체 순 통계: ${(DATA.teams||[]).length}개 순 / 전체 ${(DATA.members||[]).length}명` : `통계 대상: ${members.length}명`;
+    const allSection = (state.team === '전체') ? collapseCardV594('all','전체 순원 월별 출석현황',extraBody) : '';
+    view.innerHTML = `<section class="page stats-page-v593 stats-page-v594">
+      <div class="stats-sticky-v593"><div class="section-head">출석통계</div>${statsTeamSelect()}<div class="count">${countText}</div></div>
+      <div class="card stats-main-card-v594"><div class="stats-main-title">${h(title)}</div>${mainTable}</div>
+      ${collapseCardV594('monthly','월별 출석율',monthlyRate)}${allSection}
+    </section>`;
+    syncVersionV594();
+  };
+  try{ window.renderStats = window.renderStatsV594; }catch(e){}
+  const prevRender = window.render;
+  window.render = function(){
+    syncVersionV594();
+    if(state && state.tab === 'stats') return window.renderStatsV594();
+    return prevRender.apply(this, arguments);
+  };
+  const prevGo = window.go;
+  window.go = function(tab){
+    if(tab === 'stats'){ state.tab='stats'; window.renderStatsV594(); if(typeof updateNav==='function') updateNav(); return; }
+    return prevGo.apply(this, arguments);
+  };
+  document.addEventListener('DOMContentLoaded', syncVersionV594);
+  setTimeout(syncVersionV594,0); setTimeout(syncVersionV594,800); setTimeout(syncVersionV594,1600);
+})();
+</script>
+
 </body>
 </html>
