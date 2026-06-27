@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.92 시작", API_URL);
+console.log("결 LEADER V5.93 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.92';
+      vInput.value = 'V5.93';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.92")
+      + "&v=" + encodeURIComponent("V5.93")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4005,7 +4005,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.92';
+  return 'V5.93';
 }
 
 
@@ -6930,7 +6930,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.92&t=V5.92"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.93&t=V5.93"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -7954,7 +7954,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.63 child layout / address split / team permission / save sync patch */
 (function(){
-  const P18_VERSION = 'V5.92';
+  const P18_VERSION = 'V5.93';
   const P18_CACHE_KEY = 'geolLeaderDataCacheV5_90';
   try{ window.versionText = function(){ return P18_VERSION; }; }catch(e){}
   try{ window.dataCacheKey = function(){ return P18_CACHE_KEY; }; }catch(e){}
@@ -9320,7 +9320,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.92';
+  const APP_VERSION = 'V5.93';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9665,7 +9665,7 @@ applyLoadedData = function(r){
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V587 = 'V5.92';
+  const V587 = 'V5.93';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9916,8 +9916,8 @@ applyLoadedData = function(r){
       const raw = await call('debugStatus', {});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
-      if(ver.indexOf('V5.92_ATTENDANCE_CUM_RATE_CODEGS') < 0){
-        throw new Error('Apps Script 서버가 V5.92이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      if(ver.indexOf('V5.93_STICKY_HEADER_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.93이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
       }
       return true;
     }catch(e){
@@ -10039,21 +10039,21 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.92 final version sync + member-save server check cleanup */
+/* V5.93 final version sync + member-save server check cleanup */
 (function(){
-  try{ window.versionText = function(){ return 'V5.92'; }; }catch(e){}
+  try{ window.versionText = function(){ return 'V5.93'; }; }catch(e){}
   function syncV590Badges(){
-    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.92'; }); }catch(e){}
-    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.92</span>'; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.93'; }); }catch(e){}
+    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.93</span>'; }catch(e){}
   }
   try{ syncV590Badges(); setInterval(syncV590Badges, 1200); }catch(e){}
 })();
 </script>
 
 <script>
-/* V5.92 final version/member-save router display sync */
+/* V5.93 final version/member-save router display sync */
 (function(){
-  const VER='V5.92';
+  const VER='V5.93';
   try{ window.versionText=function(){return VER;}; }catch(e){}
   function syncVersion(){
     document.querySelectorAll('.header-version-badge').forEach(el=>{ el.textContent=VER; });
@@ -10065,7 +10065,7 @@ applyLoadedData = function(r){
 </script>
 
 
-<!-- V5.92: 출석체크 리스트 누적 출석률 보정
+<!-- V5.93: 출석체크 리스트 누적 출석률 보정
      - 월 이동 시에도 선택월 3월~선택월 누적 기준으로 % 표시
      - 해당월 단일 출석 100/0 표시로 덮어쓰던 V5.63 보정 로직을 최종 재정의 -->
 <script>
@@ -10090,6 +10090,188 @@ applyLoadedData = function(r){
     return total ? Math.round((present / total) * 100) : 0;
   };
   window.memberCumulativeRateV592 = window.memberRateUntil;
+})();
+</script>
+
+
+
+<!-- V5.93: 상단/월변경 영역 고정 + 표 첫 열 고정 보정 -->
+<style id="v593-sticky-layout-style">
+  :root{--v593-header-h:64px;--v593-bottom-h:76px;--v593-bg:#f3f3f5;}
+  .header{position:sticky!important;top:0!important;z-index:900!important;background:#e8f7f5!important;}
+  .bottom{z-index:950!important;}
+
+  /* 공통: 고정 영역이 리스트 위로 올라오도록 배경/그림자 정리 */
+  .home-sticky-v593,.stats-sticky-v593,.register-sticky-v593{
+    position:sticky!important;
+    top:var(--v593-header-h)!important;
+    z-index:700!important;
+    background:var(--v593-bg)!important;
+    margin-left:-12px!important;
+    margin-right:-12px!important;
+    padding:12px 12px 10px!important;
+    box-shadow:0 8px 14px rgba(243,243,245,.95)!important;
+  }
+  .home-sticky-v593 .leader-name{margin-top:0!important;}
+  .home-sticky-v593 .count,.stats-sticky-v593 .count{margin-bottom:0!important;}
+  .home-sticky-v593 .att-head-card-v593{
+    margin:12px 0 0!important;
+    padding:14px 16px!important;
+    border-radius:22px 22px 12px 12px!important;
+  }
+  .home-sticky-v593 .att-head{border-bottom:0!important;margin-bottom:0!important;padding-bottom:0!important;}
+  .member-list-card-v593{
+    margin-top:12px!important;
+    padding-top:6px!important;
+    border-radius:12px 12px 22px 22px!important;
+  }
+
+  /* 기존 렌더가 사용되는 경우도 대비한 보조 sticky */
+  .page:not(.home-page-v593):not(.stats-page-v593):not(.register-page) > .section-head:first-child,
+  .register-page > .register-title{
+    position:sticky!important;
+    top:var(--v593-header-h)!important;
+    z-index:650!important;
+    background:var(--v593-bg)!important;
+    margin-left:-12px!important;
+    margin-right:-12px!important;
+    padding:12px!important;
+    box-shadow:0 8px 14px rgba(243,243,245,.95)!important;
+  }
+
+  /* 출석통계/관리자 표: 가로 스크롤 시 이름 첫 열 고정 */
+  .month-table-wrap,.admin-table-wrap-v586{
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    position:relative!important;
+  }
+  .month-table .name-col,
+  .month-table-v563 .name-col{
+    position:sticky!important;
+    left:0!important;
+    z-index:5!important;
+    background:#faf8ff!important;
+    box-shadow:6px 0 10px rgba(255,255,255,.92)!important;
+  }
+  .month-table .month-th.name-col,
+  .month-table-v563 .month-th.name-col{
+    z-index:8!important;
+    background:#efe9ff!important;
+  }
+  .month-table .month-team-header.name-col,
+  .month-table-v563 .month-team-header.name-col{
+    z-index:7!important;
+    background:#efe9ff!important;
+  }
+  .admin-table-v586 th:first-child,
+  .admin-table-v586 td:first-child{
+    position:sticky!important;
+    left:0!important;
+    z-index:6!important;
+    background:#faf9ff!important;
+    box-shadow:6px 0 10px rgba(255,255,255,.92)!important;
+  }
+  .admin-table-v586 th:first-child{z-index:9!important;background:#efe9ff!important;}
+
+  @media(max-width:430px){
+    :root{--v593-header-h:64px;}
+    .home-sticky-v593,.stats-sticky-v593,.register-sticky-v593{padding-top:10px!important;}
+    .home-sticky-v593 .leader-name{font-size:22px!important;margin-bottom:6px!important;}
+    .home-sticky-v593 .leader-team{font-size:18px!important;margin-bottom:5px!important;}
+    .home-sticky-v593 .sub{font-size:13px!important;margin-bottom:10px!important;}
+  }
+</style>
+<script id="v593-sticky-layout-script">
+(function(){
+  const VER='V5.93';
+  const h = v => (typeof esc === 'function' ? esc(v) : String(v == null ? '' : v).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])));
+  function syncVersion(){
+    try{ window.versionText=function(){return VER;}; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge').forEach(el=>el.textContent=VER); }catch(e){}
+    try{ const v=document.getElementById('versionBadge'); if(v) v.textContent=VER; }catch(e){}
+  }
+
+  function renderHomeStickyV593(){
+    const ms = typeof teamMembers === 'function' ? teamMembers() : [];
+    const date = state.attendanceDate;
+    const leaderName = DATA.settings.leaderName || '순장';
+    const leaderTeam = DATA.settings.leaderTeam || '순을 선택하세요';
+    const leaderRole = DATA.settings.leaderRole || (typeof roleByNameTeam === 'function' ? roleByNameTeam(leaderName, leaderTeam) : '');
+    const listHtml = state.team ? (ms.length ? ms.map(m => memberRow(m,date)).join('') : '등록된 순원이 없습니다.') : '순을 선택하면 명단이 표시됩니다.';
+    view.innerHTML = `<section class="page home-page-v593">
+      <div class="home-sticky-v593">
+        <div class="leader-name">${h(leaderName)} ${h(leaderRole)}</div>
+        <div class="leader-team">45교구 "결" ${h(displayTeamName(leaderTeam))}</div>
+        <div class="sub">사랑으로 섬겨주셔서 감사합니다.</div>
+        ${teamSelect()}
+        <div class="count">${state.team ? `현재 표시 순원: ${ms.length}명 / 전체 ${DATA.members.length}명` : '순을 선택해주세요.'}</div>
+        <div class="card att-head-card-v593"><div class="att-head"><div class="section-head">순원 출석체크</div><div class="month-nav"><button onclick="shiftMonth(-1)">‹</button><div class="month-date">${h(monthLabelFromYm(state.currentYm))}</div><button onclick="shiftMonth(1)">›</button></div></div></div>
+      </div>
+      <div class="card member-list-card-v593">${listHtml}</div>
+    </section>`;
+    syncVersion();
+  }
+
+  function renderStatsStickyV593(){
+    const months = typeof visibleStatsMonths === 'function' ? visibleStatsMonths() : (typeof monthNumbers === 'function' ? monthNumbers() : [3,4,5,6,7,8,9,10,11,12]);
+    const isChildren = state.team === '어린이결';
+    const members = isChildren ? [] : (state.team === '전체' ? (DATA.members||[]) : (typeof teamMembers === 'function' ? teamMembers() : []));
+    const children = isChildren ? (typeof allChildrenRows === 'function' ? allChildrenRows() : []) : [];
+    let mainTable='', title='', monthlyRate='', extra='';
+    if(isChildren){
+      title = '2026년 어린이결 출석 현황';
+      mainTable = typeof renderChildTableV564 === 'function' ? renderChildTableV564() : (typeof renderChildTable === 'function' ? renderChildTable() : '');
+      monthlyRate = typeof monthlyRateRows === 'function' ? monthlyRateRows('child', children) : '';
+    }else if(state.team === '전체'){
+      title = '전체 순 월별 출석현황';
+      mainTable = typeof renderAllTeamsTableV564 === 'function' ? renderAllTeamsTableV564() : (typeof renderMonthTable === 'function' ? renderMonthTable(getStatsRows(), true) : '');
+      extra = `<div class="card all-members-section"><div class="section-head">전체 순원 월별 출석현황</div>${typeof renderAllMembersByTeamTableV564 === 'function' ? renderAllMembersByTeamTableV564() : ''}</div>`;
+      monthlyRate = typeof monthlyRateRows === 'function' ? monthlyRateRows('member', members) : '';
+    }else{
+      title = '2026년 출석 현황';
+      mainTable = typeof renderMemberTableV564 === 'function' ? renderMemberTableV564(members) : (typeof renderMonthTable === 'function' ? renderMonthTable(getStatsRows(), false) : '');
+      monthlyRate = typeof monthlyRateRows === 'function' ? monthlyRateRows('member', members) : '';
+    }
+    if(!state.team){ mainTable='순을 선택하면 통계가 표시됩니다.'; monthlyRate='순을 선택하면 월별 출석율이 표시됩니다.'; }
+    const countText = !state.team ? '순을 선택해주세요.' : isChildren ? `어린이결 통계: 전체 자녀 ${children.length}명` : state.team === '전체' ? `전체 순 통계: ${(DATA.teams||[]).length}개 순 / 전체 ${(DATA.members||[]).length}명` : `통계 대상: ${members.length}명`;
+    view.innerHTML = `<section class="page stats-page-v593">
+      <div class="stats-sticky-v593"><div class="section-head">출석통계</div>${statsTeamSelect()}<div class="count">${countText}</div></div>
+      <div class="card"><div class="stats-main-title">${title}</div>${mainTable}</div>
+      <div class="card"><div class="section-head">월별 출석율</div>${monthlyRate}</div>${extra}
+    </section>`;
+    syncVersion();
+  }
+
+  function renderRegisterStickyV593(){
+    if(typeof canRegister === 'function' && !canRegister()){
+      view.innerHTML = `<section class="page"><div class="card"><div class="section-head">순원등록 권한 없음</div><div class="count">임원/목회자/위원장은 전체 조회만 가능하며 등록·수정·삭제는 할 수 없습니다.</div></div></section>`;
+      return;
+    }
+    view.innerHTML = `<section class="page register-page register-page-v593"><div class="register-sticky-v593"><div class="register-title">📝 순원등록</div></div>${memberFormHtml('', true)}</section>`;
+    syncVersion();
+  }
+
+  try{ window.renderHome = renderHomeStickyV593; }catch(e){}
+  try{ window.renderStats = renderStatsStickyV593; }catch(e){}
+  try{ window.renderRegister = renderRegisterStickyV593; }catch(e){}
+
+  const oldRender = window.render;
+  window.render = function(){
+    syncVersion();
+    if(state && state.tab === 'home') return renderHomeStickyV593();
+    if(state && state.tab === 'stats') return renderStatsStickyV593();
+    if(state && state.tab === 'register') return renderRegisterStickyV593();
+    return oldRender.apply(this, arguments);
+  };
+  const oldGo = window.go;
+  window.go = function(tab){
+    if(tab === 'home'){ state.tab='home'; renderHomeStickyV593(); if(typeof updateNav==='function') updateNav(); return; }
+    if(tab === 'stats'){ state.tab='stats'; renderStatsStickyV593(); if(typeof updateNav==='function') updateNav(); return; }
+    if(tab === 'register'){ if(typeof canRegister==='function' && !canRegister()){ alert('순원등록 권한이 없습니다.'); return; } state.tab='register'; renderRegisterStickyV593(); if(typeof updateNav==='function') updateNav(); return; }
+    return oldGo.apply(this, arguments);
+  };
+  document.addEventListener('DOMContentLoaded', syncVersion);
+  setTimeout(syncVersion, 0); setTimeout(syncVersion, 700); setTimeout(syncVersion, 1500);
 })();
 </script>
 
