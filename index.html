@@ -1991,7 +1991,7 @@ function prefillHeaderFromLocalProfile(){
 // 1) Apps Script API Web App URL을 여기에 붙여넣으세요.
 // 예: const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
 const API_URL = "https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec";
-console.log("결 LEADER V5.90 시작", API_URL);
+console.log("결 LEADER V5.91 시작", API_URL);
 
 let JSONP_SEQ = 0;
 
@@ -2023,7 +2023,7 @@ function callWrite(name, payload){
 
       const vInput = document.createElement('input');
       vInput.name = 'v';
-      vInput.value = 'V5.90';
+      vInput.value = 'V5.91';
       form.appendChild(vInput);
 
       let done = false;
@@ -2073,7 +2073,7 @@ function call(name, ...args){
       + sep + "action=" + encodeURIComponent(name)
       + "&callback=" + callbackName
       + "&args=" + argsText
-      + "&v=" + encodeURIComponent("V5.90")
+      + "&v=" + encodeURIComponent("V5.91")
       + "&t=" + Date.now();
 
     console.log("API 요청:", name, src);
@@ -4005,7 +4005,7 @@ function updateHeader(){
 
 
 function versionText(){
-  return 'V5.90';
+  return 'V5.91';
 }
 
 
@@ -6930,7 +6930,7 @@ applyLoadedData = function(r){
 })();
 </script>
 
-<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.90&t=V5.90"></script>
+<script src="https://script.google.com/macros/s/AKfycbzp0wC45d_DfHjn4EngMiDO296gy6CaOHwem9swZhs18IW0aL9s52YWGylRxD5S6A-lLQ/exec?action=getDataJson&callback=initialDataCallback&v=V5.91&t=V5.91"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <input id="globalPhotoFileInput" type="file" accept="image/*" style="display:none" onchange="handlePhotoFile(this)">
 <!-- V5.63: 출석체크 전체 선택 시 전체 활성 순원 표시 보정 -->
@@ -7954,7 +7954,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.63 child layout / address split / team permission / save sync patch */
 (function(){
-  const P18_VERSION = 'V5.90';
+  const P18_VERSION = 'V5.91';
   const P18_CACHE_KEY = 'geolLeaderDataCacheV5_90';
   try{ window.versionText = function(){ return P18_VERSION; }; }catch(e){}
   try{ window.dataCacheKey = function(){ return P18_CACHE_KEY; }; }catch(e){}
@@ -9320,7 +9320,7 @@ applyLoadedData = function(r){
 <script>
 /* V5.85 restore standards: child display/attendance button sizing, stable ordering, monthly stats table */
 (function(){
-  const APP_VERSION = 'V5.90';
+  const APP_VERSION = 'V5.91';
   const CACHE_KEY = 'geolLeaderDataCacheV5_64';
   const MONTHS_2026 = [3,4,5,6,7,8,9,10,11,12];
   const LEADER_ORDER = {
@@ -9665,7 +9665,7 @@ applyLoadedData = function(r){
    권한관리 시트: 이름 | 직책 | 권한 | 담당순 | 활성 | 수정일시 | 수정자
 */
 (function(){
-  const V587 = 'V5.90';
+  const V587 = 'V5.91';
   const ADMIN_PW = '4545';
   const INITIAL_ADMIN = {name:'김건일', duty:'순장', permission:'관리자', team:'에스더사랑순', active:'Y'};
   const DUTIES = ['','순장','임원','목회자','위원장'];
@@ -9916,8 +9916,8 @@ applyLoadedData = function(r){
       const raw = await call('debugStatus', {});
       const res = typeof raw === 'object' ? raw : JSON.parse(String(raw));
       const ver = String((res && (res.version || res.serverVersion || res.value)) || '');
-      if(ver.indexOf('V5.90_VERSION_SYNC_MEMBER_SAVE_CODEGS') < 0){
-        throw new Error('Apps Script 서버가 V5.90이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
+      if(ver.indexOf('V5.91_MEMBER_SAVE_P26_ROUTER_CODEGS') < 0){
+        throw new Error('Apps Script 서버가 V5.91이 아닙니다. 현재 서버 버전: ' + (ver || '확인불가') + '\n\nApps Script에서 Code.gs 전체 교체 후, 기존 웹앱 배포를 새 버전으로 업데이트해야 저장됩니다.');
       }
       return true;
     }catch(e){
@@ -10039,14 +10039,28 @@ applyLoadedData = function(r){
 
 
 <script>
-/* V5.90 final version sync + member-save server check cleanup */
+/* V5.91 final version sync + member-save server check cleanup */
 (function(){
-  try{ window.versionText = function(){ return 'V5.90'; }; }catch(e){}
+  try{ window.versionText = function(){ return 'V5.91'; }; }catch(e){}
   function syncV590Badges(){
-    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.90'; }); }catch(e){}
-    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.90</span>'; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge').forEach(function(el){ el.textContent='V5.91'; }); }catch(e){}
+    try{ var d=document.getElementById('headerDistrict'); if(d && /V5\.\d+/.test(d.textContent||'')) d.innerHTML='<span class="header-version-badge">V5.91</span>'; }catch(e){}
   }
   try{ syncV590Badges(); setInterval(syncV590Badges, 1200); }catch(e){}
+})();
+</script>
+
+<script>
+/* V5.91 final version/member-save router display sync */
+(function(){
+  const VER='V5.91';
+  try{ window.versionText=function(){return VER;}; }catch(e){}
+  function syncVersion(){
+    document.querySelectorAll('.header-version-badge').forEach(el=>{ el.textContent=VER; });
+    const v=document.getElementById('versionBadge'); if(v) v.textContent=VER;
+  }
+  document.addEventListener('DOMContentLoaded', syncVersion);
+  setTimeout(syncVersion, 0); setTimeout(syncVersion, 700);
 })();
 </script>
 </body>
