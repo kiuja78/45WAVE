@@ -10793,8 +10793,8 @@ applyLoadedData = function(r){
 </style>
 <script id="v599-final-fix-script">
 (function(){
-  const VER='V5.99';
-  const SERVER_VER='V5.99_FINAL_STABLE_CODEGS';
+  const VER='V6.00';
+  const SERVER_VER='V6.00_STATS_ADMIN_LAYOUT_CODEGS';
   const ADMIN_PW='4545';
   const INITIAL={name:'김건일',duty:'순장',permission:'관리자',team:'에스더사랑순',active:'Y'};
   const DUTIES=['순장','임원','목회자','위원장'];
@@ -11034,5 +11034,117 @@ applyLoadedData = function(r){
   window.go=function(tab){ if(tab==='stats'){ state.tab='stats'; window.renderStatsV595(); if(typeof updateNav==='function') updateNav(); return; } return oldGo.apply(this, arguments); };
   document.addEventListener('DOMContentLoaded', syncVersionV595);
   setTimeout(syncVersionV595,0); setTimeout(syncVersionV595,700); setTimeout(syncVersionV595,1500);
+})();
+</script>
+
+
+<!-- V6.00: 출석통계 첫 열 폭 축소 + 관리자 권한관리 레이아웃 정리 최종 보정 -->
+<style id="v600-stats-admin-layout-style">
+  .header-version-badge,.version-badge,.app-version,#versionBadge{font-weight:950!important;white-space:nowrap!important;}
+
+  /* 출석통계: 이름/순/순원 첫 열을 실제 글자 길이에 맞게 축소 */
+  .stats-table-scroll-v600{width:100%;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding:0 0 8px!important;}
+  .stats-table-v600{border-collapse:separate!important;border-spacing:0 6px!important;table-layout:fixed!important;width:max-content!important;font-size:13px!important;}
+  .stats-table-v600 col.first-col-v600{width:82px!important;}
+  .stats-table-v600 col.month-col-v600{width:62px!important;}
+  .stats-table-v600 th,.stats-table-v600 td{box-sizing:border-box!important;text-align:center!important;vertical-align:middle!important;padding:7px 5px!important;border-radius:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  .stats-table-v600 th{background:#efe9ff!important;color:#5f50d8!important;font-weight:950!important;}
+  .stats-table-v600 td{background:#fbfaff!important;border:1px solid #eee9ff!important;color:#262236!important;font-weight:850!important;}
+  .stats-table-v600 .first-col{position:sticky!important;left:0!important;z-index:5!important;width:82px!important;min-width:82px!important;max-width:82px!important;text-align:left!important;background:#fbfaff!important;box-shadow:6px 0 10px rgba(255,255,255,.95)!important;}
+  .stats-table-v600 th.first-col{z-index:7!important;text-align:center!important;background:#efe9ff!important;color:#5f50d8!important;}
+  .stats-table-v600 .team-name{font-weight:950!important;color:#4b3b89!important;}
+  .stats-table-v600 .rate-main{font-weight:950!important;color:#453b7c!important;display:block!important;line-height:1.05!important;}
+  .stats-table-v600 .rate-sub{font-size:10px!important;color:#6f668f!important;display:block!important;margin-top:2px!important;line-height:1.05!important;}
+  .stat-ok-v600,.stat-no-v600{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:24px!important;height:24px!important;border-radius:50%!important;font-weight:950!important;color:#fff!important;font-size:17px!important;line-height:1!important;}
+  .stat-ok-v600{background:#43bd83!important}.stat-no-v600{background:#f04b45!important}.stat-blank-v600{display:inline-block!important;width:24px!important;height:24px!important;border-radius:8px!important;background:#f1eff8!important;}
+  .stats-collapse-card-v600{padding:0!important;overflow:hidden!important;}
+  .stats-collapse-head-v600{width:100%!important;border:0!important;background:#fff!important;color:#232136!important;font-size:20px!important;font-weight:950!important;text-align:left!important;padding:18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border-radius:22px!important;cursor:pointer!important;}
+  .stats-collapse-head-v600 .arrow{font-size:18px!important;color:#6a4cc2!important;transition:transform .18s ease!important;}
+  .stats-collapse-head-v600.open .arrow{transform:rotate(180deg)!important;}
+  .stats-collapse-body-v600{padding:0 14px 16px!important;display:none!important;}
+  .stats-collapse-body-v600.open{display:block!important;}
+  .team-collapse-v600{margin:10px 0!important;border:1px solid #eee9ff!important;border-radius:14px!important;overflow:hidden!important;background:#fff!important;}
+  .team-collapse-head-v600{width:100%!important;border:0!important;background:#f1ebff!important;color:#4b3b89!important;font-size:17px!important;font-weight:950!important;text-align:left!important;padding:13px 14px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;cursor:pointer!important;}
+  .team-collapse-head-v600 .arrow{color:#6a4cc2!important;transition:transform .18s ease!important;}
+  .team-collapse-head-v600.open .arrow{transform:rotate(180deg)!important;}
+  .team-collapse-body-v600{display:none!important;padding:8px 6px 0!important;background:#fff!important;}
+  .team-collapse-body-v600.open{display:block!important;}
+
+  /* 기존 표에도 최종 폭 보정 적용 */
+  .stats-table-v599 col:first-child,.stats-table-v595 col:first-child,.stats-table-v564 col:first-child{width:82px!important;}
+  .stats-table-v599 .first-col,.stats-table-v595 .sticky-col,.stats-table-v564 .name-cell{width:82px!important;min-width:82px!important;max-width:82px!important;}
+
+  /* 관리자 현재 권한관리: 이름이 길면 두 줄로 자연스럽게 표시 */
+  .admin-table-wrap-v598,.admin-table-wrap-v586{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+  .admin-table-v598,.admin-table-v586{table-layout:fixed!important;width:100%!important;min-width:0!important;border-collapse:separate!important;border-spacing:0 6px!important;font-size:12px!important;}
+  .admin-table-v598 th,.admin-table-v598 td,.admin-table-v586 th,.admin-table-v586 td{padding:6px 4px!important;line-height:1.18!important;vertical-align:middle!important;text-align:center!important;}
+  .admin-table-v598 th:nth-child(1),.admin-table-v598 td:nth-child(1),.admin-table-v586 th:nth-child(1),.admin-table-v586 td:nth-child(1){width:30%!important;min-width:86px!important;max-width:108px!important;text-align:left!important;white-space:normal!important;word-break:keep-all!important;overflow-wrap:anywhere!important;}
+  .admin-table-v598 th:nth-child(2),.admin-table-v598 td:nth-child(2),.admin-table-v586 th:nth-child(2),.admin-table-v586 td:nth-child(2){width:15%!important;}
+  .admin-table-v598 th:nth-child(3),.admin-table-v598 td:nth-child(3),.admin-table-v586 th:nth-child(3),.admin-table-v586 td:nth-child(3){width:17%!important;}
+  .admin-table-v598 th:nth-child(4),.admin-table-v598 td:nth-child(4),.admin-table-v586 th:nth-child(4),.admin-table-v586 td:nth-child(4){width:24%!important;}
+  .admin-table-v598 th:nth-child(5),.admin-table-v598 td:nth-child(5),.admin-table-v586 th:nth-child(5),.admin-table-v586 td:nth-child(5){width:8%!important;}
+  .admin-table-v598 th:nth-child(6),.admin-table-v598 td:nth-child(6){width:12%!important;}
+  .admin-name-btn-v598{display:block!important;width:100%!important;white-space:normal!important;word-break:keep-all!important;overflow-wrap:anywhere!important;line-height:1.18!important;text-align:left!important;font-size:12px!important;text-decoration:none!important;}
+  .admin-inline-v598{min-width:0!important;font-size:12px!important;padding:2px!important;}
+  .mini-save-v598{font-size:11px!important;padding:6px 5px!important;}
+
+  @media(max-width:430px){
+    .stats-table-v600{font-size:12px!important;}
+    .stats-table-v600 col.first-col-v600{width:76px!important;}
+    .stats-table-v600 col.month-col-v600{width:58px!important;}
+    .stats-table-v600 .first-col{width:76px!important;min-width:76px!important;max-width:76px!important;}
+    .stats-table-v600 th,.stats-table-v600 td{padding:7px 4px!important;}
+    .stats-table-v600 .rate-sub{font-size:9px!important;}
+    .admin-table-v598,.admin-table-v586{font-size:11px!important;}
+    .admin-name-btn-v598{font-size:11px!important;}
+  }
+</style>
+<script id="v600-stats-admin-layout-script">
+(function(){
+  const VER='V6.00';
+  const txt=v=>String(v==null?'':v).trim();
+  const arr=v=>Array.isArray(v)?v:[];
+  const esc=v=>txt(v).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  window.__GEOL_STATS_V600 = window.__GEOL_STATS_V600 || {monthly:false, all:false, teams:{}};
+  function setVersion(){
+    try{ window.versionText=function(){return VER;}; }catch(e){}
+    try{ document.querySelectorAll('.header-version-badge,#versionBadge,.version-badge,.app-version,.version,.ver,.pill,[data-version]').forEach(el=>{ if(/V\d+\.\d+/.test(el.textContent||'')) el.textContent=VER; }); }catch(e){}
+    try{ document.querySelectorAll('*').forEach(el=>{ if(el.childNodes&&el.childNodes.length===1&&el.childNodes[0].nodeType===3&&/V5\.|V6\./.test(el.textContent||'')) el.textContent=el.textContent.replace(/V\d+\.\d+/g,VER); }); }catch(e){}
+  }
+  function active(m){return m && m.active!=='N' && m.active!=='보류';}
+  function months(){try{if(typeof visibleStatsMonths==='function')return visibleStatsMonths();}catch(e){} try{if(typeof monthNumbers==='function')return monthNumbers();}catch(e){} return [3,4,5,6,7,8,9,10,11,12];}
+  function teams(){const out=[]; arr(window.DATA&&DATA.teams).forEach(t=>{t=txt(t);if(t&&t!=='전체'&&t!=='어린이결'&&!out.includes(t))out.push(t);}); arr(window.DATA&&DATA.members).forEach(m=>{const t=txt(m&&m.team);if(t&&t!=='전체'&&t!=='어린이결'&&!out.includes(t))out.push(t);}); return out;}
+  function membersOf(team){let list=arr(window.DATA&&DATA.members).filter(m=>active(m)&&txt(m.team)===txt(team)); try{if(typeof sortMembersForList==='function')list=sortMembersForList(list,team);}catch(e){} return list;}
+  function selectedMembers(){ if(!window.state||!state.team)return[]; if(state.team==='전체')return teams().flatMap(t=>membersOf(t)); try{if(typeof teamMembers==='function')return arr(teamMembers()).filter(active);}catch(e){} return membersOf(state.team); }
+  function due(mon){try{return !!isAttendanceDueMonth(mon);}catch(e){return true;}}
+  function mStatus(m,mon){try{return memberMonthStatus(m,mon);}catch(e){return '';}}
+  function cStatus(c,mon){try{return childMonthStatus(c,mon);}catch(e){return '';}}
+  function icon(st,isDue){ if(st==='출석')return '<span class="stat-ok-v600">✓</span>'; if(isDue)return '<span class="stat-no-v600">×</span>'; return '<span class="stat-blank-v600"></span>'; }
+  function table(first,body,firstW,monW){ const ms=months(); firstW=firstW||78; monW=monW||58; const min=firstW + ms.length*monW; const cols='<colgroup><col class="first-col-v600" style="width:'+firstW+'px">'+ms.map(()=>'<col class="month-col-v600" style="width:'+monW+'px">').join('')+'</colgroup>'; const head='<thead><tr><th class="first-col">'+esc(first)+'</th>'+ms.map(m=>'<th>'+m+'월</th>').join('')+'</tr></thead>'; return '<div class="stats-table-scroll-v600"><table class="stats-table-v600" style="min-width:'+min+'px">'+cols+head+'<tbody>'+body+'</tbody></table></div>'; }
+  function memberTable(list){ const ms=months(); const body=arr(list).map(m=>'<tr><td class="first-col">'+esc(m.name||'')+'</td>'+ms.map(mon=>'<td>'+icon(mStatus(m,mon),due(mon))+'</td>').join('')+'</tr>').join(''); return table('이름',body||'<tr><td colspan="'+(ms.length+1)+'">표시할 순원이 없습니다.</td></tr>',76,58); }
+  function countMembers(mon,list){list=arr(list); const p=list.filter(m=>mStatus(m,mon)==='출석').length; return {present:p,total:list.length,rate:list.length?Math.round(p/list.length*100):0};}
+  function countChildren(mon,list){list=arr(list); const p=list.filter(c=>cStatus(c,mon)==='출석').length; return {present:p,total:list.length,rate:list.length?Math.round(p/list.length*100):0};}
+  function teamRateTable(){ const ms=months(); const body=teams().map(team=>{const list=membersOf(team); return '<tr><td class="first-col team-name">'+esc(team)+'</td>'+ms.map(mon=>{const c=countMembers(mon,list); return '<td><span class="rate-main">'+c.rate+'%</span><span class="rate-sub">'+c.present+'/'+c.total+'</span></td>';}).join('')+'</tr>';}).join(''); return table('순',body||'<tr><td colspan="'+(ms.length+1)+'">표시할 순이 없습니다.</td></tr>',88,58); }
+  function childRows(){try{if(typeof allChildrenRows==='function')return arr(allChildrenRows());}catch(e){} return [];}
+  function childTable(){ const ms=months(); const rows=childRows(); const body=rows.map(c=>'<tr><td class="first-col">'+esc(c.name||'')+'</td>'+ms.map(mon=>'<td>'+icon(cStatus(c,mon),due(mon))+'</td>').join('')+'</tr>').join(''); return table('이름',body||'<tr><td colspan="'+(ms.length+1)+'">어린이결 출석 대상 자녀가 없습니다.</td></tr>',76,58); }
+  function monthlyRows(kind,list){ const ms=months(); return ms.map(mon=>{const c=kind==='child'?countChildren(mon,list):countMembers(mon,list); return '<div class="rate-row"><div class="rate-label">'+mon+'월</div><div class="rate-bar"><div class="rate-fill" style="width:'+c.rate+'%"></div></div><div class="rate-num">'+c.rate+'%<br><span>'+c.present+'/'+c.total+'명</span></div></div>';}).join('') || '<div class="muted">표시할 월별 출석율이 없습니다.</div>'; }
+  function collapse(key,title,body){ const open=!!window.__GEOL_STATS_V600[key]; return '<div class="card stats-collapse-card-v600"><button type="button" class="stats-collapse-head-v600 '+(open?'open':'')+'" onclick="toggleStatsCollapseV600(\''+key+'\')"><span>'+esc(title)+'</span><span class="arrow">⌄</span></button><div class="stats-collapse-body-v600 '+(open?'open':'')+'">'+(body||'')+'</div></div>'; }
+  function teamCollapse(team,body){ const open=!!window.__GEOL_STATS_V600.teams[team]; return '<div class="team-collapse-v600"><button type="button" class="team-collapse-head-v600 '+(open?'open':'')+'" onclick="toggleStatsTeamV600(\''+esc(team)+'\')"><span>'+esc(team)+'</span><span class="arrow">⌄</span></button><div class="team-collapse-body-v600 '+(open?'open':'')+'">'+body+'</div></div>'; }
+  function allMemberByTeam(){ return teams().map(team=>teamCollapse(team,memberTable(membersOf(team)))).join('') || '<div class="muted">표시할 순원이 없습니다.</div>'; }
+  window.toggleStatsCollapseV600=function(key){ window.__GEOL_STATS_V600[key]=!window.__GEOL_STATS_V600[key]; renderStatsV600(); };
+  window.toggleStatsTeamV600=function(team){ window.__GEOL_STATS_V600.teams[team]=!window.__GEOL_STATS_V600.teams[team]; renderStatsV600(); };
+  window.renderStatsV600=function(){
+    const team=window.state&&state.team; const isChild=team==='어린이결'; let title='2026년 출석 현황', main='순을 선택하면 통계가 표시됩니다.', rate='순을 선택하면 월별 출석율이 표시됩니다.', extra='', count='순을 선택해주세요.';
+    if(team){ if(isChild){ const rows=childRows(); title='2026년 어린이결 출석 현황'; main=childTable(); rate=monthlyRows('child',rows); count='어린이결 통계: 출석 대상 자녀 '+rows.length+'명'; }
+      else if(team==='전체'){ const list=selectedMembers(); title='전체 순 월별 출석현황'; main=teamRateTable(); rate=monthlyRows('member',list); extra=collapse('all','전체 순원 월별 출석현황',allMemberByTeam()); count='전체 순 통계: '+teams().length+'개 순 / 전체 '+list.length+'명'; }
+      else{ const list=selectedMembers(); title='2026년 출석 현황'; main=memberTable(list); rate=monthlyRows('member',list); count='통계 대상: '+list.length+'명'; }}
+    const sel=(typeof statsTeamSelect==='function')?statsTeamSelect():'';
+    view.innerHTML='<section class="page stats-page-v593 stats-page-v600"><div class="stats-sticky-v593"><div class="section-head">출석통계</div>'+sel+'<div class="count">'+count+'</div></div><div class="card stats-main-card-v600"><div class="stats-main-title">'+esc(title)+'</div>'+main+'</div>'+collapse('monthly','월별 출석율',rate)+extra+'</section>';
+    setVersion();
+  };
+  try{ window.renderStats=window.renderStatsV600; }catch(e){}
+  const prevRender=window.render; window.render=function(){ setVersion(); if(window.state&&state.tab==='stats') return window.renderStatsV600(); return prevRender.apply(this,arguments); };
+  const prevGo=window.go; window.go=function(tab){ if(tab==='stats'){ if(window.state) state.tab='stats'; window.renderStatsV600(); if(typeof updateNav==='function') updateNav(); return; } return prevGo.apply(this,arguments); };
+  document.addEventListener('DOMContentLoaded',setVersion); setVersion(); setTimeout(setVersion,0); setTimeout(setVersion,700); setTimeout(setVersion,1600);
 })();
 </script>
