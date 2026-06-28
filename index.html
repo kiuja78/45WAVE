@@ -11172,8 +11172,8 @@ applyLoadedData = function(r){
 <script id="v607-meeting-admin-script">
 (function(){
   'use strict';
-  const VERSION='V6.07';
-  const SERVER_VERSION='V6.07_MEETING_SCHEDULE_ADMIN_CODEGS';
+  const VERSION='V6.08';
+  const SERVER_VERSION='V6.08_MEETING_ADMIN_VISIBLE_CODEGS';
   const ADMIN_PW='4545';
   function arr(v){return Array.isArray(v)?v:[];}
   function txt(v){return String(v==null?'':v).trim();}
@@ -11282,6 +11282,111 @@ applyLoadedData = function(r){
   };
   document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{updateVersion(); if(window.state&&state.tab==='admin') injectMeetingAdmin();},300));
   setInterval(updateVersion,1500);
+})();
+</script>
+
+
+
+<!-- V6.08: 관리자 모임 월일 설정 카드 강제 표시 최종 보정 -->
+<style id="v608-meeting-admin-visible-style">
+  .meeting-admin-card-v608{margin-top:14px!important;display:block!important;visibility:visible!important;opacity:1!important;}
+  .meeting-admin-card-v608 .section-head{font-size:20px!important;font-weight:950!important;color:#232136!important;margin-bottom:8px!important;}
+  .meeting-grid-v608{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin-top:10px!important;}
+  .meeting-grid-v608 .full{grid-column:1/-1!important;}
+  .meeting-list-v608{margin-top:12px!important;display:flex!important;flex-direction:column!important;gap:8px!important;}
+  .meeting-row-v608{display:grid!important;grid-template-columns:84px 70px 1fr 52px!important;gap:6px!important;align-items:center!important;background:#faf9ff!important;border:1px solid #eee9ff!important;border-radius:12px!important;padding:8px!important;font-size:12px!important;}
+  .meeting-row-v608 b{font-size:13px!important;color:#282236!important;}
+  .meeting-row-v608 .muted{color:#777!important;line-height:1.25!important;word-break:keep-all!important;overflow-wrap:anywhere!important;}
+  .meeting-del-v608{border:0!important;border-radius:10px!important;background:#fff0f0!important;color:#c94335!important;font-weight:900!important;padding:7px 4px!important;}
+  .meeting-empty-v608{background:#faf9ff!important;border:1px dashed #ddd5ff!important;border-radius:12px!important;padding:12px!important;color:#777!important;font-size:13px!important;}
+  @media(max-width:420px){.meeting-row-v608{grid-template-columns:78px 64px 1fr 46px!important;font-size:11px!important}.meeting-row-v608 b{font-size:12px!important}.meeting-grid-v608{grid-template-columns:1fr 1fr!important}}
+</style>
+<script id="v608-meeting-admin-visible-script">
+(function(){
+  'use strict';
+  const VERSION='V6.08';
+  const ADMIN_PW='4545';
+  function arr(v){return Array.isArray(v)?v:[];}
+  function txt(v){return String(v==null?'':v).trim();}
+  function esc(v){return txt(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function data(){try{return (typeof DATA!=='undefined'&&DATA)?DATA:(window.DATA||{});}catch(e){return window.DATA||{};}}
+  function ymNow(){const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+  function currentUserName(){
+    try{const p=JSON.parse(localStorage.getItem('waveLeaderProfile')||'{}'); return txt(p.leaderName||p.name||p.userName)||txt(data().settings&&(data().settings.leaderName||data().settings.name))||'김건일';}
+    catch(e){return txt(data().settings&&(data().settings.leaderName||data().settings.name))||'김건일';}
+  }
+  function actor(extra){
+    let pw=sessionStorage.getItem('geolAdminPwV599')||sessionStorage.getItem('geolAdminPwV607')||sessionStorage.getItem('geolAdminPwV608')||'';
+    if(!pw){ pw=prompt('관리자 비밀번호를 입력해주세요.')||''; if(pw===ADMIN_PW) sessionStorage.setItem('geolAdminPwV608',pw); }
+    return Object.assign({actorName:currentUserName(),password:pw},extra||{});
+  }
+  async function api(action,payload){ if(typeof call==='function') return await call(action,payload||{}); throw new Error('API 호출 함수를 찾을 수 없습니다.'); }
+  function setVersion(){
+    document.querySelectorAll('.ver,.version,.app-version,[data-version]').forEach(el=>{ if(/V\d/.test(el.textContent||'')) el.textContent=VERSION; });
+    document.querySelectorAll('*').forEach(el=>{ const t=el.textContent||''; if(el.childNodes&&el.childNodes.length===1&&/V\d+\.\d+/.test(t)&&t.length<20) el.textContent=t.replace(/V\d+\.\d+/g,VERSION); });
+  }
+  function schedules(){
+    const d=data();
+    let out=arr(d.meetingSchedules||d.meetings).map(m=>({id:txt(m.id||m.meetingId),ym:txt(m.ym||m['연월']),date:txt(m.date||m['날짜']),type:txt(m.type||m['구분']||'정기모임'),memo:txt(m.memo||m['메모']),active:txt(m.active||m['활성']||'Y')||'Y'})).filter(m=>m.ym&&m.date&&m.active!=='N');
+    if(!out.length && d.meetingDefaults){ Object.keys(d.meetingDefaults).forEach(ym=>{const date=txt(d.meetingDefaults[ym]); if(date) out.push({id:'default-'+ym,ym,date,type:'정기모임',memo:'기존 월 대표 모임일',active:'Y',readonly:true});}); }
+    out.sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.type).localeCompare(String(b.type)));
+    return out;
+  }
+  function yms(){ const list=[]; for(let m=3;m<=12;m++) list.push('2026-'+String(m).padStart(2,'0')); return list; }
+  function selectedYm(){ const now=ymNow(); const list=yms(); return list.includes(now)?now:((window.state&&state.currentYm)||'2026-07'); }
+  function renderList(){
+    const box=document.getElementById('meetingListV608'); if(!box) return;
+    const ym=txt(document.getElementById('meetYmV608')?.value)||selectedYm();
+    const rows=schedules().filter(m=>m.ym===ym);
+    if(!rows.length){ box.innerHTML='<div class="meeting-empty-v608">선택한 월에 등록된 모임일정이 없습니다.</div>'; return; }
+    box.innerHTML=rows.map(m=>`<div class="meeting-row-v608"><b>${esc(m.date)}</b><span>${esc(m.type)}</span><div class="muted">${esc(m.memo||'')}</div>${m.readonly?'<span></span>':`<button class="meeting-del-v608" onclick="deleteMeetingV608('${esc(m.id)}')">삭제</button>`}</div>`).join('');
+  }
+  window.refreshMeetingListV608=renderList;
+  window.saveMeetingV608=async function(){
+    const ym=txt(document.getElementById('meetYmV608')?.value), date=txt(document.getElementById('meetDateV608')?.value), type=txt(document.getElementById('meetTypeV608')?.value)||'정기모임', memo=txt(document.getElementById('meetMemoV608')?.value);
+    if(!ym) return alert('연월을 선택해주세요.'); if(!date) return alert('모임 날짜를 선택해주세요.');
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); const raw=await api('saveMeetingSchedule',actor({ym,date,type,memo,active:'Y'})); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'저장 실패'); const d=data(); d.meetingSchedules=arr(res.meetingSchedules); d.meetings=arr(res.meetingSchedules); d.meetingDefaults=res.meetingDefaults||d.meetingDefaults||{}; const memoEl=document.getElementById('meetMemoV608'); if(memoEl) memoEl.value=''; alert('모임일정이 저장되었습니다.'); renderList(); }
+    catch(e){alert('모임일정 저장 오류: '+(e.message||e));}
+    finally{window.loadingToast&&loadingToast.classList.add('hidden');}
+  };
+  window.deleteMeetingV608=async function(id){
+    if(!confirm('이 모임일정을 삭제할까요?')) return;
+    try{ window.loadingToast&&loadingToast.classList.remove('hidden'); const raw=await api('deleteMeetingSchedule',actor({id})); const res=typeof raw==='object'?raw:JSON.parse(String(raw)); if(res&&res.ok===false) throw new Error(res.error||'삭제 실패'); const d=data(); d.meetingSchedules=arr(res.meetingSchedules); d.meetings=arr(res.meetingSchedules); d.meetingDefaults=res.meetingDefaults||d.meetingDefaults||{}; alert('삭제되었습니다.'); renderList(); }
+    catch(e){alert('모임일정 삭제 오류: '+(e.message||e));}
+    finally{window.loadingToast&&loadingToast.classList.add('hidden');}
+  };
+  function cardHtml(){
+    const list=yms(), sel=selectedYm();
+    return `<div class="card meeting-admin-card-v608" id="meetingAdminCardV608" data-meeting-card="Y"><div class="section-head">모임 월일 설정</div><div class="count">정기모임 외에 토요일 추가모임 등 월별 여러 날짜를 등록할 수 있습니다. 출석체크 기본일은 해당 월의 정기모임 날짜를 우선 사용합니다.</div><div class="meeting-grid-v608"><div><label>연월</label><select id="meetYmV608" class="input aurora-select" onchange="refreshMeetingListV608()">${list.map(ym=>`<option value="${ym}" ${ym===sel?'selected':''}>${Number(ym.slice(5))}월</option>`).join('')}</select></div><div><label>구분</label><select id="meetTypeV608" class="input aurora-select"><option>정기모임</option><option>추가모임</option><option>리더십</option><option>기타</option></select></div><div class="full"><label>날짜</label><input id="meetDateV608" type="date" class="input"></div><div class="full"><label>메모</label><input id="meetMemoV608" class="input" placeholder="예: 셋째주 정기모임, 토요일 추가모임"></div><button class="save full" onclick="saveMeetingV608()">모임일정 저장</button></div><div id="meetingListV608" class="meeting-list-v608"></div></div>`;
+  }
+  function isAdminVisible(){
+    try{ if(window.state&&state.tab==='admin') return true; }catch(e){}
+    const text=(document.body&&document.body.innerText)||'';
+    return text.includes('관리자 기능') && text.includes('현재 권한관리');
+  }
+  function findAdminPage(){
+    return document.querySelector('.admin-page-v598,.admin-page-v586') || Array.from(document.querySelectorAll('section.page,.page')).find(el=>/관리자 기능/.test(el.innerText||'')) || null;
+  }
+  function inject(){
+    setVersion();
+    if(!isAdminVisible()) return;
+    document.querySelectorAll('#meetingAdminCardV607').forEach(el=>el.remove());
+    if(document.getElementById('meetingAdminCardV608')){ renderList(); return; }
+    const page=findAdminPage(); if(!page) return;
+    const html=document.createElement('div'); html.innerHTML=cardHtml(); const node=html.firstElementChild;
+    const cards=Array.from(page.querySelectorAll(':scope > .card'));
+    const current=cards.find(c=>/현재 권한관리/.test(c.innerText||''));
+    if(current) current.insertAdjacentElement('beforebegin',node);
+    else if(cards.length) cards[0].insertAdjacentElement('afterend',node);
+    else page.appendChild(node);
+    renderList(); setVersion();
+  }
+  const oldRender=window.render; if(typeof oldRender==='function'){ window.render=function(){ const r=oldRender.apply(this,arguments); setTimeout(inject,120); setTimeout(inject,500); return r; }; }
+  const oldGo=window.go; if(typeof oldGo==='function'){ window.go=function(tab){ const r=oldGo.apply(this,arguments); setTimeout(inject,120); setTimeout(inject,500); return r; }; }
+  const oldRenderAdmin=window.renderAdmin; if(typeof oldRenderAdmin==='function'){ window.renderAdmin=async function(){ const r=await oldRenderAdmin.apply(this,arguments); setTimeout(inject,120); setTimeout(inject,500); return r; }; }
+  const obs=new MutationObserver(()=>{ if(isAdminVisible()) setTimeout(inject,80); });
+  document.addEventListener('DOMContentLoaded',()=>{ try{obs.observe(document.body,{childList:true,subtree:true});}catch(e){} setTimeout(inject,300); setTimeout(inject,1000); });
+  setInterval(()=>{setVersion(); if(isAdminVisible()) inject();},1500);
 })();
 </script>
 
