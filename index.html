@@ -11172,8 +11172,8 @@ applyLoadedData = function(r){
 <script id="v607-meeting-admin-script">
 (function(){
   'use strict';
-  const VERSION='V6.08';
-  const SERVER_VERSION='V6.08_MEETING_ADMIN_VISIBLE_CODEGS';
+  const VERSION='V6.09';
+  const SERVER_VERSION='V6.09_DYNAMIC_MEETING_COLUMNS_CODEGS';
   const ADMIN_PW='4545';
   function arr(v){return Array.isArray(v)?v:[];}
   function txt(v){return String(v==null?'':v).trim();}
@@ -11387,6 +11387,184 @@ applyLoadedData = function(r){
   const obs=new MutationObserver(()=>{ if(isAdminVisible()) setTimeout(inject,80); });
   document.addEventListener('DOMContentLoaded',()=>{ try{obs.observe(document.body,{childList:true,subtree:true});}catch(e){} setTimeout(inject,300); setTimeout(inject,1000); });
   setInterval(()=>{setVersion(); if(isAdminVisible()) inject();},1500);
+})();
+</script>
+
+
+
+<!-- V6.09: 모임날짜 동적 출석/통계 칼럼 최종 패치 -->
+<style id="v609-meeting-dynamic-columns-style">
+  .meeting-date-select-v609{margin:10px 0 14px;padding:12px;border-radius:18px;background:linear-gradient(135deg,#f8f5ff 0%,#efffff 100%);border:1px solid #eee9ff;box-shadow:0 5px 16px rgba(95,76,180,.08)}
+  .meeting-date-title-v609{font-size:13px;font-weight:950;color:#5744b6;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .meeting-date-title-v609 small{font-size:11px;color:#777;font-weight:800;white-space:nowrap}
+  .meeting-date-chips-v609{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .meeting-date-chip-v609{flex:0 0 auto;border:1px solid #dcd6ff;background:#fff;color:#40385f;border-radius:999px;padding:8px 11px;font-size:12px;font-weight:950;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .meeting-date-chip-v609.active{background:linear-gradient(135deg,#766cff,#48d0bb);border-color:transparent;color:#fff;box-shadow:0 8px 18px rgba(100,90,230,.22)}
+  .meeting-date-chip-v609 .type{display:block;font-size:10px;font-weight:800;opacity:.78;line-height:1.05;margin-top:2px}
+  .stats-page-v609{padding-bottom:88px!important}
+  .stats-sticky-v609{position:sticky!important;top:0!important;z-index:40!important;background:#f4f4f6!important;padding:10px 0 10px!important;margin:0 0 10px!important}
+  .stats-select-v609{width:100%!important;border:0!important;border-radius:12px!important;padding:13px 14px!important;font-size:16px!important;font-weight:900!important;color:#fff!important;background:linear-gradient(135deg,#766cff 0%,#82d8c8 48%,#ad7aff 100%)!important;box-shadow:0 10px 22px rgba(115,86,220,.22)!important}
+  .stats-card-v609,.stats-collapse-card-v609{background:#fff!important;border-radius:22px!important;padding:16px!important;margin:16px 0!important;box-shadow:0 8px 24px rgba(0,0,0,.08)!important;overflow:hidden!important}
+  .stats-title-v609{text-align:center!important;font-size:19px!important;font-weight:950!important;margin:0 0 12px!important;color:#222!important}
+  .stats-scroll-v609{width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;padding-bottom:8px!important}
+  .stats-table-v609{border-collapse:separate!important;border-spacing:0 6px!important;table-layout:fixed!important;width:max-content!important;font-size:12px!important}
+  .stats-table-v609 th,.stats-table-v609 td{box-sizing:border-box!important;text-align:center!important;vertical-align:middle!important;border-radius:8px!important;padding:7px 4px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .stats-table-v609 th{background:#efe9ff!important;color:#5d4bd8!important;font-weight:950!important;line-height:1.08!important}
+  .stats-table-v609 th small{display:block;font-size:10px;color:#7a70a6;margin-top:2px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stats-table-v609 td{background:#fbfaff!important;border:1px solid #eee9ff!important;color:#242236!important;font-weight:850!important}
+  .stats-table-v609 .first-col{position:sticky!important;left:0!important;z-index:4!important;background:#fbfaff!important;text-align:left!important;box-shadow:8px 0 12px rgba(255,255,255,.94)!important;white-space:normal!important;word-break:keep-all!important;overflow-wrap:anywhere!important}
+  .stats-table-v609 th.first-col{z-index:6!important;text-align:center!important;background:#efe9ff!important}
+  .stats-ok-v609,.stats-no-v609{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:25px!important;height:25px!important;border-radius:50%!important;color:#fff!important;font-size:18px!important;font-weight:950!important;line-height:1!important}
+  .stats-ok-v609{background:#43bd83!important}.stats-no-v609{background:#f04b45!important}.stats-blank-v609{display:inline-block!important;width:25px!important;height:25px!important;border-radius:8px!important;background:#f1eff8!important}
+  .rate-row-v609{display:grid!important;grid-template-columns:70px 1fr 56px!important;gap:10px!important;align-items:center!important;margin:14px 0!important;font-weight:900!important;color:#5a48a3!important}
+  .rate-label-v609{line-height:1.08!important}.rate-label-v609 small{display:block;color:#777;font-size:10px;font-weight:800;margin-top:2px}
+  .rate-bar-v609{height:11px!important;border-radius:999px!important;background:#ede8f8!important;overflow:hidden!important}.rate-fill-v609{height:100%!important;border-radius:999px!important;background:#7b61ff!important}
+  .rate-num-v609{text-align:right!important;color:#111!important;font-weight:950!important;line-height:1.05!important}.rate-num-v609 span{font-size:11px!important;color:#777!important}
+  .stats-collapse-card-v609{padding:0!important}.stats-collapse-head-v609{width:100%!important;border:0!important;background:#fff!important;color:#232136!important;font-size:20px!important;font-weight:950!important;text-align:left!important;padding:18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
+  .stats-collapse-body-v609{display:none!important;padding:0 16px 16px!important}.stats-collapse-body-v609.open{display:block!important}.stats-collapse-head-v609.open .arrow{transform:rotate(180deg)!important}
+  .team-collapse-v609{margin:8px 0!important;border-radius:14px!important;overflow:hidden!important;border:1px solid #eee9ff!important}.team-collapse-head-v609{width:100%!important;border:0!important;background:#f1ebff!important;color:#473781!important;padding:13px 14px!important;font-size:15px!important;font-weight:950!important;display:flex!important;justify-content:space-between!important;align-items:center!important}.team-collapse-body-v609{display:none!important;background:#fff!important;padding:8px!important}.team-collapse-body-v609.open{display:block!important}
+  @media(max-width:430px){.rate-row-v609{grid-template-columns:62px 1fr 52px!important}.stats-table-v609{font-size:11px!important}.stats-table-v609 th,.stats-table-v609 td{padding:7px 3px!important}}
+</style>
+<script id="v609-meeting-dynamic-columns-script">
+(function(){
+  'use strict';
+  const VER='V6.09';
+  const EMPTY={members:[],attendance:[],childAttendance:[],teams:[],meetingSchedules:[],meetings:[],meetingDefaults:{},settings:{},today:''};
+  const txt=v=>String(v==null?'':v).trim();
+  const arr=v=>Array.isArray(v)?v:[];
+  const h=v=>txt(v).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  function D(){try{return DATA||EMPTY;}catch(e){return window.DATA||EMPTY;}}
+  function S(){try{return state;}catch(e){window.state=window.state||{tab:'home',team:'',openChildren:{},attendanceDate:'',currentYm:'2026.07'};return window.state;}}
+  function normDate(v){
+    let s=txt(v); if(!s)return '';
+    if(/^\d{4}\.\d{1,2}\.\d{1,2}$/.test(s)){const p=s.split('.'); return p[0]+'-'+String(Number(p[1])).padStart(2,'0')+'-'+String(Number(p[2])).padStart(2,'0');}
+    if(/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(s)){const p=s.split('/'); return p[0]+'-'+String(Number(p[1])).padStart(2,'0')+'-'+String(Number(p[2])).padStart(2,'0');}
+    if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)){const p=s.split('-'); return p[0]+'-'+String(Number(p[1])).padStart(2,'0')+'-'+String(Number(p[2])).padStart(2,'0');}
+    return s;
+  }
+  function ymHyphen(v){
+    const s=txt(v); if(!s)return '';
+    let m=s.match(/^(\d{4})[.\-\/년\s]+(\d{1,2})/); if(m)return m[1]+'-'+String(Number(m[2])).padStart(2,'0');
+    const d=normDate(s); if(/^\d{4}-\d{2}-\d{2}$/.test(d))return d.slice(0,7);
+    return s;
+  }
+  function ymDot(v){const y=ymHyphen(v); return /^\d{4}-\d{2}$/.test(y)?y.replace('-','.'):y;}
+  function ymFromDate609(date){const d=normDate(date); return /^\d{4}-\d{2}-\d{2}$/.test(d)?d.slice(0,7).replace('-','.'):'';}
+  function dateLabel(d){d=normDate(d); if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return d; return Number(d.slice(5,7))+'/'+Number(d.slice(8,10));}
+  function today(){return normDate((D()&&D().today)||new Date().toISOString().slice(0,10));}
+  function dateDue(d){d=normDate(d); const t=today(); return /^\d{4}-\d{2}-\d{2}$/.test(d)&&(!t||d<=t);}
+  function monthRange(){let max=12; const t=today(); if(/^\d{4}-\d{2}-\d{2}$/.test(t)){const y=Number(t.slice(0,4)); max=y<2026?2:(y>2026?12:Number(t.slice(5,7)));} const out=[]; for(let m=3;m<=Math.max(2,Math.min(12,max));m++)out.push('2026-'+String(m).padStart(2,'0')); return out;}
+  function rawSchedules(){
+    const d=D(), out=[];
+    arr(d.meetingSchedules||d.meetings).forEach((m,i)=>{
+      const date=normDate(m&& (m.date||m['날짜']));
+      const ym=ymHyphen((m&&(m.ym||m['연월']))||date);
+      const active=txt(m&&(m.active||m['활성']||'Y'))||'Y';
+      if(!ym||!date||active==='N')return;
+      out.push({id:txt(m.id||m.meetingId)||('M'+i+'_'+date),ym,date,type:txt(m.type||m['구분'])||'정기모임',memo:txt(m.memo||m['메모']),active});
+    });
+    const defaults=d.meetingDefaults||{};
+    Object.keys(defaults).forEach(ym=>{const date=normDate(defaults[ym]); if(!date)return; const y=ymHyphen(ym); if(!out.some(x=>x.date===date)) out.push({id:'default-'+y,ym:y,date,type:'정기모임',memo:'월 대표 모임일',active:'Y',readonly:true});});
+    const seen={};
+    return out.filter(x=>{const k=x.date+'|'+x.type; if(seen[k])return false; seen[k]=1; return true;}).sort((a,b)=>a.date.localeCompare(b.date)||a.type.localeCompare(b.type));
+  }
+  function schedulesForYm(ym){ym=ymHyphen(ym); let list=rawSchedules().filter(x=>x.ym===ym); if(!list.length){const defs=(D()&&D().meetingDefaults)||{}; const dd=normDate(defs[ym]||defs[ym.replace('-','.')]); if(dd) list=[{id:'default-'+ym,ym,date:dd,type:'정기모임',memo:'월 대표 모임일',readonly:true}];}
+    if(!list.length && /^2026-\d{2}$/.test(ym)) list=[{id:'fallback-'+ym,ym,date:ym+'-01',type:'정기모임',memo:'기본 모임일',fallback:true}];
+    return list.sort((a,b)=>a.date.localeCompare(b.date)||a.type.localeCompare(b.type));
+  }
+  function allDateColumns(){
+    const out=[], seen={}; rawSchedules().forEach(s=>{if(!seen[s.date]){seen[s.date]=1; out.push(s);}});
+    monthRange().forEach(ym=>{if(!out.some(x=>x.ym===ym)){schedulesForYm(ym).slice(0,1).forEach(s=>{if(!seen[s.date]){seen[s.date]=1; out.push(s);}});}});
+    return out.filter(s=>/^2026-(0[3-9]|1[0-2])/.test(s.ym)).sort((a,b)=>a.date.localeCompare(b.date)||a.type.localeCompare(b.type));
+  }
+  function defaultDateForYm(ym){const list=schedulesForYm(ym); const regular=list.find(x=>txt(x.type).indexOf('정기')>=0); return (regular||list[0]||{}).date||'';}
+  window.meetingDateOf=function(ym){return defaultDateForYm(ymHyphen(ym));};
+  window.ymFromDate=function(date){return ymFromDate609(date);};
+  window.monthLabelFromYm=function(ym){const y=ymHyphen(ym); return /^\d{4}-\d{2}$/.test(y)?Number(y.slice(5,7))+'월':txt(ym);};
+  window.visibleStatsMonths=function(){return monthRange().map(x=>Number(x.slice(5,7)));};
+  window.isAttendanceDueMonth=function(mon){return dateDue(defaultDateForYm('2026-'+String(mon).padStart(2,'0')));};
+  function selectedDate(){const st=S(); const ym=ymHyphen(st.currentYm||st.attendanceDate||today()||'2026-07'); const list=schedulesForYm(ym); let d=normDate(st.attendanceDate); if(!list.some(x=>x.date===d)) d=(list[0]&&list[0].date)||defaultDateForYm(ym); st.currentYm=ym.replace('-','.'); st.attendanceDate=d; return d;}
+  window.setMeetingAttendanceDateV609=function(date){const st=S(); const d=normDate(date); st.attendanceDate=d; st.currentYm=ymFromDate609(d)||st.currentYm; try{render();}catch(e){try{renderHome();}catch(_){}}};
+  window.shiftMonth=function(delta){const st=S(); const parts=ymHyphen(st.currentYm||st.attendanceDate||'2026-07').split('-'); let y=Number(parts[0]||2026), m=Number(parts[1]||7)+Number(delta||0); if(m<3)m=3; if(m>12)m=12; const ym=y+'-'+String(m).padStart(2,'0'); st.currentYm=ym.replace('-','.'); st.attendanceDate=defaultDateForYm(ym)||st.attendanceDate; try{render();}catch(e){}};
+  function memberId(m){return txt(m&&(m.id||m.memberId||m.ID||m['고유ID']||m.name||m['이름']));}
+  function memberName(m){return txt(m&&(m.name||m['이름']));}
+  function memberTeam(m){return txt(m&&(m.team||m['순']||m['순이름']));}
+  function sameMember(a,m,id){const aid=txt(a.memberId||a.id||a['memberId']||a['순원ID']||a['고유ID']); const nm=txt(a['이름']||a.name); const tm=txt(a['순']||a.team||a['순이름']); return (aid&&aid===txt(id||memberId(m))) || (nm&&nm===memberName(m)&&(!tm||tm===memberTeam(m)));}
+  function attDate(a){return normDate(a&& (a['날짜']||a.date));}
+  function attYm(a){return ymDot(a&& (a['연월']||a.ym||a.month||a['날짜']||a.date));}
+  function hasExactDateRowsForMember(m,ym){return arr(D().attendance).some(a=>sameMember(a,m)&&attYm(a)===ymDot(ym)&&attDate(a));}
+  function statusOnDate(mOrId,date){
+    const m=typeof mOrId==='object'?mOrId:arr(D().members).find(x=>String(memberId(x))===String(mOrId));
+    const id=typeof mOrId==='object'?memberId(mOrId):txt(mOrId); const d=normDate(date||selectedDate()); const ym=ymDot(d);
+    const exact=arr(D().attendance).find(a=>sameMember(a,m,id)&&attDate(a)===d&&txt(a['상태']||a.status||a.value)==='출석');
+    if(exact)return '출석';
+    if(m && !hasExactDateRowsForMember(m,ym) && d===defaultDateForYm(ym)){
+      if(m.monthAttendance&&txt(m.monthAttendance[Number(ym.split('.')[1])])==='출석')return '출석';
+      const legacy=arr(D().attendance).find(a=>sameMember(a,m,id)&&attYm(a)===ym&&!attDate(a)&&txt(a['상태']||a.status||a.value)==='출석');
+      if(legacy)return '출석';
+    }
+    return '';
+  }
+  window.statusOn=function(id,date){return statusOnDate(id,date);};
+  window.memberMonthStatus=function(m,mon){return statusOnDate(m,defaultDateForYm('2026-'+String(mon).padStart(2,'0')));};
+  function familyIds(parentId){
+    try{if(typeof familyParentIds==='function')return familyParentIds(parentId).map(String);}catch(e){}
+    const p=arr(D().members).find(x=>String(memberId(x))===String(parentId)); const ids=[String(parentId)];
+    try{const sp=p&&typeof findSpouseFor==='function'?findSpouseFor(p):null; if(sp&&memberId(sp))ids.push(String(memberId(sp)));}catch(e){}
+    return Array.from(new Set(ids));
+  }
+  function childKey(v){try{if(typeof canonicalChildName==='function')return canonicalChildName(v);}catch(e){} try{if(typeof stripChildNameText==='function')return stripChildNameText(v).replace(/\s/g,'');}catch(e){} return txt(v).replace(/\s/g,'');}
+  function childStatusDate(parentId,childName,date){const d=normDate(date||selectedDate()); const ym=ymDot(d); const ids=familyIds(parentId); const ck=childKey(childName); const exact=arr(D().childAttendance).find(a=>ids.includes(String(a.parentId))&&childKey(a['자녀명']||a.childName||a.name)===ck&&attDate(a)===d&&txt(a['상태']||a.status||a.value)==='출석'); if(exact)return '출석'; const hasExact=arr(D().childAttendance).some(a=>ids.includes(String(a.parentId))&&childKey(a['자녀명']||a.childName||a.name)===ck&&attYm(a)===ym&&attDate(a)); if(!hasExact&&d===defaultDateForYm(ym)){const legacy=arr(D().childAttendance).find(a=>ids.includes(String(a.parentId))&&childKey(a['자녀명']||a.childName||a.name)===ck&&attYm(a)===ym&&!attDate(a)&&txt(a['상태']||a.status||a.value)==='출석'); if(legacy)return '출석';} return '';}
+  window.childStatusOn=function(parentId,childName,date){return childStatusDate(parentId,childName,date);};
+  window.childMonthStatus=function(child,mon){return childStatusDate(child&&child.parentId, child&&child.name, defaultDateForYm('2026-'+String(mon).padStart(2,'0')));};
+  const baseRenderHome=typeof renderHome==='function'?renderHome:null;
+  function dateSelectorHtml(){const st=S(); const ym=ymHyphen(st.currentYm||st.attendanceDate||today()||'2026-07'); const list=schedulesForYm(ym); const cur=selectedDate(); if(!list.length)return ''; return '<div class="meeting-date-select-v609"><div class="meeting-date-title-v609"><span>모임날짜 선택</span><small>'+h(list.length)+'개 일정</small></div><div class="meeting-date-chips-v609">'+list.map(m=>'<button type="button" class="meeting-date-chip-v609 '+(m.date===cur?'active':'')+'" onclick="setMeetingAttendanceDateV609(\''+h(m.date)+'\')">'+h(dateLabel(m.date))+'<span class="type">'+h(m.type||'모임')+'</span></button>').join('')+'</div></div>';
+  }
+  function injectDateSelector(){try{const card=document.querySelector('#view .card'); if(!card||document.getElementById('meetingDateSelectV609'))return; const wrap=document.createElement('div'); wrap.id='meetingDateSelectV609'; wrap.innerHTML=dateSelectorHtml(); const head=card.querySelector('.att-head'); if(head)head.insertAdjacentElement('afterend',wrap); else card.insertAdjacentElement('afterbegin',wrap);}catch(e){}}
+  if(baseRenderHome){window.renderHome=function(){selectedDate(); const r=baseRenderHome.apply(this,arguments); setTimeout(injectDateSelector,0); setTimeout(setVersion,0); return r;};}
+  window.toggleAttend=async function(id){
+    const data=D(), st=S(), m=arr(data.members).find(x=>String(memberId(x))===String(id)); if(!m)return;
+    const saveDate=selectedDate(), ym=ymFromDate609(saveDate), cur=statusOnDate(m,saveDate), next=cur==='출석'?'':'출석';
+    data.attendance=arr(data.attendance).filter(a=>!(sameMember(a,m,id)&&attDate(a)===saveDate));
+    if(next)data.attendance.push({'날짜':saveDate,'연월':ym,memberId:memberId(m),'순':memberTeam(m),'이름':memberName(m),'상태':next});
+    try{render();}catch(e){}
+    try{await call('saveAttendance',{date:saveDate,records:[{memberId:memberId(m),team:memberTeam(m),name:memberName(m),status:next}]});}catch(e){alert('출석 저장 중 오류가 발생했습니다: '+(e.message||e)); try{await load();}catch(_){}}
+  };
+  window.toggleChild=async function(parentId,childName,childBirth){
+    const data=D(), parent=arr(data.members).find(x=>String(memberId(x))===String(parentId)); const saveDate=selectedDate(), ym=ymFromDate609(saveDate), name=txt(childName); const cur=childStatusDate(parentId,name,saveDate), next=cur==='출석'?'':'출석';
+    data.childAttendance=arr(data.childAttendance).filter(a=>!(familyIds(parentId).includes(String(a.parentId))&&childKey(a['자녀명']||a.childName||a.name)===childKey(name)&&attDate(a)===saveDate));
+    if(next)data.childAttendance.push({'날짜':saveDate,'연월':ym,parentId:parentId,'부모명':parent?memberName(parent):'','순':parent?memberTeam(parent):'','자녀명':name,'자녀생년월일':childBirth||'','상태':next});
+    try{render();}catch(e){}
+    try{await call('saveChildAttendance',{date:saveDate,records:[{parentId:parentId,parentName:parent?memberName(parent):'',team:parent?memberTeam(parent):'',childName:name,childBirth:childBirth||'',status:next}]});}catch(e){alert('자녀 출석 저장 중 오류가 발생했습니다: '+(e.message||e)); try{await load();}catch(_){}}
+  };
+  function active(m){const v=txt(m&&(m.active||m['활성']||m.status||m['상태']));return !(v==='N'||v==='보류'||v==='삭제'||v==='비활성');}
+  function allMembers(){return arr(D().members).filter(m=>memberName(m)&&active(m));}
+  function teams(){const out=[]; arr(D().teams).forEach(t=>{t=txt(typeof t==='object'?(t.name||t.team||t['순']||t['순이름']):t); if(t&&t!=='전체'&&t!=='어린이결'&&!out.includes(t))out.push(t);}); allMembers().forEach(m=>{const t=memberTeam(m); if(t&&!out.includes(t))out.push(t);}); return out;}
+  function membersOf(team){let list=allMembers().filter(m=>memberTeam(m)===txt(team)); try{if(typeof sortMembersForList==='function')list=sortMembersForList(list,team);}catch(e){} return list;}
+  function selectedMembers(){const team=txt(S().team); if(team==='전체')return teams().flatMap(t=>membersOf(t)); try{if(typeof teamMembers==='function'&&team&&team!=='어린이결')return arr(teamMembers()).filter(active);}catch(e){} return membersOf(team);}
+  function childRows(){try{if(typeof allChildrenRows==='function')return arr(allChildrenRows());}catch(e){} return [];}
+  function countMembers(list,date){list=arr(list); const p=list.filter(m=>statusOnDate(m,date)==='출석').length; return {present:p,total:list.length,rate:list.length?Math.round(p/list.length*100):0};}
+  function countChildren(list,date){list=arr(list); const p=list.filter(c=>childStatusDate(c.parentId,c.name,date)==='출석').length; return {present:p,total:list.length,rate:list.length?Math.round(p/list.length*100):0};}
+  function icon(st,due){if(st==='출석')return '<span class="stats-ok-v609">✓</span>'; if(due)return '<span class="stats-no-v609">×</span>'; return '<span class="stats-blank-v609"></span>';}
+  function thLabel(s){return '<span>'+h(dateLabel(s.date))+'</span><small>'+h(s.type||'모임')+'</small>';}
+  function statsTable(first,rows,cellFn,fw,mw){const cols=allDateColumns(); fw=fw||74; mw=mw||58; const min=fw+cols.length*mw; const body=arr(rows).map((row,idx)=>'<tr><td class="first-col">'+h(row.label||row.name||'')+'</td>'+cols.map(c=>'<td>'+cellFn(row,c,idx)+'</td>').join('')+'</tr>').join('')||'<tr><td colspan="'+(cols.length+1)+'">표시할 항목이 없습니다.</td></tr>'; return '<div class="stats-scroll-v609"><table class="stats-table-v609" style="min-width:'+min+'px"><colgroup><col style="width:'+fw+'px">'+cols.map(()=>'<col style="width:'+mw+'px">').join('')+'</colgroup><thead><tr><th class="first-col">'+h(first)+'</th>'+cols.map(c=>'<th>'+thLabel(c)+'</th>').join('')+'</tr></thead><tbody>'+body+'</tbody></table></div>';}
+  function memberTable(list){return statsTable('이름',arr(list).map(m=>({name:memberName(m),member:m})),(row,c)=>icon(statusOnDate(row.member,c.date),dateDue(c.date)),74,58);}
+  function childTable(){return statsTable('이름',childRows().map(c=>({name:c.name,child:c})),(row,c)=>icon(childStatusDate(row.child.parentId,row.child.name,c.date),dateDue(c.date)),74,58);}
+  function teamRateTable(){return statsTable('순',teams().map(t=>({name:t,team:t,members:membersOf(t)})),(row,c)=>{const r=countMembers(row.members,c.date); return '<span class="rate-main-v606">'+r.rate+'%</span><span class="rate-sub-v606">'+r.present+'/'+r.total+'</span>';},82,62);}
+  window.__GEOL_STATS_V609=window.__GEOL_STATS_V609||{monthly:false,all:false,teams:{}};
+  window.toggleStatsCollapseV609=function(key){window.__GEOL_STATS_V609[key]=!window.__GEOL_STATS_V609[key];renderStatsV609();};
+  window.toggleStatsTeamV609=function(team){window.__GEOL_STATS_V609.teams[team]=!window.__GEOL_STATS_V609.teams[team];renderStatsV609();};
+  function collapse(key,title,body){const open=!!window.__GEOL_STATS_V609[key]; return '<div class="stats-collapse-card-v609"><button type="button" class="stats-collapse-head-v609 '+(open?'open':'')+'" onclick="toggleStatsCollapseV609(\''+h(key)+'\')"><span>'+h(title)+'</span><span class="arrow">⌄</span></button><div class="stats-collapse-body-v609 '+(open?'open':'')+'">'+body+'</div></div>';}
+  function allMembersByTeam(){return teams().map(t=>{const open=!!window.__GEOL_STATS_V609.teams[t]; return '<div class="team-collapse-v609"><button type="button" class="team-collapse-head-v609 '+(open?'open':'')+'" onclick="toggleStatsTeamV609(\''+h(t)+'\')"><span>'+h(t)+'</span><span>⌄</span></button><div class="team-collapse-body-v609 '+(open?'open':'')+'">'+memberTable(membersOf(t))+'</div></div>';}).join('')||'<div class="count">표시할 순원이 없습니다.</div>';}
+  function rateRows(kind,list){const cols=allDateColumns(); return cols.map(c=>{const r=kind==='child'?countChildren(list,c.date):countMembers(list,c.date); return '<div class="rate-row-v609"><div class="rate-label-v609">'+h(dateLabel(c.date))+'<small>'+h(c.type||'모임')+'</small></div><div class="rate-bar-v609"><div class="rate-fill-v609" style="width:'+r.rate+'%"></div></div><div class="rate-num-v609">'+r.rate+'%<br><span>'+r.present+'/'+r.total+'명</span></div></div>';}).join('')||'<div class="count">등록된 모임날짜가 없습니다.</div>';}
+  function defaultTeamSelect(){const opts=['전체'].concat(teams()).concat(['어린이결']);let cur=txt(S().team)||'전체'; if(!opts.includes(cur))cur='전체'; S().team=cur; return '<select class="stats-select-v609" onchange="state.team=this.value;renderStatsV609()">'+opts.map(o=>'<option value="'+h(o)+'" '+(o===cur?'selected':'')+'>'+h(o)+'</option>').join('')+'</select>';}
+  window.renderStatsV609=function(){const view=document.getElementById('view')||window.view; if(!view)return; setVersion(); let team=txt(S().team)||'전체'; const ts=teams(); if(team!=='전체'&&team!=='어린이결'&&!ts.includes(team))team='전체'; S().team=team; let title='',main='',rate='',extra='',count=''; if(team==='어린이결'){const rows=childRows(); title='2026년 어린이결 출석 현황'; main=childTable(); rate=rateRows('child',rows); count='어린이결 통계: 출석 대상 자녀 '+rows.length+'명';} else if(team==='전체'){const list=selectedMembers(); title='전체 순 모임별 출석현황'; main=teamRateTable(); rate=rateRows('member',list); extra=collapse('all','전체 순원 모임별 출석현황',allMembersByTeam()); count='전체 순 통계: '+ts.length+'개 순 / 전체 '+list.length+'명';} else {const list=selectedMembers(); title='2026년 모임별 출석 현황'; main=memberTable(list); rate=rateRows('member',list); count='통계 대상: '+list.length+'명';} const sel=typeof statsTeamSelect==='function'?statsTeamSelect():defaultTeamSelect(); view.innerHTML='<section class="page stats-page-v609"><div class="stats-sticky-v609"><div class="section-head">출석통계</div>'+sel+'<div class="count">'+h(count)+'</div></div><div class="stats-card-v609"><div class="stats-title-v609">'+h(title)+'</div>'+main+'</div>'+collapse('monthly','모임별 출석율',rate)+extra+'</section>'; setVersion();};
+  window.renderStats=window.renderStatsV609;
+  function setVersion(){try{window.versionText=function(){return VER;};}catch(e){} try{document.querySelectorAll('.header-version-badge,#versionBadge,.version-badge,.app-version,.version,.ver,.pill,[data-version]').forEach(el=>{const s=String(el.textContent||''); if(/V\d+\.\d+/.test(s))el.textContent=s.replace(/V\d+\.\d+/g,VER);});}catch(e){} }
+  const oldRender=window.render; window.render=function(){const st=S(); selectedDate(); if(txt(st.tab)==='stats')return renderStatsV609(); const r=oldRender?oldRender.apply(this,arguments):undefined; setTimeout(()=>{setVersion(); if(txt(S().tab)==='home')injectDateSelector();},0); return r;};
+  const oldGo=window.go; window.go=function(tab){if(tab==='stats'){S().tab='stats'; renderStatsV609(); try{if(typeof updateNav==='function')updateNav();}catch(e){} return;} const r=oldGo?oldGo.apply(this,arguments):undefined; setTimeout(()=>{setVersion(); if(tab==='home'||txt(S().tab)==='home')injectDateSelector();},120); return r;};
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{setVersion(); try{selectedDate(); if(txt(S().tab)==='home')injectDateSelector(); if(txt(S().tab)==='stats')renderStatsV609();}catch(e){}},700);});
+  setVersion(); setInterval(setVersion,1000);
 })();
 </script>
 
